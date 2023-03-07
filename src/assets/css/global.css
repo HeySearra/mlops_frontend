@@ -1,0 +1,15 @@
+
+a {
+    text-decoration: none;
+}
+
+.el-table,
+.el-descriptions,
+.md,
+.file_holder {
+  border: 1px solid #e0e0e0 !important;
+}
+
+.limit .el-radio__input {
+    display: none;
+  }
