@@ -4,7 +4,8 @@ import Home from '../views/Home.vue'
 
 Vue.use(VueRouter)
 
-const routes = [{
+const routes = [
+    {
         path: '/',
         name: 'Home',
         component: Home
@@ -20,6 +21,12 @@ const routes = [{
         name: 'DataDetails',
         component: () =>
             import ('../views/Datasets/DataDetails.vue')
+    },
+    {
+        path: '/datadetails_wang/:id',
+        name: 'DataDetails_wang',
+        component: () =>
+            import ('../views/Datasets/DataDetails_wang.vue')
     },
     {
         path: '/new_datasets',

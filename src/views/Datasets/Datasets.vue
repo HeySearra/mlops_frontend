@@ -43,6 +43,7 @@
       <el-card
         class="limit"
         shadow="never"
+        v-if="mode == '其他'"
       >
         <div slot="header">
           <span>任务</span>
@@ -59,6 +60,32 @@
                 <el-tag
                   type="success"
                   :effect="item == clusterTasks.checkList ? 'light':'plain'"
+                >{{ item }}</el-tag>
+              </el-radio>
+            </el-radio-group>
+          </div>
+        </el-collapse-transition>
+      </el-card>
+
+    <el-card
+        class="limit"
+        shadow="never"
+      >
+        <div slot="header">
+          <span>分类</span>
+        </div>
+        <el-collapse-transition>
+          <div style="padding: 8px 0">
+            <el-radio-group v-model="clusterGoal.checkList">
+              <el-radio
+                v-for="(item, i) in clusterGoal.data"
+                :label="item"
+                :key="i"
+                @click.prevent.native="checkRadio_Goal(item, clusterGoal)"
+              >
+                <el-tag
+                  type="success"
+                  :effect="item == clusterGoal.checkList ? 'light':'plain'"
                 >{{ item }}</el-tag>
               </el-radio>
             </el-radio-group>
@@ -117,6 +144,7 @@ export default {
 
   data() {
     return {
+      mode: '预处理',
       input: '',
       search_word: '',
       count: undefined,
@@ -128,6 +156,10 @@ export default {
       clusterTasks: {
         data: ['命名实体识别', '关系抽取', '实体关系联合抽取'],
         checkList: '',
+      },
+      clusterGoal: {
+        data: ['预处理','其他'],
+        checkList: ''
       }
     }
   },
@@ -148,7 +180,8 @@ export default {
     },
 
     get_datasets_list(page = 1) {
-      this.$http({
+      if(this.mode == '其他'){
+        this.$http({
         url: "/datasets/",
         method: "get",
         params: {
@@ -157,12 +190,30 @@ export default {
           task: this.clusterTasks.checkList,
           name: this.search_word
         }
-      }).then((res) => {
-        //console.log(res);
-        let data = res.data
-        this.count = data.count
-        this.resultList = data.results
-      })
+        }).then((res) => {
+          //console.log(res);
+          let data = res.data
+          this.count = data.count
+          this.resultList = data.results
+        })
+      }else if(this.mode == '预处理'){
+        //TODO: 更换接口
+        this.$http({
+        url: "/datasets/",
+        method: "get",
+        params: {
+          page: page,
+          area: this.clusterFields.checkList,
+          name: this.search_word
+        }
+        }).then((res) => {
+          //console.log(res);
+          let data = res.data
+          this.count = data.count
+          this.resultList = data.results
+        })
+      }
+      
     },
 
     checkRadio(val, cluster) {
@@ -170,13 +221,47 @@ export default {
       this.get_datasets_list()
     },
 
+    checkRadio_Goal(val,cluster){
+      if(this.mode != val){
+        this.switchSystem(this.mode, val)
+      }
+    },
+
+    switchSystem(from, to){
+      this.mode = to
+      if (to == '其他'){
+        this.clusterFields = {
+          data: ['新闻', '金融', '医疗'],
+          checkList: '',
+        }
+        this.clusterTasks.checkList = ''
+      }else if(to == "预处理"){
+        this.clusterFields = {
+          data: ['钢铁', '医疗'],
+          checkList: '',
+        }
+        this.clusterTasks.checkList = ''
+      }
+      this.get_datasets_list()
+    },
+
+
     toDataset(arg) {
-      this.$router.push({
-        name: "DataDetails",
-        params: {
-          id: arg.id,
-        },
-      });
+      if(this.mode == '其他'){
+        this.$router.push({
+          name: "DataDetails",
+          params: {
+            id: arg.id,
+          },
+        });
+      }else if(this.mode == '预处理'){
+        this.$router.push({
+          name: "DataDetails_wang",
+          params: {
+            id: arg.id
+          }
+        })
+      }
     },
   }
 
