@@ -6,7 +6,7 @@
     <el-tag type="warning" size="small">{{ detail.area }}</el-tag>
     <div class="info">{{ detail.short_description }}</div>
 
-    <div class="tabs1">
+    <div class="version">
       <el-tabs v-model="version_choose">
         <el-tab-pane v-for="(version, index) in versions" :label="version.name" :name="version.name" :key="index">
         </el-tab-pane>
@@ -29,11 +29,144 @@
         </el-tab-pane>
 
         <el-tab-pane label="实验" name="second">
-          <!-- <div v-if="exp_count == 0"> 暂无相关实验 </div> -->
-          <div v-if="false"></div>
-          <div v-else>
-            <!-- <exptable :resultList="exp_list"></exptable> -->
-            <preprocessflow></preprocessflow>
+          <!-- <exptable :resultList="exp_list"></exptable> -->
+          <div class="tabel">
+            <el-table border tooltip-effect="dark" style="width: 100%" max-height="210" :data="resultList"
+              :row-style="{height: '10px'}"
+              :cell-style="{padding: '0'}"
+               :header-cell-style="{
+                'font-size': '14px',
+                color: '#778192',
+                'font-weight': 'normal',
+                'text-align': 'center',
+                'background-color': '#fafafa',
+              }">
+              <!-- @expand-change="expandChange" -->
+              <!-- <el-table-column type="selection" align="center" width="55">
+              </el-table-column> -->
+              <el-table-column prop="task" label="任务名" width="160" align="center" show-overflow-tooltip>
+              </el-table-column>
+              <el-table-column label="开始时间" width="160" align="center">
+                <template slot-scope="scope">{{ scope.row.created.substr(0, 10) }}
+                  <span style=" margin-right: 5px;"></span>
+                  {{ scope.row.created.substr(11, 8) }}</template>
+              </el-table-column>
+              <el-table-column label="状态" width="100" align="center">
+                <template slot-scope="scope">
+                  <el-tag align="center" :type="scope.row.run_status == 'running' ? 'warning' : 'success'"
+                    disable-transitions>{{
+                      scope.row.run_status }} </el-tag>
+                </template>
+              </el-table-column>
+              <el-table-column prop="description" label="描述" show-overflow-tooltip>
+              </el-table-column>
+              <el-table-column prop="owner" label="创建用户" width="80" align="center" show-overflow-tooltip>
+              </el-table-column>
+              <!-- <el-table-column label="模型">
+                <template slot-scope="scope">
+                  <span @click="toModel(scope.row)" class="name">{{ scope.row.model_name }}</span> </template>
+              </el-table-column> -->
+              <!-- <el-table-column prop="model_version" label="版本" width="55" align="center">
+              </el-table-column>
+              <el-table-column label="数据集">
+                <template slot-scope="scope">
+                  <span @click="toDataset(scope.row)" class="name">{{ scope.row.dataset_name }}</span> </template>
+              </el-table-column> -->
+
+              <el-table-column type="expand">
+                <template slot-scope="props">
+                  <div class="expand">
+                    <el-row :gutter="30">
+                      <el-col :span="10">
+                        <p>实验参数</p>
+                        <el-descriptions :column="1" border>
+                          <template v-for="(value, key) in props.row.metric">
+                            <el-descriptions-item :label="key">{{ value }}</el-descriptions-item>
+                          </template>
+                        </el-descriptions>
+                      </el-col>
+
+                      <el-col :span="10">
+                        <p>实验指标</p>
+                        <el-descriptions :column="1" border>
+                          <template v-for="(value, key) in props.row.metric">
+                            <el-descriptions-item :label="key">{{ value }}</el-descriptions-item>
+                          </template>
+                        </el-descriptions>
+                      </el-col>
+                    </el-row>
+                  </div>
+                </template>
+              </el-table-column>
+
+            </el-table>
+
+          </div>
+          <div class="experiment">
+            <div title="左" style="">
+              <el-card shadow="never">
+                <div slot="header" class="card-title">
+                  <span>待进行步骤</span>
+                </div>
+                <el-form :model="form" label-width="120px">
+                  <el-form-item label="Activity name">
+                    <el-input v-model="form.name" />
+                  </el-form-item>
+                  <el-form-item label="Activity zone">
+                    <el-select v-model="form.region" placeholder="please select your zone">
+                      <el-option label="Zone one" value="shanghai" />
+                      <el-option label="Zone two" value="beijing" />
+                    </el-select>
+                  </el-form-item>
+                  <el-form-item label="Activity time">
+                    <el-col :span="11">
+                      <el-date-picker
+                        v-model="form.date1"
+                        type="date"
+                        placeholder="Pick a date"
+                        style="width: 100%"
+                      />
+                    </el-col>
+                    <el-col :span="2" class="text-center">
+                      <span class="text-gray-500">-</span>
+                    </el-col>
+                    <el-col :span="11">
+                      <el-time-picker
+                        v-model="form.date2"
+                        placeholder="Pick a time"
+                        style="width: 100%"
+                      />
+                    </el-col>
+                  </el-form-item>
+                  <el-form-item label="Instant delivery">
+                    <el-switch v-model="form.delivery" />
+                  </el-form-item>
+                  <el-form-item label="Activity type">
+                    <el-checkbox-group v-model="form.type">
+                      <el-checkbox label="Online activities" name="type" />
+                      <el-checkbox label="Promotion activities" name="type" />
+                      <el-checkbox label="Offline activities" name="type" />
+                      <el-checkbox label="Simple brand exposure" name="type" />
+                    </el-checkbox-group>
+                  </el-form-item>
+                  <el-form-item label="Resources">
+                    <el-radio-group v-model="form.resource">
+                      <el-radio label="Sponsor" />
+                      <el-radio label="Venue" />
+                    </el-radio-group>
+                  </el-form-item>
+                  <el-form-item label="Activity form">
+                    <el-input v-model="form.desc" type="textarea" />
+                  </el-form-item>
+                  <el-form-item>
+                    <el-button type="primary" @click="onSubmit">Create</el-button>
+                    <el-button>Cancel</el-button>
+                  </el-form-item>
+                </el-form>
+              </el-card>
+
+            </div>
+            <div title="右" style="background-color: rgb(57, 107, 179)"></div>
           </div>
         </el-tab-pane>
       </el-tabs>
@@ -77,17 +210,100 @@ export default {
         "train_data_path": "",
         "download_url": ""
       },
-      exp_count: 0,
-      exp_list: [],
+      exp_count: 2,
+      exp_list: [{
+        'created': '1',
+        'run_status': '1',
+        'model_name': '1',
+        'dataset_name': '1',
+      }],
       activeName: 'first',
       version_choose: '版本1',
-      versions:[
-        {'name': '版本1'},
-        {'name': '版本2'},
-        {'name': '版本3'},
-        {'name': '版本4'},
-        {'name': '版本5'},
-      ]
+      versions: [
+        { 'name': '版本1' },
+        { 'name': '版本2' },
+        { 'name': '版本3' },
+        { 'name': '版本4' },
+        { 'name': '版本5' },
+      ],
+      resultList: [{
+        'id': 1,
+        'task': '任务',
+        'created': '2023-01-23',
+        'run_status': 'success',
+        'description': '1232432543657658787876',
+        'owner': 'wlt',
+        'model_config': {
+          "1": "1",
+          "2": "2",
+        },
+        'metric': {
+          "1": "1",
+          "2": "2",
+        },
+      },
+      {
+        'id': 1,
+        'task': '任务',
+        'created': '2023-01-23',
+        'run_status': 'success',
+        'description': '1232432543657658787876',
+        'owner': 'wlt',
+        'model_config': {
+          "1": "1",
+          "2": "2",
+        },
+        'metric': {
+          "1": "1",
+          "2": "2",
+        },
+      }, {
+        'id': 1,
+        'task': '任务',
+        'created': '2023-01-23',
+        'run_status': 'success',
+        'description': '1232432543657658787876',
+        'owner': 'wlt',
+        'model_config': {
+          "1": "1",
+          "2": "2",
+        },
+        'metric': {
+          "1": "1",
+          "2": "2",
+        },
+      }, {
+        'id': 1,
+        'task': '任务',
+        'created': '2023-01-23',
+        'run_status': 'success',
+        'description': '1232432543657658787876',
+        'owner': 'wlt',
+        'model_config': {
+          "1": "1",
+          "2": "2",
+        },
+        'metric': {
+          "1": "1",
+          "2": "2",
+        },
+      }, {
+        'id': 1,
+        'task': '任务',
+        'created': '2023-01-23',
+        'run_status': 'success',
+        'description': '1232432543657658787876',
+        'owner': 'wlt',
+        'model_config': {
+          '1': '1',
+          '2': '2'
+        },
+        'metric': {
+          '1': '1',
+          '2': '2'
+        },
+      },
+      ],
     }
   },
 
@@ -132,6 +348,20 @@ export default {
     Download() {
       window.open("/api/datasets/" + this.id + '/download/')
     },
+
+    // expandChange(row, expandedRows) {
+    //   if (expandedRows.length > 0) {
+    //     let id = row.id
+    //     this.$http({
+    //       url: "/experiments/" + id + '/',
+    //       method: "get",
+    //     }).then((res) => {
+    //       let data = res.data
+    //       row.model_config = data.model_config
+    //       row.metric = data.metric
+    //     })
+    //   }
+    // },
   }
 
 }
@@ -190,10 +420,23 @@ export default {
   margin-right: 10px;
   margin-top: 8px;
 }
-</style>
+
+.tabel {
+  height: 220px;
+}
+
+.experiment {
+  width: 100%;
+  height: 500px;
+  display: flex;
+  flex-direction: row;
+}
+
+.experiment>div {
+  height: 22px;
+  flex: 1;
+}</style>
   
-<style>
-/* .md .v-show-content {
+<style>/* .md .v-show-content {
     background-color: #fff !important;
-  } */
-</style>
+  } */</style>

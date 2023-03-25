@@ -1,11 +1,6 @@
 <template>
   <div>
-    <el-table
-      border
-      tooltip-effect="dark"
-      style="width: 100%"
-      :data="resultList"
-      @expand-change="expandChange"
+    <el-table border tooltip-effect="dark" style="width: 100%" :data="resultList" @expand-change="expandChange"
       :header-cell-style="{
         'font-size': '14px',
         color: '#778192',
@@ -14,77 +9,36 @@
         'background-color': '#fafafa',
         padding: '0',
         height: '2.5vw',
-      }"
-    >
-      <el-table-column
-        type="selection"
-        width="55"
-      >
+      }">
+      <el-table-column type="selection" width="55">
       </el-table-column>
-      <el-table-column
-        label="开始时间"
-        width="180"
-        align="center"
-      >
-        <template slot-scope="scope">{{ scope.row.created.substr(0,10)}}
+      <el-table-column label="开始时间" width="180" align="center">
+        <template slot-scope="scope">{{ scope.row.created.substr(0, 10) }}
           <span style=" margin-right: 5px;"></span>
-          {{scope.row.created.substr(11,8)}}</template>
+          {{ scope.row.created.substr(11, 8) }}</template>
       </el-table-column>
-      <el-table-column
-        label="状态"
-        width="100"
-        align="center"
-      >
+      <el-table-column label="状态" width="100" align="center">
         <template slot-scope="scope">
-          <el-tag
-            :type="scope.row.run_status == 'running' ? 'warning' : 'success'"
-            disable-transitions
-          >{{scope.row.run_status}} </el-tag>
+          <el-tag :type="scope.row.run_status == 'running' ? 'warning' : 'success'"
+            disable-transitions>{{ scope.row.run_status }} </el-tag>
         </template>
       </el-table-column>
-      <el-table-column
-        prop="description"
-        label="描述"
-        show-overflow-tooltip
-      >
+      <el-table-column prop="description" label="描述" show-overflow-tooltip>
       </el-table-column>
-      <el-table-column
-        prop="task"
-        label="任务"
-        width="160"
-        align="center"
-        show-overflow-tooltip
-      >
+      <el-table-column prop="task" label="任务" width="160" align="center" show-overflow-tooltip>
       </el-table-column>
-      <el-table-column
-        prop="owner"
-        label="用户"
-        width="80"
-        align="center"
-        show-overflow-tooltip
-      >
+      <el-table-column prop="owner" label="用户" width="80" align="center" show-overflow-tooltip>
       </el-table-column>
       <el-table-column label="模型">
         <template slot-scope="scope">
-          <span
-            @click="toModel(scope.row)"
-            class="name"
-          >{{scope.row.model_name}}</span> </template>
+          <span @click="toModel(scope.row)" class="name">{{ scope.row.model_name }}</span> </template>
       </el-table-column>
-      <el-table-column
-        prop="model_version"
-        label="版本"
-        width="55"
-        align="center"
-      >
+      <el-table-column prop="model_version" label="版本" width="55" align="center">
       </el-table-column>
 
       <el-table-column label="数据集">
         <template slot-scope="scope">
-          <span
-            @click="toDataset(scope.row)"
-            class="name"
-          >{{scope.row.dataset_name}}</span> </template>
+          <span @click="toDataset(scope.row)" class="name">{{ scope.row.dataset_name }}</span> </template>
       </el-table-column>
 
       <el-table-column type="expand">
@@ -93,24 +47,18 @@
             <el-row :gutter="40">
               <el-col :span="18">
                 <p>实验参数</p>
-                <el-descriptions
-                  :column="2"
-                  border
-                >
-                  <template v-for="(value,key) in JSON.parse(props.row.model_config)">
-                    <el-descriptions-item :label="key">{{value}}</el-descriptions-item>
+                <el-descriptions :column="2" border>
+                  <template v-for="(value, key) in JSON.parse(props.row.model_config)">
+                    <el-descriptions-item :label="key">{{ value }}</el-descriptions-item>
                   </template>
                 </el-descriptions>
               </el-col>
 
               <el-col :span="6">
                 <p>实验指标</p>
-                <el-descriptions
-                  :column="1"
-                  border
-                >
-                  <template v-for="(value,key) in JSON.parse(props.row.metric)">
-                    <el-descriptions-item :label="key">{{value}}</el-descriptions-item>
+                <el-descriptions :column="1" border>
+                  <template v-for="(value, key) in JSON.parse(props.row.metric)">
+                    <el-descriptions-item :label="key">{{ value }}</el-descriptions-item>
                   </template>
                 </el-descriptions>
               </el-col>
@@ -143,6 +91,7 @@ export default {
 
 
   mounted() {
+    console.log(this.resultList)
   },
 
   methods: {
