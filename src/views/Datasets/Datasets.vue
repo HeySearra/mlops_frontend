@@ -13,6 +13,27 @@
       </el-input>
     </div>
 
+    <el-button 
+      id="upload-button" 
+      class="mid-child-container" 
+      circle
+      @click="clickSubmitIcon"
+      >
+      <svg class="icon" id="upload-plus-icon" aria-hidden="true">
+       <use xlink:href="#icon-plus"></use>
+      </svg>
+    </el-button>
+
+    <el-dialog
+      title="上传新数据"
+      :visible.sync="uploadDialogVisible"
+      width="40%"
+      :before-close="handleUploadDialogClose"
+      :destroy-on-close="true"
+      modal>
+      <dataUpload></dataUpload>
+    </el-dialog>
+
     <div class="filter">
       <el-card
         class="limit"
@@ -135,11 +156,11 @@
 </template>
 
 <script>
-
+import dataUpload from "../../components/DataUpload.vue"
 export default {
 
   components: {
-
+    dataUpload
   },
 
   data() {
@@ -160,7 +181,8 @@ export default {
       clusterGoal: {
         data: ['预处理','其他'],
         checkList: ''
-      }
+      },
+      uploadDialogVisible: false
     }
   },
 
@@ -263,6 +285,15 @@ export default {
         })
       }
     },
+
+    clickSubmitIcon(e){
+      e.stopPropagation();
+      this.uploadDialogVisible = true
+    },
+
+    handleUploadDialogClose(done){
+      done();
+    }
   }
 
 }
@@ -334,5 +365,27 @@ export default {
 
 .limit >>> .el-card__body {
   padding: 5px;
+}
+
+#upload-button {
+  position: absolute;
+  top: 90vh;
+  left: 90vw;
+  width: 50px;
+  height: 50px;
+  z-index: 1;
+  background: color;
+  box-shadow: 0px 0px 1px 1px grey;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+
+#upload-plus-icon {
+  width: 100%;
+  height: 100%;
+  color: #e0e0e0;
 }
 </style>

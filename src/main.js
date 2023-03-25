@@ -7,6 +7,7 @@ import './assets/iconfont'
 import '@/assets/css/global.css'
 import http from './axios.js'
 import VueClipboard from 'vue-clipboard2'
+import './assets/icons/iconfont'
 
 Vue.use(Element)
 Vue.use(VueClipboard)

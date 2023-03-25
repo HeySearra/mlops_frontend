@@ -29,9 +29,11 @@
         </el-tab-pane>
 
         <el-tab-pane label="实验" name="second">
-          <div v-if="exp_count == 0"> 暂无相关实验 </div>
+          <!-- <div v-if="exp_count == 0"> 暂无相关实验 </div> -->
+          <div v-if="false"></div>
           <div v-else>
-            <exptable :resultList="exp_list"></exptable>
+            <!-- <exptable :resultList="exp_list"></exptable> -->
+            <preprocessflow></preprocessflow>
           </div>
         </el-tab-pane>
       </el-tabs>
@@ -45,13 +47,16 @@ import { mavonEditor } from "mavon-editor";
 import "mavon-editor/dist/css/index.css";
 import JsonViewer from 'vue-json-viewer';
 import exptable from '../../components/ExpTable.vue'
+import preprocessflow from '../../components/PreProcessFlow.vue'
 
 export default {
 
   components: {
+    preprocessflow,
     mavonEditor,
     JsonViewer,
-    exptable
+    exptable,
+    preprocess
   },
 
   data() {
