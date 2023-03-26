@@ -104,7 +104,7 @@
           </div>
           <div class="experiment">
             <div title="左" style="">
-              <el-card shadow="never">
+              <el-card shadow="never" class="todo">
                 <div slot="header" class="card-title">
                   <span>待进行步骤</span>
                 </div>
@@ -143,10 +143,10 @@
                   </el-form-item>
                   <el-form-item label="Activity type">
                     <el-checkbox-group v-model="form.type">
-                      <el-checkbox label="Online activities" name="type" />
-                      <el-checkbox label="Promotion activities" name="type" />
-                      <el-checkbox label="Offline activities" name="type" />
-                      <el-checkbox label="Simple brand exposure" name="type" />
+                      <el-checkbox label="Online" name="type" />
+                      <el-checkbox label="Promotion" name="type" />
+                      <el-checkbox label="Offline" name="type" />
+                      <el-checkbox label="Simple" name="type" />
                     </el-checkbox-group>
                   </el-form-item>
                   <el-form-item label="Resources">
@@ -166,9 +166,10 @@
               </el-card>
 
             </div>
-            <div title="右" style="background-color: rgb(57, 107, 179)"></div>
+            <div title="右" style="">
+              <el-card class="graph" shadow="never"></el-card>
+            </div>
           </div>
-          <pre-process-flow :dataset_id="id"></pre-process-flow>
         </el-tab-pane>
       </el-tabs>
     </div>
@@ -181,15 +182,13 @@ import { mavonEditor } from "mavon-editor";
 import "mavon-editor/dist/css/index.css";
 import JsonViewer from 'vue-json-viewer';
 import exptable from '../../components/ExpTable.vue'
-import preprocessflow from '../../components/PreProcessFlow.vue'
 
 export default {
 
   components: {
-    preprocessflow,
     mavonEditor,
     JsonViewer,
-    exptable,
+    exptable
   },
 
   data() {
@@ -304,6 +303,17 @@ export default {
         },
       },
       ],
+      form: {
+        'name': 'name',
+        'region': 'region',
+        'date1': '2023.01',
+        'date2': '2023.02',
+        'delivery': true,
+        'type': 'type',
+        'resource': 'resource',
+        'desc': 'desc',
+
+      }
     }
   },
 
@@ -399,7 +409,7 @@ export default {
 }
 
 .el-card {
-  margin-top: 20px;
+  margin-top: 10px;
 }
 
 .v-note-wrapper {
@@ -435,7 +445,18 @@ export default {
 .experiment>div {
   height: 22px;
   flex: 1;
-}</style>
+}
+.todo{
+  width: 400px;
+  margin-right: 0px;
+}
+
+.graph{
+  width: 100%;
+  float: left;
+  margin-left: 15px;
+}
+</style>
   
 <style>/* .md .v-show-content {
     background-color: #fff !important;
