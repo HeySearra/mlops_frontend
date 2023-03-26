@@ -1,6 +1,5 @@
 <template>
   <div>
-    <pre-process-flow></pre-process-flow>
   </div>
 </template>
 

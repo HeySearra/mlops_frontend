@@ -168,6 +168,7 @@
             </div>
             <div title="右" style="background-color: rgb(57, 107, 179)"></div>
           </div>
+          <pre-process-flow :dataset_id="id"></pre-process-flow>
         </el-tab-pane>
       </el-tabs>
     </div>
