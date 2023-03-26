@@ -15,6 +15,14 @@ module.exports = {
           "^/api": "",
         },
       },
+      "/wang/": {
+        target: "http://localhost:8000/",
+        ws: true,
+        changOrigin: true, //允许跨域
+        pathRewrite: {
+          "^/wang": "",
+        },
+      }
     }
   },
 }

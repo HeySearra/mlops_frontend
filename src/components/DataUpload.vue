@@ -1,23 +1,70 @@
 <template>
   <div id="upload-frame">
+    <el-form ref="form" 
+      :model="datasetInfo"
+      label-width="80px"
+      size="mini">
+      <el-form-item label="数据名称" :rules="[{required: true}]">
+        <el-input v-model="datasetInfo.name"></el-input>
+      </el-form-item>
+      <el-form-item label="数据简介">
+        <el-input
+          type="textarea"
+          autosize
+          placeholder="请输入数据简介"
+          v-model="datasetInfo.short_description">
+        </el-input>
+      </el-form-item>
+      <el-form-item label="详细介绍">
+        <el-input
+          type="textarea"
+          autosize
+          placeholder="请输入数据详情介绍"
+          v-model="datasetInfo.long_description">
+        </el-input>
+      </el-form-item>
+      <el-form-item label="领域">
+        <el-select v-model="datasetInfo.area" placeholder="请选择">
+          <el-option
+            v-for="a in areaOptions"
+            :key="a"
+            :label="a"
+            :value="a">
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="任务">
+        <el-select v-model="datasetInfo.task" placeholder="请选择">
+          <el-option
+            v-for="b in taskOptions"
+            :key="b"
+            :label="b"
+            :value="b">
+          </el-option>
+        </el-select>
+      </el-form-item>
+    </el-form>
+  
     <el-upload
       id="upload-view"
       drag
       multiple
+      ref="upload"
       :auto-upload="false"
       :on-preview="handlePreview"
       :file-list="fileList"
       :on-remove="handleRemoveFile"
       :on-success="handleUploadSuccess"
       :on-progess="handleUploadProgess"
-      :http-request="sendUploadRequest"
       :on-change="handleFileListChange"
-      :limit="5">
+      :data="datasetInfo"
+      action="/wang/predata/"
+      >
       <i class="el-icon-upload" id="upload-view"/>
       <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-      <div class="el-upload__tip" slot="tip">Tips</div>
-    </el-upload>
-    <el-button size="small" type="primary" @click="upload">要上传力</el-button>
+      <div class="el-upload__tip" slot="tip">一般认为上传CSV文件比较靠谱</div>
+    </el-upload> 
+    <el-button size="small" type="primary" @click="handleUpload">要上传力</el-button>
   </div>
 </template>
 
@@ -28,23 +75,36 @@ export default {
       return {
         need_refresh: false,
         fileList:[],
+        areaOptions:["医疗"],
+        taskOptions:["通用"],
+        datasetInfo:{
+          name:'',
+          task:'',
+          short_description:'',
+          long_description:'',
+          area:'',
+          time_series:"114514",
+          id_col:"114514"
+        }
       }
     },
-    mounted:{
-
-    },
     methods:{
-      upload(){
-
-      },
-      handlePreview(){
-
+      handleUpload(){
+        this.$refs.upload.submit();
       },
       handleRemoveFile(){
 
       },
       handleUploadSuccess(){
-
+        this.datasetInfo = {
+          name:'',
+          task:'',
+          short_description:'',
+          long_description:'',
+          area:'',
+          time_series:"114514",
+          id_col:"114514"
+        }
       },
       handleUploadProgess(){
 
@@ -54,7 +114,6 @@ export default {
       },
       handleFileListChange(file, fileList){
         this.fileList = fileList
-        console.log(this.fileList)
       }
     }
 }

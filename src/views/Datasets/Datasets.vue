@@ -20,7 +20,7 @@
     <el-dialog
       title="上传新数据"
       :visible.sync="uploadDialogVisible"
-      width="40%"
+      width="60%"
       :before-close="handleUploadDialogClose"
       :destroy-on-close="true"
       modal>
@@ -165,9 +165,8 @@ export default {
           this.resultList = data.results
         })
       } else if (this.mode == '预处理') {
-        //TODO: 更换接口
-        this.$http({
-          url: "/datasets/",
+        this.$http_wang({
+          url: "/predata/",
           method: "get",
           params: {
             page: page,
@@ -238,7 +237,12 @@ export default {
     },
 
     handleUploadDialogClose(done){
-      done();
+      this.$confirm('确认关闭？已填写的数据将会清空。')
+          // eslint-disable-next-line no-unused-vars
+          .then(_ => {
+            done();
+          })
+          .catch(_ => {});
     }
   }
 

@@ -189,7 +189,6 @@ export default {
     mavonEditor,
     JsonViewer,
     exptable,
-    preprocess
   },
 
   data() {

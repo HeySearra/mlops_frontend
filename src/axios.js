@@ -6,4 +6,10 @@ const http = axios.create({
     withCredentials: true,
 });
 
-export default http
+const http_wang = axios.create({
+    baseURL: '/wang/',
+    timeout: 10000,
+    withCredentials: true
+})
+
+export {http, http_wang}
