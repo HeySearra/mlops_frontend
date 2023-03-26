@@ -102,74 +102,75 @@
             </el-table>
 
           </div>
-          <div class="experiment">
-            <div title="左" style="">
-              <el-card shadow="never" class="todo">
-                <div slot="header" class="card-title">
-                  <span>待进行步骤</span>
-                </div>
-                <el-form :model="form" label-width="120px">
-                  <el-form-item label="Activity name">
-                    <el-input v-model="form.name" />
-                  </el-form-item>
-                  <el-form-item label="Activity zone">
-                    <el-select v-model="form.region" placeholder="please select your zone">
-                      <el-option label="Zone one" value="shanghai" />
-                      <el-option label="Zone two" value="beijing" />
-                    </el-select>
-                  </el-form-item>
-                  <el-form-item label="Activity time">
-                    <el-col :span="11">
-                      <el-date-picker
-                        v-model="form.date1"
-                        type="date"
-                        placeholder="Pick a date"
-                        style="width: 100%"
-                      />
-                    </el-col>
-                    <el-col :span="2" class="text-center">
-                      <span class="text-gray-500">-</span>
-                    </el-col>
-                    <el-col :span="11">
-                      <el-time-picker
-                        v-model="form.date2"
-                        placeholder="Pick a time"
-                        style="width: 100%"
-                      />
-                    </el-col>
-                  </el-form-item>
-                  <el-form-item label="Instant delivery">
-                    <el-switch v-model="form.delivery" />
-                  </el-form-item>
-                  <el-form-item label="Activity type">
-                    <el-checkbox-group v-model="form.type">
-                      <el-checkbox label="Online" name="type" />
-                      <el-checkbox label="Promotion" name="type" />
-                      <el-checkbox label="Offline" name="type" />
-                      <el-checkbox label="Simple" name="type" />
-                    </el-checkbox-group>
-                  </el-form-item>
-                  <el-form-item label="Resources">
-                    <el-radio-group v-model="form.resource">
-                      <el-radio label="Sponsor" />
-                      <el-radio label="Venue" />
-                    </el-radio-group>
-                  </el-form-item>
-                  <el-form-item label="Activity form">
-                    <el-input v-model="form.desc" type="textarea" />
-                  </el-form-item>
-                  <el-form-item>
-                    <el-button type="primary" @click="onSubmit">Create</el-button>
-                    <el-button>Cancel</el-button>
-                  </el-form-item>
-                </el-form>
-              </el-card>
+<!--          <div class="experiment">-->
+<!--            <div title="左" style="">-->
+<!--              <el-card shadow="never" class="todo">-->
+<!--                <div slot="header" class="card-title">-->
+<!--                  <span>待进行步骤</span>-->
+<!--                </div>-->
+<!--                <el-form :model="form" label-width="120px">-->
+<!--                  <el-form-item label="Activity name">-->
+<!--                    <el-input v-model="form.name" />-->
+<!--                  </el-form-item>-->
+<!--                  <el-form-item label="Activity zone">-->
+<!--                    <el-select v-model="form.region" placeholder="please select your zone">-->
+<!--                      <el-option label="Zone one" value="shanghai" />-->
+<!--                      <el-option label="Zone two" value="beijing" />-->
+<!--                    </el-select>-->
+<!--                  </el-form-item>-->
+<!--                  <el-form-item label="Activity time">-->
+<!--                    <el-col :span="11">-->
+<!--                      <el-date-picker-->
+<!--                        v-model="form.date1"-->
+<!--                        type="date"-->
+<!--                        placeholder="Pick a date"-->
+<!--                        style="width: 100%"-->
+<!--                      />-->
+<!--                    </el-col>-->
+<!--                    <el-col :span="2" class="text-center">-->
+<!--                      <span class="text-gray-500">-</span>-->
+<!--                    </el-col>-->
+<!--                    <el-col :span="11">-->
+<!--                      <el-time-picker-->
+<!--                        v-model="form.date2"-->
+<!--                        placeholder="Pick a time"-->
+<!--                        style="width: 100%"-->
+<!--                      />-->
+<!--                    </el-col>-->
+<!--                  </el-form-item>-->
+<!--                  <el-form-item label="Instant delivery">-->
+<!--                    <el-switch v-model="form.delivery" />-->
+<!--                  </el-form-item>-->
+<!--                  <el-form-item label="Activity type">-->
+<!--                    <el-checkbox-group v-model="form.type">-->
+<!--                      <el-checkbox label="Online" name="type" />-->
+<!--                      <el-checkbox label="Promotion" name="type" />-->
+<!--                      <el-checkbox label="Offline" name="type" />-->
+<!--                      <el-checkbox label="Simple" name="type" />-->
+<!--                    </el-checkbox-group>-->
+<!--                  </el-form-item>-->
+<!--                  <el-form-item label="Resources">-->
+<!--                    <el-radio-group v-model="form.resource">-->
+<!--                      <el-radio label="Sponsor" />-->
+<!--                      <el-radio label="Venue" />-->
+<!--                    </el-radio-group>-->
+<!--                  </el-form-item>-->
+<!--                  <el-form-item label="Activity form">-->
+<!--                    <el-input v-model="form.desc" type="textarea" />-->
+<!--                  </el-form-item>-->
+<!--                  <el-form-item>-->
+<!--                    <el-button type="primary" @click="onSubmit">Create</el-button>-->
+<!--                    <el-button>Cancel</el-button>-->
+<!--                  </el-form-item>-->
+<!--                </el-form>-->
+<!--              </el-card>-->
 
-            </div>
-            <div title="右" style="">
-              <el-card class="graph" shadow="never"></el-card>
-            </div>
-          </div>
+<!--            </div>-->
+<!--            <div title="右" style="">-->
+<!--              <el-card class="graph" shadow="never"></el-card>-->
+<!--            </div>-->
+<!--          </div>-->
+          <pre-process-flow :dataset_id="id"></pre-process-flow>
         </el-tab-pane>
       </el-tabs>
     </div>
@@ -182,10 +183,12 @@ import { mavonEditor } from "mavon-editor";
 import "mavon-editor/dist/css/index.css";
 import JsonViewer from 'vue-json-viewer';
 import exptable from '../../components/ExpTable.vue'
+import PreProcessFlow from "../../components/PreProcessFlow";
 
 export default {
 
   components: {
+    PreProcessFlow,
     mavonEditor,
     JsonViewer,
     exptable

@@ -458,6 +458,7 @@ export default {
         }
       }
       let id = this.dataset_id
+      id = 6
       this.$http_wang({
         url:"/predata/"+id+"/process/",
         method: "get",
