@@ -196,16 +196,16 @@ export default {
 
   data() {
     return {
-      id: undefined,
+      id: 1,
       detail: {
-        owner: "zpn",
+        "owner": "zpn",
         "name": "bank",
         "task": "命名实体识别",
         "area": "新闻",
         "short_description": "",
         "long_description": "## 数据集描述\n",
         "sample": " ",
-        data_source: "",
+        "data_source": "",
         "created": "2023-01-16T19:46:57.975103",
         "experiment_times": 0,
         "train_data": "",
@@ -322,7 +322,7 @@ export default {
 
   created() {
     const id = this.$route.params.id
-    this.id = id
+    this.id = parseInt(id)
     this.get_datasets(id)
   },
 

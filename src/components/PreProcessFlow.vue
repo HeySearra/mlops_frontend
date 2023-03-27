@@ -431,7 +431,7 @@ export default {
     dataset_id:{
       type:Number,
       required:false,
-      default:6
+      default:1
     }
   },
   mounted () {
@@ -458,7 +458,6 @@ export default {
         }
       }
       let id = this.dataset_id
-      id = 6
       this.$http_wang({
         url:"/predata/"+id+"/process/",
         method: "get",
