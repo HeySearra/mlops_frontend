@@ -13,7 +13,7 @@
       @click="clickSubmitIcon"
       >
       <svg class="icon" id="upload-plus-icon" aria-hidden="true">
-       <use xlink:href="#icon-plus"></use>
+       <use xlink:href="#icon-Plus"></use>
       </svg>
     </el-button>
 
@@ -159,7 +159,6 @@ export default {
             name: this.search_word
           }
         }).then((res) => {
-          //console.log(res);
           let data = res.data
           this.count = data.count
           this.resultList = data.results
@@ -174,7 +173,6 @@ export default {
             name: this.search_word
           }
         }).then((res) => {
-          //console.log(res);
           let data = res.data
           this.count = data.count
           this.resultList = data.results
@@ -237,6 +235,7 @@ export default {
     },
 
     handleUploadDialogClose(done){
+      //TODO:空表直接退出
       this.$confirm('确认关闭？已填写的数据将会清空。')
           // eslint-disable-next-line no-unused-vars
           .then(_ => {
@@ -322,8 +321,8 @@ export default {
 }
 
 #upload-button {
-  position: absolute;
-  top: 90vh;
+  position: fixed;
+  top: 85vh;
   left: 90vw;
   width: 50px;
   height: 50px;

@@ -7,7 +7,7 @@
       <el-form-item label="数据名称" :rules="[{required: true}]">
         <el-input v-model="datasetInfo.name"></el-input>
       </el-form-item>
-      <el-form-item label="数据简介">
+      <el-form-item label="数据简介" :rules="[{required: true}]">
         <el-input
           type="textarea"
           autosize
@@ -15,26 +15,29 @@
           v-model="datasetInfo.short_description">
         </el-input>
       </el-form-item>
-      <el-form-item label="详细介绍">
-        <el-input
-          type="textarea"
-          autosize
-          placeholder="请输入数据详情介绍"
-          v-model="datasetInfo.long_description">
-        </el-input>
-      </el-form-item>
-      <el-form-item label="领域">
-        <el-select v-model="datasetInfo.area" placeholder="请选择">
-          <el-option
-            v-for="a in areaOptions"
-            :key="a"
-            :label="a"
-            :value="a">
-          </el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item label="任务">
-        <el-select v-model="datasetInfo.task" placeholder="请选择">
+      <div>
+        <el-form-item label="详细介绍" :rules="[{required: true}]">
+          <el-input
+              type="textarea"
+              autosize
+              placeholder="请输入数据详情介绍"
+              v-model="datasetInfo.long_description">
+          </el-input>
+        </el-form-item>
+        <el-form-item label="领域" :rules="[{required: true}]">
+          <el-select v-model="datasetInfo.area" placeholder="请选择">
+            <el-option
+                v-for="a in areaOptions"
+                :key="a"
+                :label="a"
+                :value="a">
+            </el-option>
+          </el-select>
+        </el-form-item>
+      </div>
+
+      <el-form-item label="任务" :rules="[{required: true}]">
+        <el-select v-model="datasetInfo.task" placeholder="请选择" >
           <el-option
             v-for="b in taskOptions"
             :key="b"
@@ -62,7 +65,6 @@
       >
       <i class="el-icon-upload" id="upload-view"/>
       <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-      <div class="el-upload__tip" slot="tip">一般认为上传CSV文件比较靠谱</div>
     </el-upload> 
     <el-button size="small" type="primary" @click="handleUpload">要上传力</el-button>
   </div>

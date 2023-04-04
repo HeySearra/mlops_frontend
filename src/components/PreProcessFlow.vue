@@ -1,6 +1,6 @@
 <template>
   <div>
-<!--TODO： 可以加入一键重排功能，使样式好看。-->
+<!--TODO： 加入的卡片自动定位，使样式好看。-->
 <!--TOdo: 修改节点样式，增加点击修改param功能，将数据绑定到data-->
     <div class="preprocess-canvas">
 <!--可选节点-->
@@ -706,6 +706,6 @@ export default {
   }
 }
 
-
+// TODO: 展示表头
 
 </style>
