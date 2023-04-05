@@ -12,14 +12,14 @@
           <mavon-editor class='md' v-model="detail.long_description" defaultOpen="preview" :subfield="false"
             :editable="false" :toolbarsFlag="false" :shortCut="false" :boxShadow="false" />
           <el-card shadow="never">
-            <div slot="header" class="card-title">
+            <!-- <div slot="header" class="card-title">
               <span>数据集预览</span>
               <el-button style="float: right; padding: 3px 0" type="text" icon="el-icon-download"
                 @click="Download">下载数据集</el-button>
-            </div>
+            </div> -->
 <!--            <json-viewer :value="JSON.parse(this.detail.sample)"></json-viewer>-->
           </el-card>
-          <dataset-intro> </dataset-intro>
+          <dataset-intro :Introduction="detail.sample"> </dataset-intro>
         </el-tab-pane>
 
         <el-tab-pane label="实验" name="second">
@@ -250,26 +250,29 @@ export default {
     },
 
     get_datasets(id) {
+      var that = this;
       this.$http_wang({
         url: "/predata/" + id + '/',
         method: "get",
       }).then((res) => {
         let data = res.data
-        this.detail = data
-      }),
-
-        this.$http({
-          url: "/datasets/" + id + '/experiments/',
-          method: "get",
-        }).then((res) => {
-          let data = res.data
-          data.results.map(item => {
-            item.model_config = '';
-            item.metric = '';
-          });
-          this.exp_count = data.count
-          this.exp_list = data.results
-        })
+        that.detail = data
+        // that.detail.sample = JSON.parse (data.sample)
+        console.log(that.detail)
+      });
+      // console.log(this.detail)
+        // this.$http({
+        //   url: "/datasets/" + id + '/experiments/',
+        //   method: "get",
+        // }).then((res) => {
+        //   let data = res.data
+        //   data.results.map(item => {
+        //     item.model_config = '';
+        //     item.metric = '';
+        //   });
+        //   this.exp_count = data.count
+        //   this.exp_list = data.results
+        // })
     },
 
     Download() {
