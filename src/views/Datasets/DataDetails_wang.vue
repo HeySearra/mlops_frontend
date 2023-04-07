@@ -6,6 +6,13 @@
     <el-tag type="warning" size="small">{{ detail.area }}</el-tag>
     <div class="info">{{ detail.short_description }}</div>
 
+    <div class="version">
+      <el-tabs v-model="version_choose">
+        <el-tab-pane v-for="(version, index) in detail.children" :label="version.children_name" :name="version.children_name" :key="index">
+        </el-tab-pane>
+      </el-tabs>
+    </div>
+
     <div>
       <el-tabs v-model="activeName">
         <el-tab-pane label="数据集详情" name="first">
@@ -238,6 +245,7 @@ export default {
     const id = this.$route.params.id
     this.id = parseInt(id)
     this.get_datasets(id)
+    this.version_choose = '原始版本'
   },
 
 
@@ -256,9 +264,16 @@ export default {
         method: "get",
       }).then((res) => {
         let data = res.data
+        if(data.children.length == 0){
+          data.children.push({
+            'children_id': data.id,
+            'children_name': '原始版本',
+          })
+        }
         that.detail = data
         // that.detail.sample = JSON.parse (data.sample)
         console.log(that.detail)
+
       });
       // console.log(this.detail)
         // this.$http({
