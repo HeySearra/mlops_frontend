@@ -14,9 +14,7 @@
             {{ item.label }}
           </span>
         </div>
-        <el-button @click="submitPreprocess" type="primary">提交任务</el-button>
       </div>
-
       <div
           class="flow-container"
           ref="flowContainer">
@@ -431,7 +429,6 @@ export default {
     dataset_id:{
       type:Number,
       required:false,
-      default:1
     }
   },
   mounted () {
@@ -466,7 +463,7 @@ export default {
           methods: JSON.stringify(method_dict)
         }
       }).then((res)=>{
-        console.log("ok")
+        console.log("ok",res)
       })
     },
     linkStyle (link) {
@@ -617,9 +614,8 @@ export default {
 }
 
 .preprocess-canvas {
-  margin-top       : 20px;
   width            : 100%;
-  height           : 600px;
+  height           : 500px;
   background-color : #f5f5f5;
   @list-width      : 200px;
 
