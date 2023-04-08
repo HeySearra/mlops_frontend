@@ -58,6 +58,12 @@ const routes = [
         component: () =>
             import ('../views/Experiment/NewExperiment.vue')
     },
+    {
+        path: '/visualize',
+        name: 'Visualize',
+        component: () =>
+            import ('../views/Visualize/Visualize.vue')
+    },
 ]
 
 const router = new VueRouter({
