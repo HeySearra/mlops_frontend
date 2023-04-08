@@ -41,18 +41,6 @@
           </svg>
           实验
         </router-link>
-        <router-link
-          to='/visualize'
-          class="menu-item"
-        >
-          <svg
-            class="icon"
-            aria-hidden="true"
-          >
-            <use xlink:href="#icon-data1"></use>
-          </svg>
-          分析
-        </router-link>
         <span class="menu-item">
           <svg
             class="icon"
@@ -75,7 +63,7 @@
 
       <ul>
         <li>
-          <router-link to="/login"> 登录</router-link>
+          <router-link to="/login"> {{username === ""?"登录":username}}</router-link>
         </li>
       </ul>
 
@@ -91,6 +79,7 @@ export default {
   name: 'Home',
   data() {
     return {
+      username:""
     }
   },
   methods:
@@ -99,6 +88,16 @@ export default {
       this.$router.push(index)
     }
   },
+  mounted() {
+    var _that = this
+    this.$bus.$on("usernameUpdate",(name)=>{
+        _that.username = name
+    })
+    var name = localStorage.getItem('username')
+    if(name){
+      this.name = name
+    }
+  }
 
 }
 </script>

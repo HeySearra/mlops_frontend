@@ -4,7 +4,6 @@
     <div style="margin-top:52px">
       <router-view />
     </div>
-
   </div>
 </template>
 

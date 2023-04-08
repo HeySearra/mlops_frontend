@@ -18,8 +18,10 @@ Vue.config.productionTip = false
 Vue.prototype.$http = http
 Vue.prototype.$http_wang = http_wang
 Vue.prototype.$echarts = echarts
+Vue.prototype.$bus = new Vue() // 总线
 
 new Vue({
   router,
   render: h => h(App),
 }).$mount('#app')
+

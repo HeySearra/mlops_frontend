@@ -59,11 +59,15 @@ const routes = [
             import ('../views/Experiment/NewExperiment.vue')
     },
     {
-        path: '/visualize',
-        name: 'Visualize',
-        component: () =>
-            import ('../views/Visualize/Visualize.vue')
+        path: '/login',
+        name: 'Login',
+        component: () => import('../views/Account/Login')
     },
+    {
+        path: '/register',
+        name: 'Register',
+        component: () => import('../views/Account/Register')
+    }
 ]
 
 const router = new VueRouter({

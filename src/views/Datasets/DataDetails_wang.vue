@@ -3,7 +3,7 @@
 
     <div>
       <span class="title">{{ detail.name }}</span>
-      <el-tag size="mini" type="success" style="margin-left: 10px">{{ detail.task }}</el-tag>
+      <el-tag size="mini" type="success" style="margin-left: 20px">{{ detail.task }}</el-tag>
       <el-tag type="warning" size="mini" style="margin-left: 10px">{{ detail.area }}</el-tag>
       <span class="attr-label">贡献者:</span><span class="attr-value">{{detail.owner}}</span>
       <span class="attr-label">上传时间：</span><span class="attr-value">{{beautifyTimestamp(detail.created)}}</span>
