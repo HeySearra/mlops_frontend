@@ -10,7 +10,7 @@ module.exports = {
     hotOnly: false,
     proxy: { //配置跨域 
       "/api/": {
-        target: "http://cc.qk0.cc:8001/", 
+        target: "http://cc.qk0.cc:8001/",
         ws: true,
         changOrigin: true, //允许跨域 
         pathRewrite: {
@@ -26,5 +26,5 @@ module.exports = {
         },
       }
     }
-  },
+  }
 }

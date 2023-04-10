@@ -32,6 +32,18 @@ body {
     overflow: hidden;
 }
 
+.attr-label{
+  font-size: 10px;
+  color: #a3a3a3;
+  margin-right: 10px;
+  margin-left: 20px;
+}
+
+.attr-value{
+  font-size: 10px;
+  color: #a3a3a3;
+}
+
 .mid-child-container{
   display: flex;
   justify-content: center;

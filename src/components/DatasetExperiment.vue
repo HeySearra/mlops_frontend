@@ -62,7 +62,7 @@
     </div>
     <el-card shadow="never">
       <div slot="header" class="card-title">
-        <span>创建新流程</span>
+        <span>创建新流程</span><span class="tips">拖动左侧方块来编辑流程</span>
         <el-button style="float: right; padding: 3px 0" type="text" icon="el-icon-caret-right" @click="Submit">
           提交流程
         </el-button>
@@ -133,4 +133,10 @@ export default {
   font-weight: bold;
   color: #555;
 }
+.tips{
+  font-size: 10px;
+  color: #a3a3a3;
+  margin-left: 20px;
+}
+
 </style>

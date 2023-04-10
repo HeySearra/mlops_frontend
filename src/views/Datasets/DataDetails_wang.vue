@@ -21,7 +21,7 @@
         </el-tab-pane>
 
         <el-tab-pane label="视图" name="third">
-          <dataset-statistic></dataset-statistic>
+          <dataset-statistic :id="id"></dataset-statistic>
         </el-tab-pane>
       </el-tabs>
     </div>
@@ -60,7 +60,7 @@ export default {
           head:[],
           sample_data:[]
         },
-        created: "",
+        created: "2023-01-01T00:00:00",
         experiment_times: 0,
         record_count: 0
       },
@@ -167,18 +167,6 @@ export default {
 .experiment>div {
   height: 22px;
   flex: 1;
-}
-
-.attr-label{
-  font-size: 10px;
-  color: #a3a3a3;
-  margin-right: 10px;
-  margin-left: 20px;
-}
-
-.attr-value{
-  font-size: 10px;
-  color: #a3a3a3;
 }
 
 #id{

@@ -22,6 +22,6 @@ Vue.prototype.$bus = new Vue() // 总线
 
 new Vue({
   router,
-  render: h => h(App),
+  render: h => h(App)
 }).$mount('#app')
 
