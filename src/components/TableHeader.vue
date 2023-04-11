@@ -73,6 +73,10 @@ let chart_set_option = (chart,data,type)=>{
     })
   }else if(type === "CATEGORIES"){
     chart.setOption({
+      legend:{
+        //TODO: 高清大图需要图例
+        show:false
+      },
       tooltip: {
         show:true,
         appendToBody:true,//这个接口Echarts文档说可能有未知Bad case...
@@ -91,34 +95,39 @@ let chart_set_option = (chart,data,type)=>{
           return "<div>"+rangeName+"</div><div>"+params[0].marker+"Count:"+String(count)+"</div>"
         },
       },
-      xAxis: {
-        type: "category",// 由于后端不会传递所有的数据，所以在后端统计后，以分类的形式返回前端
-        boundaryGap:true,
-        splitNumber:8,
-        minInterval:1,
-        maxInterval:20,
-        silent: true,
-        data:data.categories
-      },
-      yAxis: {
-        show:false,
-        type: "value",
-        min: 0,
-      },
       series: [
         {
           type: 'pie',
-          data: data.data,
+          radius: ['70%','100%'],
+          avoidLabelOverlap:false,
+          data: data.categoryData.data,
           colorBy: 'data',
+          left:'center',
+          top: 'middle',
+          width: 'auto',
+          height: 'auto',
+          label:{
+            show: false,
+            position: 'center'
+          },
+          labelLine:{
+            show:false
+          },
+          emphasis: {
+            scale:true,
+            focus: 'self',
+            label: {
+              show: true,
+              fontSize: '10',
+              fontWeight: 'bold'
+            }
+          },
           itemStyle:{
             color: "rgba(137, 207, 240,1)",
-            opacity: 0.5
-          },
-          emphasis:{
-            focus: "self",
-            blurScope: "global"
-          },
-          barCategoryGap:'0%'
+            opacity: 0.5,
+            borderColor: '#000',
+            borderWidth: 1
+          }
         }
       ],
     })
@@ -133,6 +142,14 @@ export default {
       chartData:{
         categories:["ok!","ok!","ok!","ok!","ok!","ok!","ok!","ok!","ok!","ok!"],
         data:[1,2,3,4,5,6,4,3,2,1],
+        categoryData:{
+          data:[
+            {value:200, name:"奥特曼"},
+            {value:100, name:"赛亚人"},
+            {value:400, name:"Apex猎杀者"},
+            {value:50, name:"钢铁侠"}
+          ]
+        }
       },
       chartType: "NUMBER"
     }
@@ -149,7 +166,7 @@ export default {
   },
   created() {
     //TODO: 搞清楚获取col info的方式。
-    this.chartType= "SQUARE"
+    this.chartType= "NUMBER"
   },
   mounted(){
     let chart = document.getElementById("col_chart")
@@ -167,7 +184,7 @@ export default {
     }
 
     // 绘制图表
-    chart_set_option(this.chart, this.chartData,"NUMBER")
+    chart_set_option(this.chart, this.chartData,"CATEGORIES")
   }
 }
 </script>
