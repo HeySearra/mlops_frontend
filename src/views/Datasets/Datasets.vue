@@ -327,7 +327,7 @@ export default {
   width: 50px;
   height: 50px;
   z-index: 1;
-  background: color;
+  background: white;
   box-shadow: 0px 0px 1px 1px grey;
   display: flex;
   justify-content: center;
