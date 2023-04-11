@@ -1,15 +1,13 @@
 <template>
-
   <div class="table-header-frame">
     <el-dialog>
       高清无码大图, 暂时不做
     </el-dialog>
     <div class="col_info">
-      <span>{{col_name}}</span>
+      <span>{{col_name}}{{col_id}}</span>
       <i class="el-icon-more"/>
     </div>
-    <div id="col_chart"/>
-
+    <div class="table-header-chart" :id="`col_chart`+col_id"/>
   </div>
 </template>
 <script>
@@ -38,7 +36,8 @@ let chart_set_option = (chart,data,type)=>{
           // var rangeName = params[0].name
           var rangeName = "ok了家人们"
           var count = params[0].value[1]
-          return "<div>"+rangeName+"</div><div>"+params[0].marker+"Count:"+String(count)+"</div>"
+          return `<div>${rangeName}</div>
+                  <div>${params[0].marker}Count:${count}</div>`
         },
       },
       xAxis: {
@@ -74,13 +73,12 @@ let chart_set_option = (chart,data,type)=>{
   }else if(type === "CATEGORIES"){
     chart.setOption({
       legend:{
-        //TODO: 高清大图需要图例
         show:false
       },
       tooltip: {
         show:true,
         appendToBody:true,//这个接口Echarts文档说可能有未知Bad case...
-        trigger:"axis",//数据轴触发
+        trigger:"item",//数据轴触发
         triggerOn:"mousemove",
         transitionDuration: 0.4,
         borderColor:"#123",
@@ -89,10 +87,11 @@ let chart_set_option = (chart,data,type)=>{
           fontSize: 10
         },
         formatter(params){
-          // var rangeName = params[0].name
-          var rangeName = "ok了家人们"
-          var count = params[0].value[1]
-          return "<div>"+rangeName+"</div><div>"+params[0].marker+"Count:"+String(count)+"</div>"
+          var cateName = params.name
+          var count = params.value
+          var percent = params.percent
+          return `<div>${cateName}:${count}</div>
+                  <div>${params.marker}${percent}%</div>`
         },
       },
       series: [
@@ -104,8 +103,8 @@ let chart_set_option = (chart,data,type)=>{
           colorBy: 'data',
           left:'center',
           top: 'middle',
-          width: 'auto',
-          height: 'auto',
+          width: '80%',
+          height: '80%',
           label:{
             show: false,
             position: 'center'
@@ -169,13 +168,13 @@ export default {
     this.chartType= "NUMBER"
   },
   mounted(){
-    let chart = document.getElementById("col_chart")
-    Object.defineProperty(chart,'clientWidth',{
-      get(){return 150;}
-    })
-    Object.defineProperty(chart,'clientHeight',{
-      get(){return 200;}
-    })
+    let chart = document.getElementById("col_chart"+this.col_id)
+    // Object.defineProperty(chart,'clientWidth',{
+    //   get(){return 150;}
+    // })
+    // Object.defineProperty(chart,'clientHeight',{
+    //   get(){return 150;}
+    // })
     var myChart = Echarts.init(chart);
 
     this.chart = myChart
@@ -193,15 +192,31 @@ export default {
 /* todo: 设置宽度 */
 .table-header-frame{
   height: 150px;
+  width: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 .table-header-frame:hover{
   height: 150px;
   background-color: #fafafa;
 }
 .col_info{
-  margin-bottom: 10px;
+  margin-bottom: 3px;
+  width:100%;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+}
+/* 就是父组件尺寸的100% */
+.table-header-chart{
+  width: 120px;
+  height: 120px;
+}
+
+
+.cell{
+  padding-left: 5px !important;
+  padding-right: 5px !important;
 }
 </style>

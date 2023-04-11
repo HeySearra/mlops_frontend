@@ -56,21 +56,23 @@
             stripe
             border
             max-height=400
+            :row-key="tableData.data.idx"
+            :cell-style="cellStyle"
         >
           <!-- TODO:貌似设置max-height也可以使表头固定 -->
-          <el-table-column prop="idx" label="序号" width=50 fixed="left" />
+          <el-table-column prop="idx" label="序号" width=40 fixed="left" />
           <el-table-column
               v-for="(header,idx) in tableData.headers"
               :key="idx"
               :prop="header.label"
               :label="header.label"
+              width=130
           >
-            <!-- slot-scope 作用域插槽, 并不是很需要 -->
+<!-- Tip:这里宽度的设置是table-header中table-header-frame的width+cell的width*2  -->
             <template slot="header">
               <table-header :data_id="id" :col_id="idx"/>
             </template>
           </el-table-column>>
-          <!-- 修改表格样式，使容纳更多数据-->
         </el-table>
       </el-main>
     </el-container>
@@ -131,6 +133,9 @@ export default {
     SubmitSliceChange(){
       this.sliceDialogVisible = false
       //todo
+    },
+    cellStyle({row, column, rowIndex, columnIndex}){
+      return "font-size:10px;font-family:'Times New Roman',math,sans-serif"
     }
   },
   props:{
@@ -142,6 +147,7 @@ export default {
 }
 </script>
 <style>
+
 #table-frame{
   width: 100%;
   border-radius: 5px;
@@ -165,6 +171,7 @@ export default {
   color: #3c3c3c;
   font-weight: bold;
   font-style: italic;
+  cursor: pointer;
 }
 
 .slice-edit-line{
@@ -172,5 +179,9 @@ export default {
   flex-direction: row;
   justify-content: space-between;
   margin-top: 10px;
+}
+
+.el-table__cell{
+  padding: 3px 0 !important;
 }
 </style>

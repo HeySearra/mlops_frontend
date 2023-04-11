@@ -27,8 +27,8 @@
           <el-button style="float: right; padding: 3px 0" type="text" icon="el-icon-download"
                      @click="Download">下载数据集</el-button>
       </div>
-      <el-table :data='detail.sample.sample' max-height="400" style="width: 100%">
-        <el-table-column v-for="(item,idx) in detail.sample.head" :key="idx" :prop="item" :label="item" width="180"/>
+      <el-table :data='detail.sample.sample' max-height="400" border :cell-style="cellStyle">
+        <el-table-column v-for="(item,idx) in detail.sample.head" :formatter="trimFloat" :key="idx" :prop="item" :label="item" width="100"/>
       </el-table>
     </el-card>
   </div>
@@ -53,11 +53,25 @@ export default {
       type: Object,
       required: true,
       default: null,
+    },
+    id:{
+      type: Number,
+      required: true,
     }
   },
   methods: {
     Download(){
-
+      window.open("/wang/predata/download?name="+this.detail.name)
+    },
+    cellStyle({row, column, rowIndex, columnIndex}){
+      return "font-size:10px;font-family:'Times New Roman',math,sans-serif"
+    },
+    trimFloat(row, column, cellValue, index){
+      if(typeof cellValue === 'number'&&cellValue.toString().indexOf(".")!==-1){
+        return cellValue.toFixed(5)
+      }else{
+        return cellValue
+      }
     }
   }
 }

@@ -13,7 +13,7 @@
     <div>
       <el-tabs v-model="activeName" id="tab">
         <el-tab-pane label="详情" name="first">
-          <dataset-intro :detail="detail"> </dataset-intro>
+          <dataset-intro :detail="detail" :id="id" > </dataset-intro>
         </el-tab-pane>
 
         <el-tab-pane label="实验" name="second">
@@ -114,24 +114,6 @@ export default {
         console.log(that.detail)
       });
     },
-
-    Download() {
-      window.open("/api/datasets/" + this.id + '/download/')
-    },
-
-    // expandChange(row, expandedRows) {
-    //   if (expandedRows.length > 0) {
-    //     let id = row.id
-    //     this.$http({
-    //       url: "/experiments/" + id + '/',
-    //       method: "get",
-    //     }).then((res) => {
-    //       let data = res.data
-    //       row.model_config = data.model_config
-    //       row.metric = data.metric
-    //     })
-    //   }
-    // },
   }
 
 }
