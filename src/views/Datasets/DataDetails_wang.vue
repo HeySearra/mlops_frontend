@@ -85,6 +85,7 @@ export default {
     const id = this.$route.params.id
     this.id = parseInt(id)
     this.get_datasets(id)
+    this.version_choose = '原始版本'
   },
 
 
@@ -110,8 +111,17 @@ export default {
         url: "/predata/" + id + '/',
         method: "get",
       }).then((res) => {
-        that.detail = res.data
+        let data = res.data
+        if(data.children.length == 0){
+          data.children.push({
+            'children_id': data.id,
+            'children_name': '原始版本',
+          })
+        }
+        that.detail = data
+        // that.detail.sample = JSON.parse (data.sample)
         console.log(that.detail)
+
       });
     },
   }
