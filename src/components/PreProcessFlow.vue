@@ -26,23 +26,20 @@
             :link-base-style="linkBaseStyle"
             :link-style="linkStyle"
             :link-desc="linkDesc">
+<!--  动态插槽-->
           <template v-slot:node="{meta}">
             <div
                 @mouseup="nodeMouseUp"
                 @click="nodeClick"
-                class="flow-node flow-node-${meta.name}">
-              <el-container>
-                <el-header class="node-header ellipsis">
+                :class="`flow-node flow-node-${meta.name}`">
+                <div :class="`node-header node-header-${meta.name}  ellipsis`">
                   {{ meta.name }}
-                </el-header>
-                <el-main class="node-main">
-                  <div class="node-main-params">
-                    <div class="node-main-param-item" v-for="(val,key,i) in meta.params" :key="i">
-                      {{key}} : {{val != null? val : "空"}}
-                    </div>
+                </div>
+                <div class="node-main-params">
+                  <div class="node-main-param-item" v-for="(val,key,i) in meta.params" :key="i">
+                    <span class="attr-label">{{key}}:</span><span class="attr-value">{{val != null? val : "空"}}</span>
                   </div>
-                </el-main>
-              </el-container>
+                </div>
             </div>
           </template>
         </super-flow>
@@ -120,9 +117,6 @@ const drawerType = {
   link: 1
 }
 
-var node_width_default = 200
-var node_height_default = 150
-
 export default {
   components:{
     SuperFlow
@@ -182,8 +176,6 @@ export default {
         {
           label: 'dropna',
           value: () => ({
-            width: node_width_default,
-            height: node_height_default,
             meta: {
               name: 'dropna',
               params: {
@@ -199,8 +191,6 @@ export default {
         {
           label: 'remove_duplicates',
           value: () => ({
-            width: node_width_default,
-            height: node_height_default,
             meta: {
               name: 'remove_duplicates',
               params:{
@@ -214,8 +204,6 @@ export default {
         {
           label: 'Time_normalization',
           value: () => ({
-            width: node_width_default,
-            height: node_height_default,
             meta: {
               name: 'Time_normalization',
               params:{
@@ -227,8 +215,6 @@ export default {
         {
           label: 'onehot_encode',
           value: () => ({
-            width: node_width_default,
-            height: node_height_default,
             meta: {
               name: 'onehot_encode',
               params: {
@@ -242,8 +228,6 @@ export default {
         {
           label: 'normalize',
           value: () => ({
-            width: node_width_default,
-            height: node_height_default,
             meta: {
               name: 'normalize',
               params:{
@@ -256,8 +240,6 @@ export default {
         {
           label: 'imputation',
           value: () => ({
-            width: node_width_default,
-            height: node_height_default,
             meta: {
               name: 'imputation',
               params:{
@@ -272,8 +254,6 @@ export default {
         {
           label: 'variance_select',
           value: () => ({
-            width: node_width_default,
-            height: node_height_default,
             meta: {
               name: 'variance_select',
               params:{
@@ -286,8 +266,6 @@ export default {
         {
           label: 'test_select',
           value: () => ({
-            width: node_width_default,
-            height: node_height_default,
             meta: {
               name: 'test_select',
               params:{
@@ -302,8 +280,6 @@ export default {
         {
           label: 'dimension_reduction',
           value: () => ({
-            width: node_width_default,
-            height: node_height_default,
             meta: {
               name: 'dimension_reduction',
               params:{
@@ -317,8 +293,6 @@ export default {
         {
           label: 'get_subtable',
           value: () => ({
-            width: node_width_default,
-            height: node_height_default,
             meta: {
               name: 'get_subtable',
               params:{
@@ -330,8 +304,6 @@ export default {
         {
           label: '2d_to_3d',
           value: () => ({
-            width: node_width_default,
-            height: node_height_default,
             meta: {
               name: '2d_to_3d',
               params:{
@@ -345,8 +317,6 @@ export default {
         {
           label: 'merge',
           value: () => ({
-            width: node_width_default,
-            height: node_height_default,
             meta: {
               name: 'merge',
               params:{
@@ -618,6 +588,12 @@ export default {
   height           : 500px;
   background-color : #f5f5f5;
   @list-width      : 200px;
+  @node-header-height: 30px;
+  @node-width      : 150px;
+  @node-height     : 100px;
+  display:flex;
+  flex-direction: row;
+  justify-content: flex-start;
 
   //TODO: 节点列表可能溢出。修改UI。
   .side-menu{
@@ -648,35 +624,60 @@ export default {
   }
 
   .flow-node{
-    width: 200px;
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
   }
 
   .node-header {
     font-size   : 14px;
-    height      : 40px !important;
-    line-height : 40px;
+    height      : 30px !important;
+    line-height : 30px;
     color       : #ffffff;
-    background  : #9a6e3a;
+    width       : 100%;
     text-align: center;
+    font-weight: bold;
+    border-radius: 10px 10px 0 0;
   }
-
-  .node-main {
-    text-align  : center;
-    overflow    : hidden;
-    padding     : 6px !important;
-    word-break  : break-all;
-    height: 150px;
-  }
+  .node-header-dropna { background: black;}
+  .node-header-remove_duplicates{ background: brown;}
+  .node-header-Time_normalzation{ background: #9a6e3a;}
+  .node-header-onehot_encode{ background: #008fff; }
+  .node-header-normalize{ background: #55a532; }
+  .node-header-imputation{ background: #795da3; }
+  .node-header-variance_select{ background: #990055; }
+  .node-header-test_select{ background: red; }
+  .node-header-dimension_reduction{ background: cadetblue;}
+  .node-header-get_subtable{ background: darkblue ;}
+  .node-header-2d_to_3d{ background: chocolate;}
+  .node-header-merge{ background: tomato; }
 
   .node-main-params{
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
-  }
 
-  .node-main-param-item{
-    margin-bottom: 3px;
+    text-align  : center;
+    overflow-y    : hidden;
+    word-break  : break-all;
+    height: calc(150px - @node-header-height);
+
+    .attr-label{
+      font-size: 10px;
+      color: #a3a3a3;
+      margin-right: 2px !important;
+      margin-left: 0px !important;
+      font-family: "Times New Roman", math, sans-serif;
+      font-style: italic;
+    }
+
+    .attr-value{
+      font-size: 10px;
+      color: #a3a3a3;
+      font-family: "Times New Roman", math, sans-serif;
+      font-style: italic;
+    }
   }
 }
 

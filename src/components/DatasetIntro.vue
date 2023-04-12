@@ -61,7 +61,7 @@ export default {
   },
   methods: {
     Download(){
-      window.open("/wang/predata/download?name="+this.detail.name)
+      window.open("http://localhost:8000/predata/"+this.id+"/download")
     },
     cellStyle({row, column, rowIndex, columnIndex}){
       return "font-size:10px;font-family:'Times New Roman',math,sans-serif"
