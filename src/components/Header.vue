@@ -41,6 +41,18 @@
           </svg>
           实验
         </router-link>
+        <router-link
+            to='/visualize'
+            class="menu-item"
+        >
+          <svg
+              class="icon"
+              aria-hidden="true"
+          >
+            <use xlink:href="#icon-data1"></use>
+          </svg>
+          分析
+        </router-link>
         <span class="menu-item">
           <svg
             class="icon"
