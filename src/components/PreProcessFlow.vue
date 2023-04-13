@@ -1,9 +1,6 @@
 <template>
   <div>
-<!--TODO： 加入的卡片自动定位，使样式好看。-->
-<!--TOdo: 修改节点样式，增加点击修改param功能，将数据绑定到data-->
     <div class="preprocess-canvas">
-<!--可选节点-->
       <div class="side-menu">
         <div class="node-container">
           <span
@@ -26,11 +23,10 @@
             :link-base-style="linkBaseStyle"
             :link-style="linkStyle"
             :link-desc="linkDesc">
-<!--  动态插槽-->
           <template v-slot:node="{meta}">
             <div
                 @mouseup="nodeMouseUp"
-                @click="nodeClick"
+                @dblclick="drawerConf.open(meta.name)"
                 :class="`flow-node flow-node-${meta.name}`">
                 <div :class="`node-header node-header-${meta.name}  ellipsis`">
                   {{ meta.name }}
@@ -54,9 +50,9 @@
       <el-form
           @keyup.native.enter="settingSubmit"
           @submit.native.prevent
-          v-show="drawerConf.type === drawerType.node"
           ref="nodeSetting"
           :model="nodeSetting">
+          <!-- TODO:!!! -->
         <el-form-item
             label="节点名称"
             prop="name">
@@ -73,21 +69,6 @@
               v-model="nodeSetting.desc"
               placeholder="请输入节点描述"
               maxlength="30">
-          </el-input>
-        </el-form-item>
-      </el-form>
-      <el-form
-          @keyup.native.enter="settingSubmit"
-          @submit.native.prevent
-          v-show="drawerConf.type === drawerType.link"
-          ref="linkSetting"
-          :model="linkSetting">
-        <el-form-item
-            label="连线描述"
-            prop="desc">
-          <el-input
-              v-model="linkSetting.desc"
-              placeholder="请输入连线描述">
           </el-input>
         </el-form-item>
       </el-form>
@@ -111,6 +92,10 @@
 <script>
 import SuperFlow from 'vue-super-flow'
 import 'vue-super-flow/lib/index.css'
+// TODO: 自动定位
+// TODO：设置参数对话框
+// TODO：设置线段规则分布
+// TODO：设置上传规则
 
 const drawerType = {
   node: 0,
@@ -125,25 +110,19 @@ export default {
     return {
       drawerType,
       drawerConf: {
-        title: '',
+        title: '修改参数',
         visible: false,
-        type: null,
-        info: null,
-        open: (type, info) => {
+        open: (name, type, info) => {
+          //TODO：根据name选择params
           const conf = this.drawerConf
           conf.visible = true
-          conf.type = type
-          conf.info = info
           if (conf.type === drawerType.node) {
-            conf.title = '节点'
             if (this.$refs.nodeSetting) this.$refs.nodeSetting.resetFields()
             this.$set(this.nodeSetting, 'name', info.meta.name)
             this.$set(this.nodeSetting, 'desc', info.meta.desc)
-          } else {
-            conf.title = '连线'
-            if (this.$refs.linkSetting) this.$refs.linkSetting.resetFields()
-            this.$set(this.linkSetting, 'desc', info.meta ? info.meta.desc : '')
-          }
+            //TODO: 如果一个属性在vue组件初始化时不在data中，就没有setter和getter，其值的变化也就不会触发动态更新。
+            //TODO：$set的意义是,新加入一个属性值时触发ui refresh。
+          } 
         },
         cancel: () => {
           this.drawerConf.visible = false
@@ -637,11 +616,10 @@ export default {
     width       : 100%;
     text-align: center;
     font-weight: bold;
-    border-radius: 10px 10px 0 0;
   }
   .node-header-dropna { background: black;}
   .node-header-remove_duplicates{ background: brown;}
-  .node-header-Time_normalzation{ background: #9a6e3a;}
+  .node-header-Time_normalization{ background: #9a6e3a;}
   .node-header-onehot_encode{ background: #008fff; }
   .node-header-normalize{ background: #55a532; }
   .node-header-imputation{ background: #795da3; }
@@ -659,9 +637,9 @@ export default {
     align-items: center;
 
     text-align  : center;
-    overflow-y    : hidden;
+    overflow-y  : hidden;
     word-break  : break-all;
-    height: calc(150px - @node-header-height);
+    height: calc(@node-height - @node-header-height);
 
     .attr-label{
       font-size: 10px;
@@ -674,7 +652,7 @@ export default {
 
     .attr-value{
       font-size: 10px;
-      color: #a3a3a3;
+      color: #737373;
       font-family: "Times New Roman", math, sans-serif;
       font-style: italic;
     }
