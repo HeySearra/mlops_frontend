@@ -112,29 +112,24 @@ export default {
       drawerConf: {
         title: '修改参数',
         visible: false,
-        open: (name, type, info) => {
+        open: (name) => {
           //TODO：根据name选择params
           const conf = this.drawerConf
+
+          let params = {}
+          for (let nodeItem in this.nodeItemList) {
+            if (nodeItem.label === name){
+              params = nodeItem.value()
+            }
+          }
+
+          if (this.$refs.nodeSetting) this.$refs.nodeSetting.resetFields()
           conf.visible = true
-          if (conf.type === drawerType.node) {
-            if (this.$refs.nodeSetting) this.$refs.nodeSetting.resetFields()
-            this.$set(this.nodeSetting, 'name', info.meta.name)
-            this.$set(this.nodeSetting, 'desc', info.meta.desc)
-            //TODO: 如果一个属性在vue组件初始化时不在data中，就没有setter和getter，其值的变化也就不会触发动态更新。
-            //TODO：$set的意义是,新加入一个属性值时触发ui refresh。
-          } 
         },
         cancel: () => {
           this.drawerConf.visible = false
-          if (this.drawerConf.type === drawerType.node) {
-            this.$refs.nodeSetting.clearValidate()
-          } else {
-            this.$refs.linkSetting.clearValidate()
-          }
+          this.$refs.nodeSetting.clearValidate()
         }
-      },
-      linkSetting: {
-        desc: ''
       },
       nodeSetting: {
         name: '',
@@ -431,19 +426,11 @@ export default {
     },
     settingSubmit () {
       const conf = this.drawerConf
-      if (this.drawerConf.type === drawerType.node) {
-        if (!conf.info.meta) conf.info.meta = {}
-        Object.keys(this.nodeSetting).forEach(key => {
-          this.$set(conf.info.meta, key, this.nodeSetting[key])
-        })
-        this.$refs.nodeSetting.resetFields()
-      } else {
-        if (!conf.info.meta) conf.info.meta = {}
-        Object.keys(this.linkSetting).forEach(key => {
-          this.$set(conf.info.meta, key, this.linkSetting[key])
-        })
-        this.$refs.linkSetting.resetFields()
-      }
+      if (!conf.info.meta) conf.info.meta = {}
+      Object.keys(this.nodeSetting).forEach(key => {
+        this.$set(conf.info.meta, key, this.nodeSetting[key])
+      })
+      this.$refs.nodeSetting.resetFields()
       conf.visible = false
     },
     nodeMouseUp (evt) {
