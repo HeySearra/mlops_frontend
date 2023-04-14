@@ -1,6 +1,7 @@
 <template>
   <div class="container">
 
+
     <div>
       <span class="title">{{ detail.name }}</span>
       <el-tag size="mini" type="success" style="margin-left: 20px">{{ detail.task }}</el-tag>
@@ -9,6 +10,14 @@
       <span class="attr-label">上传时间：</span><span class="attr-value">{{beautifyTimestamp(detail.created)}}</span>
     </div>
     <div class="info" style="color:grey">简介： {{ detail.short_description }}</div>
+    
+    <div class="version">
+      <el-tabs v-model="version_choose">
+        <el-tab-pane v-for="(version, index) in detail.children" :label="version.children_name" :name="version.children_name" :key="index">
+        </el-tab-pane>
+      </el-tabs>
+    </div>
+
 
     <div>
       <el-tabs v-model="activeName" id="tab">
