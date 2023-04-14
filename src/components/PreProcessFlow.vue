@@ -26,14 +26,14 @@
           <template v-slot:node="{meta}">
             <div
                 @mouseup="nodeMouseUp"
-                @dblclick="drawerConf.open(meta.name)"
+                @dblclick="drawerConf.open(meta)"
                 :class="`flow-node flow-node-${meta.name}`">
                 <div :class="`node-header node-header-${meta.name}  ellipsis`">
                   {{ meta.name }}
                 </div>
                 <div class="node-main-params">
                   <div class="node-main-param-item" v-for="(val,key,i) in meta.params" :key="i">
-                    <span class="attr-label">{{key}}:</span><span class="attr-value">{{val != null? val : "空"}}</span>
+                    <span class="attr-label">{{key}}:</span><span class="attr-value">{{val.default}}</span>
                   </div>
                 </div>
             </div>
@@ -41,7 +41,7 @@
         </super-flow>
       </div>
     </div>
-
+<!--    visible改变时自动重刷dialog内容，好耶！ -->
     <el-dialog
         :title="drawerConf.title"
         :visible.sync="drawerConf.visible"
@@ -50,40 +50,23 @@
       <el-form
           @keyup.native.enter="settingSubmit"
           @submit.native.prevent
-          ref="nodeSetting"
-          :model="nodeSetting">
-          <!-- TODO:!!! -->
+          ref="paramSetting"
+          :model="curDialogParams">
         <el-form-item
-            label="节点名称"
-            prop="name">
-          <el-input
-              v-model="nodeSetting.name"
-              placeholder="请输入节点名称"
-              maxlength="30">
-          </el-input>
-        </el-form-item>
-        <el-form-item
-            label="节点描述"
-            prop="desc">
-          <el-input
-              v-model="nodeSetting.desc"
-              placeholder="请输入节点描述"
-              maxlength="30">
-          </el-input>
+            v-for="(val, key, idx) in this.curDialogParams"
+            :label="key"
+            :prop="key"
+            :key="idx">
+            <el-input
+                v-model="$data[key]"
+                :placeholder="val.value"
+                maxlength="30">
+            </el-input>
         </el-form-item>
       </el-form>
-      <span
-          slot="footer"
-          class="dialog-footer">
-        <el-button
-            @click="drawerConf.cancel">
-          取 消
-        </el-button>
-        <el-button
-            type="primary"
-            @click="settingSubmit">
-          确 定
-        </el-button>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="drawerConf.cancel">取 消</el-button>
+        <el-button type="primary" @click="settingSubmit">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -92,6 +75,7 @@
 <script>
 import SuperFlow from 'vue-super-flow'
 import 'vue-super-flow/lib/index.css'
+import nodeOptions from "../preprocess"
 // TODO: 自动定位
 // TODO：设置参数对话框
 // TODO：设置线段规则分布
@@ -109,26 +93,20 @@ export default {
   data () {
     return {
       drawerType,
+      curDialogParams: {},
       drawerConf: {
         title: '修改参数',
         visible: false,
-        open: (name) => {
+        open: (meta) => {
           //TODO：根据name选择params
           const conf = this.drawerConf
-
-          let params = {}
-          for (let nodeItem in this.nodeItemList) {
-            if (nodeItem.label === name){
-              params = nodeItem.value()
-            }
-          }
-
-          if (this.$refs.nodeSetting) this.$refs.nodeSetting.resetFields()
+          this.curDialogParams = meta.params
+          // if (this.$refs.paramSetting) this.$refs.paramSetting.resetFields()
           conf.visible = true
         },
         cancel: () => {
           this.drawerConf.visible = false
-          this.$refs.nodeSetting.clearValidate()
+          this.$refs.paramSetting.clearValidate()
         }
       },
       nodeSetting: {
@@ -146,171 +124,9 @@ export default {
         ele: null,
         info: null
       },
-      nodeItemList: [
-        {
-          label: 'dropna',
-          value: () => ({
-            meta: {
-              name: 'dropna',
-              params: {
-                axis: 0,
-                how: 'any',
-                thresh: null,
-                subset: null
-              }
-            },
-
-          })
-        },
-        {
-          label: 'remove_duplicates',
-          value: () => ({
-            meta: {
-              name: 'remove_duplicates',
-              params:{
-                keep: "first",
-                subset: null
-              }
-            },
-
-          })
-        },
-        {
-          label: 'Time_normalization',
-          value: () => ({
-            meta: {
-              name: 'Time_normalization',
-              params:{
-                subset:null
-              }
-            }
-          })
-        },
-        {
-          label: 'onehot_encode',
-          value: () => ({
-            meta: {
-              name: 'onehot_encode',
-              params: {
-                prefix: null,
-                include_na: false,
-                subset: null
-              }
-            }
-          })
-        },
-        {
-          label: 'normalize',
-          value: () => ({
-            meta: {
-              name: 'normalize',
-              params:{
-                method: null,
-                subset: null
-              }
-            },
-          })
-        },
-        {
-          label: 'imputation',
-          value: () => ({
-            meta: {
-              name: 'imputation',
-              params:{
-                method: null,
-                value: null,
-                subset: null
-              }
-            },
-
-          })
-        },
-        {
-          label: 'variance_select',
-          value: () => ({
-            meta: {
-              name: 'variance_select',
-              params:{
-                threshold: 0,
-                subset: null
-              }
-            }
-          })
-        },
-        {
-          label: 'test_select',
-          value: () => ({
-            meta: {
-              name: 'test_select',
-              params:{
-                score_func: null,
-                k: null,
-                y_name: null,
-                subset:null
-              }
-            },
-          })
-        },
-        {
-          label: 'dimension_reduction',
-          value: () => ({
-            meta: {
-              name: 'dimension_reduction',
-              params:{
-                method: null,
-                n_components: 0,
-                subset: null,
-              }
-            },
-          })
-        },
-        {
-          label: 'get_subtable',
-          value: () => ({
-            meta: {
-              name: 'get_subtable',
-              params:{
-                subset: null
-              }
-            },
-          })
-        },
-        {
-          label: '2d_to_3d',
-          value: () => ({
-            meta: {
-              name: '2d_to_3d',
-              params:{
-                id_col: null,
-                timestap_col: null,
-                to_tensor: false
-              }
-            }
-          })
-        },
-        {
-          label: 'merge',
-          value: () => ({
-            meta: {
-              name: 'merge',
-              params:{
-                how: null,
-                on: null
-              }
-            },
-          })
-        },
-      ],
+      nodeItemList: nodeOptions,
 
       graphMenu: [
-        [
-          {
-            label: 'Beautify',
-            selected (graph) {
-              console.log("try to beautify,", graph)
-            }
-          }
-        ],
         [
           {
             label: '清空',
@@ -326,12 +142,6 @@ export default {
             label: '删除',
             selected: node => {
               node.remove()
-            }
-          },
-          {
-            label: '编辑',
-            selected: node => {
-              this.drawerConf.open(drawerType.node, node)
             }
           }
         ]
@@ -425,12 +235,13 @@ export default {
       return link.meta ? link.meta.desc : ''
     },
     settingSubmit () {
+        console.log(this.curDialogParams)
       const conf = this.drawerConf
       if (!conf.info.meta) conf.info.meta = {}
       Object.keys(this.nodeSetting).forEach(key => {
         this.$set(conf.info.meta, key, this.nodeSetting[key])
       })
-      this.$refs.nodeSetting.resetFields()
+      this.$refs.paramSetting.resetFields()
       conf.visible = false
     },
     nodeMouseUp (evt) {
