@@ -63,7 +63,7 @@ export default {
     Download(){
       window.open("http://localhost:8000/predata/"+this.id+"/download")
     },
-    cellStyle({row, column, rowIndex, columnIndex}){
+    cellStyle(){
       return "font-size:10px;font-family:'Times New Roman',math,sans-serif"
     },
     trimFloat(row, column, cellValue, index){

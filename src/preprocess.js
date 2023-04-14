@@ -11,7 +11,6 @@ const nodeOptions=[
             subset: { value:[], type:"ChooseCol", unique:false}
           },
         },
-
       })
     },
     {
@@ -44,7 +43,7 @@ const nodeOptions=[
         meta: {
           name: 'onehot_encode',
           params: {
-            prefix: {value:[],},//TODO:???长度和subset长度对应？
+            prefix: {value:"", type:"String", unique:false, tips:"需要输入多个字符串，请用 | 作为分隔符"},//TODO:???长度和subset长度对应？
             include_na: {value:false, type:"Bool", unique:true},
             subset: {value:[], type:"ChooseCol", unique:false}
           }
@@ -70,7 +69,7 @@ const nodeOptions=[
           name: 'imputation',
           params:{
             method: {value:"ffill", type:"Enum", unique:true, options:["ffill","bfill","meanfill","valuefill"]},
-            value: {value:0, type:"Number", unique:true},
+            value: {value:0, type:"Float", unique:true},
             subset: {value:[], type:"ChooseCol", unique:false}
           }
         },
@@ -83,7 +82,7 @@ const nodeOptions=[
         meta: {
           name: 'variance_select',
           params:{
-            threshold: {value:0, type:"Number", unique:true},
+            threshold: {value:0, type:"Float", unique:true},
             subset: {value:[], type:"ChooseCol", unique:false}
           }
         }

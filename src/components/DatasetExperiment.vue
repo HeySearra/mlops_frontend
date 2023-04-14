@@ -67,7 +67,7 @@
           提交流程
         </el-button>
       </div>
-      <pre-process-flow :dataset_id="id" ref="preProcessFlow"></pre-process-flow>
+      <pre-process-flow :all_cols="detail.sample.head" :dataset_id="id" ref="preProcessFlow"></pre-process-flow>
     </el-card>
   </div>
 </template>
@@ -116,6 +116,10 @@ export default {
   props:{
     id:{
       type: Number,
+      required: true
+    },
+    detail:{
+      type:Object,
       required: true
     }
   },

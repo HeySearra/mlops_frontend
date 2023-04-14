@@ -43,6 +43,10 @@ body {
   font-size: 10px;
   color: #a3a3a3;
 }
+.super-flow-form-item .el-form-item__label {
+  font-style: italic;
+  font-weight: bold;
+}
 
 .mid-child-container{
   display: flex;

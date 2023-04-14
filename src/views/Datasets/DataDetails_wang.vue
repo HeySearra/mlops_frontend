@@ -26,7 +26,7 @@
         </el-tab-pane>
 
         <el-tab-pane label="实验" name="second">
-          <dataset-experiment :id="id"></dataset-experiment>
+          <dataset-experiment :detail="detail" :id="id"></dataset-experiment>
         </el-tab-pane>
 
         <el-tab-pane label="视图" name="third">

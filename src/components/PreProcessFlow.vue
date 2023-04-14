@@ -22,18 +22,20 @@
             :link-menu="linkMenu"
             :link-base-style="linkBaseStyle"
             :link-style="linkStyle"
-            :link-desc="linkDesc">
+            :link-desc="linkDesc"
+            :enter-intercept="enterIntercept"
+            :output-intercept="outputIntercept">
           <template v-slot:node="{meta}">
             <div
                 @mouseup="nodeMouseUp"
-                @dblclick="drawerConf.open(meta)"
+                @dblclick="dialogConf.open(meta)"
                 :class="`flow-node flow-node-${meta.name}`">
                 <div :class="`node-header node-header-${meta.name}  ellipsis`">
                   {{ meta.name }}
                 </div>
                 <div class="node-main-params">
                   <div class="node-main-param-item" v-for="(val,key,i) in meta.params" :key="i">
-                    <span class="attr-label">{{key}}:</span><span class="attr-value">{{val.default}}</span>
+                    <span class="attr-label">{{key}}:</span><span class="attr-value">{{val.value}}</span>
                   </div>
                 </div>
             </div>
@@ -43,29 +45,72 @@
     </div>
 <!--    visible改变时自动重刷dialog内容，好耶！ -->
     <el-dialog
-        :title="drawerConf.title"
-        :visible.sync="drawerConf.visible"
+        :title="dialogConf.title"
+        :visible.sync="dialogConf.visible"
         :close-on-click-modal="false"
         width="500px">
       <el-form
           @keyup.native.enter="settingSubmit"
           @submit.native.prevent
           ref="paramSetting"
-          :model="curDialogParams">
+          :model="curDialogParams"
+          label-width="100px">
         <el-form-item
             v-for="(val, key, idx) in this.curDialogParams"
             :label="key"
             :prop="key"
-            :key="idx">
+            :key="idx"
+            class="super-flow-form-item">
             <el-input
-                v-model="$data[key]"
+                v-if="val.type === `Number`"
+                v-model.number="curDialogParams[key].value"
                 :placeholder="val.value"
-                maxlength="30">
-            </el-input>
+                maxlength="10"
+                size="small"/>
+<!--   TODO:float validator       -->
+            <el-input
+                v-if="val.type === `Float`"
+                v-model="curDialogParams[key].value"
+                :placeholder="val.value"
+                maxlength="10"
+                size="small"/>
+            <el-input
+                v-if="val.type === `String`&&val.unique===true"
+                v-model="curDialogParams[key].value"
+                :placeholder="val.value"
+                maxlength="20"
+                size="small"/>
+            <el-input
+                type="textarea"
+                v-if="val.type === `String`&&val.unique===false"
+                v-model="curDialogParams[key].value"
+                :autosize="{ minRows: 2, maxRows: 4}"
+                :placeholder="curDialogParams[key].value===``?val.tips:curDialogParams[key].value"/>
+            <el-select
+                multiple
+                collapse-tags
+                v-if="val.type === `ChooseCol`"
+                v-model="curDialogParams[key].value"
+                placeholder="请选择"
+                size="small">
+                <el-option v-for="(col,idx) in all_cols" :key="idx" :label="col" :value="col"/>
+            </el-select>
+            <el-select
+                v-if="val.type === `Enum` && val.unique"
+                v-model="curDialogParams[key].value"
+                placeholder="请选择"
+                size="small">
+                <el-option v-for="(val,idx) in curDialogParams[key].options" :key="idx" :label="val" :value="val"/>
+            </el-select>
+            <div v-if="val.type === `Bool`">
+                <el-radio v-model="curDialogParams[key].value" :label="true">备选项</el-radio>
+                <el-radio v-model="curDialogParams[key].value" :label="false">备选项</el-radio>
+            </div>
+
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="drawerConf.cancel">取 消</el-button>
+        <el-button @click="dialogConf.cancel">取 消</el-button>
         <el-button type="primary" @click="settingSubmit">确 定</el-button>
       </span>
     </el-dialog>
@@ -77,14 +122,8 @@ import SuperFlow from 'vue-super-flow'
 import 'vue-super-flow/lib/index.css'
 import nodeOptions from "../preprocess"
 // TODO: 自动定位
-// TODO：设置参数对话框
-// TODO：设置线段规则分布
+// TODO：设置线段规则分布 vue super flow 自带接口
 // TODO：设置上传规则
-
-const drawerType = {
-  node: 0,
-  link: 1
-}
 
 export default {
   components:{
@@ -92,28 +131,22 @@ export default {
   },
   data () {
     return {
-      drawerType,
       curDialogParams: {},
-      drawerConf: {
+      metaInfo: {},
+      dialogConf: {
         title: '修改参数',
         visible: false,
         open: (meta) => {
-          //TODO：根据name选择params
-          const conf = this.drawerConf
+          const conf = this.dialogConf
+          this.metaInfo = meta // meta是object，采用引用传递，故this.metaInfo就是node的真实meta
           this.curDialogParams = meta.params
-          // if (this.$refs.paramSetting) this.$refs.paramSetting.resetFields()
           conf.visible = true
         },
         cancel: () => {
-          this.drawerConf.visible = false
+          this.dialogConf.visible = false
           this.$refs.paramSetting.clearValidate()
         }
       },
-      nodeSetting: {
-        name: '',
-        desc: ''
-      },
-
       dragConf: {
         isDown: false,
         isMove: false,
@@ -128,38 +161,17 @@ export default {
 
       graphMenu: [
         [
-          {
-            label: '清空',
-            selected: graph => {
-              graph.selectAll()
-            }
-          }
+          { label: '清空', selected: graph => {graph.selectAll()} }
         ]
       ],
       nodeMenu: [
         [
-          {
-            label: '删除',
-            selected: node => {
-              node.remove()
-            }
-          }
+          { label: '删除', selected: node => {node.remove()}}
         ]
       ],
       linkMenu: [
         [
-          {
-            label: '删除',
-            selected: link => {
-              link.remove()
-            }
-          },
-          {
-            label: '编辑',
-            selected: link => {
-              this.drawerConf.open(drawerType.link, link)
-            }
-          }
+          { label: '删除', selected: link => {link.remove()}}
         ]
       ],
 
@@ -183,6 +195,10 @@ export default {
     dataset_id:{
       type:Number,
       required:false,
+    },
+    all_cols:{
+      type:Array,
+      required:false
     }
   },
   mounted () {
@@ -194,9 +210,23 @@ export default {
     })
   },
   methods: {
+    enterIntercept(formNode, toNode, graph) {
+      console.log(formNode, toNode, graph)
+      return true
+    },
+    outputIntercept(node, graph) {
+      console.log(node, graph)
+      return true
+    },
     //TODO： 暂时是按照nodelist里的顺序来排列的，这显然不一定是真正的顺序！
+    graphValidate(graph){
+      return true
+      //TODo: 在此检查图合法性
+    },
     submitPreprocess(){
       let graph = this.$refs.superFlow.toJSON();
+      //
+      console.log(graph)
       let method_dict = {}
       for(let i = 0;i<graph.nodeList.length;i++){
         var name = graph.nodeList[i].meta.name
@@ -234,45 +264,32 @@ export default {
     linkDesc (link) {
       return link.meta ? link.meta.desc : ''
     },
-    settingSubmit () {
-        console.log(this.curDialogParams)
-      const conf = this.drawerConf
-      if (!conf.info.meta) conf.info.meta = {}
-      Object.keys(this.nodeSetting).forEach(key => {
-        this.$set(conf.info.meta, key, this.nodeSetting[key])
+    settingSubmit () { // node的meta是没有getter和setter的，所以需要手动$set
+      Object.keys(this.curDialogParams).forEach(key => {
+        this.$set(this.metaInfo.params, key, this.curDialogParams[key])
       })
       this.$refs.paramSetting.resetFields()
-      conf.visible = false
+      this.dialogConf.visible = false
     },
     nodeMouseUp (evt) {
-      //TODO： 有什么用？
+      //TODO： 在这里调整方块位置
       evt.preventDefault()
-    },
-    nodeClick () {
-      console.log(arguments)
-      //TODO: 点击修改param！
     },
     docMousemove ({ clientX, clientY }) {
       const conf = this.dragConf
-
       if (conf.isMove) {
-
         conf.ele.style.top = clientY - conf.offsetTop + 'px'
         conf.ele.style.left = clientX - conf.offsetLeft + 'px'
-
       } else if (conf.isDown) {
-
         // 鼠标移动量大于 5 时 移动状态生效
         conf.isMove =
             Math.abs(clientX - conf.clientX) > 5
             || Math.abs(clientY - conf.clientY) > 5
-
       }
     },
     docMouseup ({ clientX, clientY }) {
       const conf = this.dragConf
       conf.isDown = false
-
       if (conf.isMove) {
         const {
           top,
