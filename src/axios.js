@@ -21,6 +21,7 @@ http_wang.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlenc
 http_wang.interceptors.response.use(
     response => {
         //根据状态码判断是否请求成功，否则返回报错
+        console.log(response)
         if(response.status === 200){
             return Promise.resolve(response)
         } else {

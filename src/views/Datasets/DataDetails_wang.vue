@@ -32,7 +32,7 @@
         </el-tab-pane>
 
         <el-tab-pane label="实验" name="second">
-          <dataset-experiment :detail="detail" :id="id"></dataset-experiment>
+          <dataset-experiment ref="Experiment" :history="resultList" :detail="detail" :id="id"></dataset-experiment>
         </el-tab-pane>
 
         <el-tab-pane label="视图" name="third">
@@ -77,8 +77,9 @@ export default {
         },
         created: "2023-01-01T00:00:00",
         experiment_times: 0,
-        record_count: 0
+        record_count: 0,
       },
+      process_info:[],
       exp_count: 2,
       exp_list: [],
       activeName: 'first',
@@ -92,7 +93,8 @@ export default {
         'type': 'type',
         'resource': 'resource',
         'desc': 'desc',
-      }
+      },
+      resultList:[]
     }
   },
 
@@ -101,24 +103,26 @@ export default {
     this.id = parseInt(id)
     this.get_datasets(id)
     this.version_choose = this.id
+
   },
 
 
   mounted() {
+
   },
 
   methods: {
     change(value, render) {
       this.html = render;
     },
-    beautifyTimestamp(ts){
+    beautifyTimestamp(ts) {
       let date = ts.split("T")[0]
       let time = ts.split("T")[1]
       let date_parts = date.split("-")
       let time_parts = time.split(":")
-      let date_string = date_parts[0]+"年"+String(Number(date_parts[1]))+"月"+String(Number(date_parts[2]))+"日"+" "
-      let time_string = time_parts[0]+"时"+time_parts[1]+"分"
-      return date_string+time_string
+      let date_string = date_parts[0] + "年" + String(Number(date_parts[1])) + "月" + String(Number(date_parts[2])) + "日" + " "
+      let time_string = time_parts[0] + "时" + time_parts[1] + "分"
+      return date_string + time_string
     },
     get_datasets(id) {
       var that = this;
@@ -126,31 +130,52 @@ export default {
         url: "/predata/" + id + '/',
         method: "get",
       }).then((res) => {
-        if(res.status == 200){
+        console.log(res)
+        if (res.status == 200) {
           let data = res.data
-          if(data.children.length == 0){
+          if (data.children.length == 0) {
             data.children.push({
               'children_id': data.id,
               'children_name': '原始版本',
             })
           }
           that.detail = data
-        } else{
+          that.parseHistoryRecord()
+        } else {
           that.$notify({
             title: '获取失败',
-            message:  res.response.data,
+            message: res.response.data,
             duration: 5000
           });
         }
       });
     },
     versionChange(version) {
-      if (version != this.id){
+      if (version != this.id) {
         this.get_datasets(version)
       }
     },
+    parseHistoryRecord() {
+      var processes = JSON.parse(this.detail.process_code)
+      let list = []
+      processes.forEach((record) => {
+        let process_name = record["name"]
+        let info = {
+          'task': process_name,
+          'created': record["create_time"],
+          'run_status': 'success',
+          'description': record["description"],
+          'owner': record["operator"],
+          "model_config": {}
+        }
+        for (let key in record["params"]) {
+          info["model_config"][key] = record["params"][key]
+        }
+        list.push(info)
+      })
+      this.resultList = list
+    }
   }
-
 }
 </script>
   

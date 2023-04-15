@@ -10,6 +10,7 @@ const nodeOptions=[
             thresh: { value:0,type: "Number", unique:true},
             subset: { value:[], type:"ChooseCol", unique:false}
           },
+          description: ""
         },
       })
     },
@@ -21,19 +22,21 @@ const nodeOptions=[
           params:{
             keep: { value: "first",type:"Enum", unique:true, optios:["first","last","mean"]},
             subset: { value:[], type:"ChooseCol", unique:false }
-          }
+          },
+          description: ""
         },
 
       })
     },
     {
-      label: 'Time_normalization',
+      label: 'time_normalization',
       value: () => ({
         meta: {
-          name: 'Time_normalization',
+          name: 'time_normalization',
           params:{
             subset: {value:[], type:"ChooseCol", unique:false}
-          }
+          },
+          description: ""
         }
       })
     },
@@ -46,7 +49,8 @@ const nodeOptions=[
             prefix: {value:"", type:"String", unique:false, tips:"需要输入多个字符串，请用 | 作为分隔符"},//TODO:???长度和subset长度对应？
             include_na: {value:false, type:"Bool", unique:true},
             subset: {value:[], type:"ChooseCol", unique:false}
-          }
+          },
+          description: ""
         }
       })
     },
@@ -58,7 +62,8 @@ const nodeOptions=[
           params:{
             method: {value:"z-score", type:"Enum", unique:true, options:["z-score","min-max","max-abs"]},
             subset: {value:[], type:"ChooseCol", unique:false}
-          }
+          },
+          description: ""
         },
       })
     },
@@ -71,7 +76,8 @@ const nodeOptions=[
             method: {value:"ffill", type:"Enum", unique:true, options:["ffill","bfill","meanfill","valuefill"]},
             value: {value:0, type:"Float", unique:true},
             subset: {value:[], type:"ChooseCol", unique:false}
-          }
+          },
+          description: ""
         },
 
       })
@@ -84,7 +90,8 @@ const nodeOptions=[
           params:{
             threshold: {value:0, type:"Float", unique:true},
             subset: {value:[], type:"ChooseCol", unique:false}
-          }
+          },
+          description: ""
         }
       })
     },
@@ -99,7 +106,8 @@ const nodeOptions=[
             k: { value: 0, type:"Number", unique:true},
             y_name: { value:"", type:"String", unique:true},
             subset: {value:[], type:"ChooseCol", unique:false}
-          }
+          },
+          description: ""
         },
       })
     },
@@ -112,7 +120,8 @@ const nodeOptions=[
             method: {value:"pca", type:"Enum", unique:true, options:["pca","svd"]},
             n_components: {value:1, type:"Number", unique:true},
             subset: {value:[], type:"ChooseCol", unique:false},
-          }
+          },
+          description: ""
         },
       })
     },
@@ -123,7 +132,8 @@ const nodeOptions=[
           name: 'get_subtable',
           params:{
             subset: {value:[], type:"ChooseCol", unique:false}
-          }
+          },
+          description: ""
         },
       })
     },
@@ -136,7 +146,8 @@ const nodeOptions=[
             id_col: {value:[], type:"ChooseCol", unique:false},
             timestap_col: {value:[], type:"ChooseCol", unique:true},
             to_tensor: {value:false, type:"Bool", unique:true}
-          }
+          },
+          description: ""
         }
       })
     },
@@ -148,7 +159,8 @@ const nodeOptions=[
           params:{
             how: { value:"inner", type:"Enum", unique:true, options:["left","right","outer","inner","cross"]},
             on: { value:[], type:"ChooseCol", unique:false}
-          }
+          },
+          description: ""
         },
       })
     },

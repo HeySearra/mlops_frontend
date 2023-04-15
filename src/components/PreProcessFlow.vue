@@ -105,7 +105,14 @@
                 <el-radio v-model="curDialogParams[key].value" :label="true">备选项</el-radio>
                 <el-radio v-model="curDialogParams[key].value" :label="false">备选项</el-radio>
             </div>
-
+        </el-form-item>
+        <el-form-item
+            label="描述"
+            class="super-flow-form-item">
+          <el-input
+            v-model="nodeDescription"
+            maxlength="10"
+            size="small"/>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -132,6 +139,7 @@ export default {
     return {
       curDialogParams: {},
       metaInfo: {},
+      nodeDescription: "",
       dialogConf: {
         title: '修改参数',
         visible: false,
@@ -139,6 +147,7 @@ export default {
           const conf = this.dialogConf
           this.metaInfo = meta // meta是object，采用引用传递，故this.metaInfo就是node的真实meta
           this.curDialogParams = meta.params
+          this.nodeDescription = meta.description
           conf.visible = true
         },
         cancel: () => {
@@ -240,31 +249,32 @@ export default {
       return true
     },
     submitPreprocess(newName){
+      // 可能出现begin不在第一个的情形。
       if(!this.graphValidate()){
         return
       }
       let that = this
       let graph = this.$refs.superFlow.toJSON();
       console.log(graph)
-      let method_dict = {}
+      let methods = []
       for(let i = 1;i<graph.nodeList.length;i++){
-        var name = graph.nodeList[i].meta.name
-        var param = graph.nodeList[i].meta.params
-        method_dict[name] = {}
+        let method_dict = {"params":{}}
+        const name = graph.nodeList[i].meta.name;
+        const param = graph.nodeList[i].meta.params;
+        method_dict["name"] = name
+        method_dict["description"] = graph.nodeList[i].meta.description
         for(let key in graph.nodeList[i].meta.params){
-          method_dict[name][key] = param[key].value
+          method_dict["params"][key] = param[key].value
         }
+        methods.push(method_dict)
       }
       let id = this.dataset_id
       this.$http_wang({
         url:"/predata/"+id+"/process/",
-        method: "get",
-        params: {
+        method: "post",
+        data: {
           name: newName,
-          methods: JSON.stringify(method_dict)
-        },
-        headers: {
-          "Content-Type":"application/json"
+          methods: JSON.stringify(methods)
         }
       }).then((res)=>{
         console.log("ok!",res)
@@ -286,6 +296,7 @@ export default {
       Object.keys(this.curDialogParams).forEach(key => {
         this.$set(this.metaInfo.params, key, this.curDialogParams[key])
       })
+      this.$set(this.metaInfo,"description",this.nodeDescription)
       this.$refs.paramSetting.resetFields()
       this.dialogConf.visible = false
     },
@@ -452,7 +463,7 @@ export default {
   }
   .node-header-dropna { background: black;}
   .node-header-remove_duplicates{ background: brown;}
-  .node-header-Time_normalization{ background: #9a6e3a;}
+  .node-header-time_normalization{ background: #9a6e3a;}
   .node-header-onehot_encode{ background: #008fff; }
   .node-header-normalize{ background: #55a532; }
   .node-header-imputation{ background: #795da3; }

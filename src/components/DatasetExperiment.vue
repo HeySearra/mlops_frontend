@@ -5,7 +5,7 @@
         <div slot="header" class="card-title">
           <span>数据历史处理记录</span>
         </div>
-        <el-table border tooltip-effect="dark" style="width: 100%" max-height="210" :data="resultList"
+        <el-table border tooltip-effect="dark" style="width: 100%" max-height="210" :data="history"
                 :row-style="{height: '10px'}"
                 :cell-style="{padding: '0'}"
                 :header-cell-style="{
@@ -16,16 +16,12 @@
                 'background-color': '#fafafa',
               }">
         <el-table-column prop="task" label="任务名" width="160" align="center" show-overflow-tooltip/>
-        <el-table-column label="开始时间" width="160" align="center">
-          <template slot-scope="scope">{{ scope.row.created.substr(0, 10) }}
-            <span style=" margin-right: 5px;"></span>
-            {{ scope.row.created.substr(11, 8) }}</template>
-        </el-table-column>
+        <el-table-column label="开始时间" prop="created" width="160" align="center" show-overflow-tooltip/>
         <el-table-column label="状态" width="100" align="center">
           <template slot-scope="scope">
-            <el-tag align="center" :type="scope.row.run_status == 'running' ? 'warning' : 'success'"
-                    disable-transitions>{{
-                scope.row.run_status }} </el-tag>
+            <el-tag align="center" :type="scope.row.run_status == 'running' ? 'warning' : 'success'" disable-transitions>
+              {{scope.row.run_status }}
+            </el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="description" label="描述" show-overflow-tooltip/>
@@ -97,37 +93,14 @@ export default {
       return {
         newNameDialogVisible:false,
         newFileName:"",
-        resultList:[{
-          'id': 1,
-          'task': '任务',
-          'created': '2023-01-23',
-          'run_status': 'success',
-          'description': '1232432543657658787876',
-          'owner': 'wlt',
-          'model_config': {
-            "1": "1",
-            "2": "2",
-          },
-          'metric': {
-            "1": "1",
-            "2": "2",
-          }},{
-          'id': 1,
-          'task': '任务',
-          'created': '2023-01-23',
-          'run_status': 'success',
-          'description': '1232432543657658787876',
-          'owner': 'wlt',
-          'model_config': {
-            "1": "1",
-            "2": "2",
-          },
-          'metric': {
-            "1": "1",
-            "2": "2",
-          }}
-        ]
+        resultList:[]
       }
+  },
+  created() {
+
+  },
+  mounted(){
+
   },
   props:{
     id:{
@@ -137,6 +110,10 @@ export default {
     detail:{
       type:Object,
       required: true
+    },
+    history:{
+      type:Array,
+      require:false
     }
   },
   methods:{
@@ -144,9 +121,10 @@ export default {
       this.newNameDialogVisible = false
       this.$refs.preProcessFlow.submitPreprocess(this.newFileName)
       this.newFileName = ""
-    }
+    },
   }
 }
+
 </script>
 
 <style>
