@@ -28,12 +28,12 @@ http_wang.interceptors.response.use(
         }
     },
     error => {
-        console.log(error)
         if(error.response.status === 401){
             localStorage.setItem('token', null)
             localStorage.setItem('username', "")
             router.push("/login")
         }
+        return error
     }
 )
 

@@ -20,9 +20,8 @@
             :graph-menu="graphMenu"
             :node-menu="nodeMenu"
             :link-menu="linkMenu"
+            :node-list="nodeList"
             :link-base-style="linkBaseStyle"
-            :link-style="linkStyle"
-            :link-desc="linkDesc"
             :enter-intercept="enterIntercept"
             :output-intercept="outputIntercept">
           <template v-slot:node="{meta}">
@@ -158,7 +157,19 @@ export default {
         info: null
       },
       nodeItemList: nodeOptions,
-
+      nodeList:[
+          {
+            id: 'nodeStart',
+            width: 100,
+            height: 80,
+            coordinate: [20, 20],
+            label: 'BEGIN',
+            meta: {
+              name: 'BEGIN',
+              params: {}
+            },
+          }
+      ],
       graphMenu: [
         [
           { label: '清空', selected: graph => {graph.selectAll()} }
@@ -199,6 +210,10 @@ export default {
     all_cols:{
       type:Array,
       required:false
+    },
+    dataset_name:{
+      type:String,
+      required:true
     }
   },
   mounted () {
@@ -211,31 +226,33 @@ export default {
   },
   methods: {
     enterIntercept(formNode, toNode, graph) {
-      console.log(formNode, toNode, graph)
+      // console.log(formNode, toNode, graph)
       return true
     },
     outputIntercept(node, graph) {
-      console.log(node, graph)
+      // console.log(node, graph)
       return true
     },
     //TODO： 暂时是按照nodelist里的顺序来排列的，这显然不一定是真正的顺序！
-    graphValidate(graph){
-      return true
-      //TODo: 在此检查图合法性
-    },
-    submitPreprocess(){
+    graphValidate(){
       let graph = this.$refs.superFlow.toJSON();
-      //
+
+      return true
+    },
+    submitPreprocess(newName){
+      if(!this.graphValidate()){
+        return
+      }
+      let that = this
+      let graph = this.$refs.superFlow.toJSON();
       console.log(graph)
       let method_dict = {}
-      for(let i = 0;i<graph.nodeList.length;i++){
+      for(let i = 1;i<graph.nodeList.length;i++){
         var name = graph.nodeList[i].meta.name
         var param = graph.nodeList[i].meta.params
         method_dict[name] = {}
         for(let key in graph.nodeList[i].meta.params){
-          if(param[key]  != null){
-            method_dict[name][key] = param[key]
-          }
+          method_dict[name][key] = param[key].value
         }
       }
       let id = this.dataset_id
@@ -243,26 +260,27 @@ export default {
         url:"/predata/"+id+"/process/",
         method: "get",
         params: {
-          name:"newnew",
+          name: newName,
           methods: JSON.stringify(method_dict)
+        },
+        headers: {
+          "Content-Type":"application/json"
         }
       }).then((res)=>{
-        console.log("ok",res)
-      })
-    },
-    linkStyle (link) {
-      if (link.meta && link.meta.desc === '1') {
-        return {
-          color: 'red',
-          hover: '#FF00FF',
-          dotted: true
+        console.log("ok!",res)
+        if(res.status == 200){
+          that.$notify({
+            title: '创建成功',
+            duration: 5000
+          });
+        } else{
+          that.$notify({
+            title: '创建失败',
+            message:  res.response.data,
+            duration: 5000
+          });
         }
-      } else {
-        return {}
-      }
-    },
-    linkDesc (link) {
-      return link.meta ? link.meta.desc : ''
+      })
     },
     settingSubmit () { // node的meta是没有getter和setter的，所以需要手动$set
       Object.keys(this.curDialogParams).forEach(key => {
@@ -384,7 +402,7 @@ export default {
   @list-width      : 200px;
   @node-header-height: 30px;
   @node-width      : 150px;
-  @node-height     : 100px;
+  @node-height     : 120px;
   display:flex;
   flex-direction: row;
   justify-content: flex-start;
@@ -444,6 +462,7 @@ export default {
   .node-header-get_subtable{ background: darkblue ;}
   .node-header-2d_to_3d{ background: chocolate;}
   .node-header-merge{ background: tomato; }
+  .node-header-BEGIN{ background: #0077aa; }
 
   .node-main-params{
     display: flex;
