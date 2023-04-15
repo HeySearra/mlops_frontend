@@ -1,7 +1,6 @@
 <template>
   <div class="container">
 
-
     <div>
       <span class="title">{{ detail.name }}</span>
       <el-tag size="mini" type="success" style="margin-left: 20px">{{ detail.task }}</el-tag>
@@ -10,14 +9,21 @@
       <span class="attr-label">上传时间：</span><span class="attr-value">{{beautifyTimestamp(detail.created)}}</span>
     </div>
     <div class="info" style="color:grey">简介： {{ detail.short_description }}</div>
-    
-    <div class="version">
-      <el-tabs v-model="version_choose">
-        <el-tab-pane v-for="(version, index) in detail.children" :label="version.children_name" :name="version.children_name" :key="index">
-        </el-tab-pane>
-      </el-tabs>
-    </div>
 
+    <div class="version-choose" >
+      <el-select v-model="version_choose" size="small" @change="versionChange">
+        <el-option
+            label="原始版本"
+            :value="id">
+        </el-option>
+        <el-option
+            v-for="(version, index) in detail.children"
+            :key="index+1"
+            :label="version.children_name[0]"
+            :value="version.children_id[0]">
+        </el-option>
+      </el-select>
+    </div>
 
     <div>
       <el-tabs v-model="activeName" id="tab">
@@ -76,7 +82,7 @@ export default {
       exp_count: 2,
       exp_list: [],
       activeName: 'first',
-      version_choose: '版本1',
+      version_choose: 0,
       form: {
         'name': 'name',
         'region': 'region',
@@ -94,7 +100,7 @@ export default {
     const id = this.$route.params.id
     this.id = parseInt(id)
     this.get_datasets(id)
-    this.version_choose = '原始版本'
+    this.version_choose = this.id
   },
 
 
@@ -120,18 +126,28 @@ export default {
         url: "/predata/" + id + '/',
         method: "get",
       }).then((res) => {
-        let data = res.data
-        if(data.children.length == 0){
-          data.children.push({
-            'children_id': data.id,
-            'children_name': '原始版本',
-          })
+        if(res.status == 200){
+          let data = res.data
+          if(data.children.length == 0){
+            data.children.push({
+              'children_id': data.id,
+              'children_name': '原始版本',
+            })
+          }
+          that.detail = data
+        } else{
+          that.$notify({
+            title: '获取失败',
+            message:  res.response.data,
+            duration: 5000
+          });
         }
-        that.detail = data
-        // that.detail.sample = JSON.parse (data.sample)
-        console.log(that.detail)
-
       });
+    },
+    versionChange(version) {
+      if (version != this.id){
+        this.get_datasets(version)
+      }
     },
   }
 
@@ -172,6 +188,12 @@ export default {
 
 #id{
   margin-top: 10px;
+}
+
+.version-choose{
+  position: absolute;
+  top: 100px;
+  right: 200px;
 }
 
 </style>
