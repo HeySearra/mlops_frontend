@@ -114,7 +114,7 @@ export default {
 
 </script>
 
-<style>
+<style scoped>
 .card-title {
   font-size: 18px;
   font-weight: bold;
