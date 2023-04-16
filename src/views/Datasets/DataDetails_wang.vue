@@ -153,6 +153,7 @@ export default {
     versionChange(version) {
       if (version != this.id) {
         this.get_datasets(version)
+        this.id = version
       }
     },
     parseHistoryRecord() {

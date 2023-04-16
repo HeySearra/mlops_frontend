@@ -29,26 +29,13 @@
 
         <el-table-column type="expand">
           <template slot-scope="props">
-            <div class="expand">
-              <el-row :gutter="30">
-                <el-col :span="10">
-                  <p>实验参数</p>
-                  <el-descriptions :column="1" border>
-                    <template v-for="(value, key) in props.row.metric">
-                      <el-descriptions-item :key="key" :label="key">{{ value }}</el-descriptions-item>
-                    </template>
-                  </el-descriptions>
-                </el-col>
-
-                <el-col :span="10">
-                  <p>实验指标</p>
-                  <el-descriptions :column="1" border>
-                    <template v-for="(value, key) in props.row.metric">
-                      <el-descriptions-item :key="key" :label="key">{{ value }}</el-descriptions-item>
-                    </template>
-                  </el-descriptions>
-                </el-col>
-              </el-row>
+            <div class="expand" >
+                <p><i class="el-icon-s-operation"/>预处理参数</p>
+                <el-descriptions :column="2" border size="small" labelClassName="d-label" contentClassName="d-content">
+                  <template v-for="(value, key) in props.row.model_config">
+                    <el-descriptions-item :key="key" :label="key">{{ value }}</el-descriptions-item>
+                  </template>
+                </el-descriptions>
             </div>
           </template>
         </el-table-column>
@@ -141,5 +128,20 @@ export default {
 
 .el-input{
   width: 200px;
+}
+
+.d-label{
+  width: 100px;
+  font-size: 12px;
+  font-style: italic;
+  font-weight: bold;
+}
+
+.d-content{
+  font-family: 'Times New Roman',math,sans-serif
+}
+
+.expand{
+  padding: 0 30px 0 30px;
 }
 </style>

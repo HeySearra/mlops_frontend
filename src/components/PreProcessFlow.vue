@@ -33,7 +33,7 @@
                   {{ meta.name }}
                 </div>
                 <div class="node-main-params">
-                  <div class="node-main-param-item" v-for="(val,key,i) in meta.params" :key="i">
+                  <div class="node-main-param-item ellipsis" v-for="(val,key,i) in meta.params" :key="i">
                     <span class="attr-label">{{key}}:</span><span class="attr-value">{{val.value}}</span>
                   </div>
                 </div>
@@ -445,6 +445,9 @@ export default {
     height   : 100%;
     overflow : hidden;
   }
+  .node-main-param-item{
+    max-width: 100%;
+  }
 
   .flow-node{
     width: 100%;
@@ -485,6 +488,7 @@ export default {
     overflow-y  : hidden;
     word-break  : break-all;
     height: calc(@node-height - @node-header-height);
+    padding: 0 5px 0 5px;
 
     .attr-label{
       font-size: 10px;
