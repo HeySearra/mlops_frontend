@@ -13,14 +13,10 @@
     <div class="version-choose" >
       <el-select v-model="version_choose" size="small" @change="versionChange">
         <el-option
-            label="原始版本"
-            :value="id">
-        </el-option>
-        <el-option
             v-for="(version, index) in detail.children"
             :key="index+1"
-            :label="version.children_name[0]"
-            :value="version.children_id[0]">
+            :label="version.children_name"
+            :value="version.children_id">
         </el-option>
       </el-select>
     </div>
