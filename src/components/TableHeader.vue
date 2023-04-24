@@ -3,10 +3,31 @@
     <el-dialog>
       高清无码大图, 暂时不做
     </el-dialog>
-    <div class="col_info">
-      <span>{{col_name}}{{col_id}}</span>
-      <i class="el-icon-more"/>
+    <el-popover
+    style="width:100%"
+    placement="top-start"
+    width="200"
+    trigger="click"
+    v-model="popVisible">
+    <div class="sort-button">
+      <el-button type="text" icon="el-icon-top">按升序排列</el-button>
+      <el-button type="text" icon="el-icon-bottom" id="desc-sort">按降序排列</el-button>
     </div>
+    <el-slider
+        v-model="select_range"
+        range
+        :min="data_range[0]"
+        :max="data_range[1]">
+    </el-slider>
+    <div style="text-align: right; margin: 0">
+      <el-button type="primary" size="mini">应用</el-button>
+    </div>
+    <div class="col_info" slot="reference">
+      <span >{{col_name}}{{col_id}}</span>
+      <span style="float:right"><i class="el-icon-more"/></span>
+      
+    </div>
+  </el-popover>
     <div class="table-header-chart" :id="`col_chart`+col_id"/>
   </div>
 </template>
@@ -138,6 +159,8 @@ export default {
     return{
       col_name:"学号",
       type: "Number", // 还可以是String，datetime，或者类别型
+      data_range: [0, 10],
+      select_range: [0, 10],
       chartData:{
         categories:["ok!","ok!","ok!","ok!","ok!","ok!","ok!","ok!","ok!","ok!"],
         data:[1,2,3,4,5,6,4,3,2,1],
@@ -150,7 +173,8 @@ export default {
           ]
         }
       },
-      chartType: "NUMBER"
+      chartType: "NUMBER",
+      popVisible: false,
     }
   },
   props:{
@@ -203,10 +227,12 @@ export default {
 }
 .col_info{
   margin-bottom: 3px;
+  height:30px;
   width:100%;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  cursor:pointer;
 }
 /* 就是父组件尺寸的100% */
 .table-header-chart{
@@ -219,4 +245,15 @@ export default {
   padding-left: 5px !important;
   padding-right: 5px !important;
 }
+
+.sort-button{
+  display : flex;
+	flex-direction: column;
+  align-items: flex-start;
+}
+
+#desc-sort{
+  margin-left: 0;
+}
+
 </style>

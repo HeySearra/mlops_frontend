@@ -100,7 +100,7 @@
     </el-descriptions>
 
     <div ref="chart" :style="{width: '1500px',height: '500px'}"></div>
-
+    <div ref="heatmap" :style="{width: '1500px',height: '500px'}"></div>
     <el-row>
       <el-col :span="4"><el-input placeholder="搜索单条数据" v-model="curSingleData"></el-input></el-col>
       <el-col :span="6"><el-button type="info" @click="showSingleData()">查看源数据和预测结果</el-button></el-col>
@@ -391,6 +391,7 @@ export default {
       if (val=='model_12324njk') this.result_all.type = 'reg';
       if (val=='model_12321njk') this.result_all.type = 'b-cls';
       this.initCharts();
+      this.initHeatmap();
     },
     showSingleData() {
       this.dialogShow = true;
@@ -447,6 +448,61 @@ export default {
           },
         ]
       });
+    },
+    initHeatmap() {
+      let myHeatmap = echarts.init(this.$refs.heatmap);
+      myHeatmap.setOption(
+        {
+          tooltip: {
+            position: 'top'
+          },
+          grid: {
+            height: '50%',
+            top: '10%'
+          },
+          xAxis: {
+            type: 'category',
+            data: ['2022-1-2', '2022-2-4', '2022-3-1'],
+            splitArea: {
+              show: true
+            }
+          },
+          yAxis: {
+            type: 'category',
+            data: ['K', 'Ca', 'Na'],
+            splitArea: {
+              show: true
+            }
+          },
+          visualMap: {
+            min: 0,
+            max: 1,
+            calculable: true,
+            orient: 'horizontal',
+            left: 'center',
+            bottom: '15%',
+            inRange: {
+              color: ['#ffffff','#0000cd']
+            }
+          },
+          series: [
+            {
+              name: '特征重要性',
+              type: 'heatmap',
+              data: [[0,0,0.2],[0,1,0.1],[0,2,0.25],[1,0,0.4],[1,1,0.5],[1,2,0.25],[2,0,0.4],[2,1,0.4],[2,2,0.5]],
+              label: {
+                show: true
+              },
+              emphasis: {
+                itemStyle: {
+                  shadowBlur: 10,
+                  shadowColor: 'rgba(0, 0, 0, 0.5)'
+                }
+              }
+            }
+          ]
+        }
+      );
     },
     // 生成大小一样样色不同的圆点
     markDot(color) {
