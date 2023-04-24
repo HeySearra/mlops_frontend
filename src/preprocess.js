@@ -20,7 +20,7 @@ const nodeOptions=[
         meta: {
           name: 'remove_duplicates',
           params:{
-            keep: { value: "first",type:"Enum", unique:true, optios:["first","last","mean"]},
+            keep: { value: "first",type:"Enum", unique:true, options:["first","last","mean"]},
             subset: { value:[], type:"ChooseCol", unique:false }
           },
           description: ""
