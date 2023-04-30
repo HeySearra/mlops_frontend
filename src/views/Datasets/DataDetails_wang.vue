@@ -12,6 +12,7 @@
 
     <div class="version-choose" >
       <el-select v-model="version_choose" size="small" @change="versionChange">
+        <el-option label="原始数据" :value="origin_id"></el-option>
         <el-option
             v-for="(version, index) in detail.children"
             :key="version.children_id[0]"
@@ -56,6 +57,7 @@ export default {
   data() {
     return {
       id: 1,
+      origin_id: 1,
       detail: {
         owner: "匿名用户",
         id_col: 1,
@@ -96,6 +98,7 @@ export default {
 
   created() {
     const id = this.$route.params.id
+    this.origin_id = parseInt(id)
     this.id = parseInt(id)
     this.get_datasets(id)
     this.version_choose = this.id
@@ -153,6 +156,7 @@ export default {
       }
     },
     parseHistoryRecord() {
+
       var processes = JSON.parse(this.detail.process_code)
       let list = []
       processes.forEach((record) => {
