@@ -1,6 +1,70 @@
 <template>
   <div class="container">
 
+    <el-dialog
+        title="修改数据"
+        :visible.sync="changeInfoDialogVisible"
+        width="60%"
+        :destroy-on-close="true"
+        modal>
+      <el-form ref="form"
+               :model="detail"
+               label-width="80px"
+               size="mini">
+        <el-form-item label="数据名称">
+          <el-input v-model="detail.name"></el-input>
+        </el-form-item>
+        <el-form-item label="数据简介">
+          <el-input
+              type="textarea"
+              autosize
+              placeholder="请输入数据简介"
+              v-model="detail.short_description">
+          </el-input>
+        </el-form-item>
+        <div>
+          <el-form-item label="详细介绍">
+            <el-input
+                type="textarea"
+                autosize
+                placeholder="请输入数据详情介绍"
+                v-model="detail.long_description">
+            </el-input>
+          </el-form-item>
+          <el-form-item label="领域">
+            <el-select v-model="detail.area" placeholder="请选择" >
+              <el-option
+                  v-for="a in areaOptions"
+                  :key="a"
+                  :label="a"
+                  :value="a">
+              </el-option>
+            </el-select>
+          </el-form-item>
+        </div>
+
+        <el-form-item label="任务">
+          <el-select v-model="detail.task" placeholder="请选择" >
+            <el-option
+                v-for="b in taskOptions"
+                :key="b"
+                :label="b"
+                :value="b">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-button
+            type="primary"
+            icon="el-icon-edit"
+            circle
+            size="mini"
+            style="margin-left: 100px"
+            @click="changeInfoDialogVisible = false"
+        >
+        </el-button>
+      </el-form>
+    </el-dialog>
+
     <div>
       <span class="title">{{ detail.name }}</span>
       <el-tag size="mini" type="success" style="margin-left: 20px">{{ detail.task }}</el-tag>
@@ -11,6 +75,8 @@
     <div class="info" style="color:grey">简介： {{ detail.short_description }}</div>
 
     <div class="version-choose" >
+      <el-button type="primary" icon="el-icon-edit" circle size="mini" style="margin-right: 10px" @click="changeInfo"></el-button>
+      <el-button type="danger" icon="el-icon-delete" circle size="mini" style="margin-right: 10px" @click="deleteDataset"></el-button>
       <el-select v-model="version_choose" size="small" @change="versionChange">
         <el-option label="原始数据" :value="origin_id"></el-option>
         <el-option
@@ -51,7 +117,7 @@ export default {
   components: {
     DatasetIntro,
     DatasetStatistic,
-    DatasetExperiment
+    DatasetExperiment,
   },
 
   data() {
@@ -78,6 +144,9 @@ export default {
         record_count: 0,
       },
       process_info:[],
+      areaOptions:["医疗"],
+      taskOptions:["通用"],
+      changeInfoDialogVisible: false,
       exp_count: 2,
       exp_list: [],
       activeName: 'first',
@@ -175,6 +244,14 @@ export default {
         list.push(info)
       })
       this.resultList = list
+    },
+    changeInfo(e) {
+      e.stopPropagation();
+      console.log("?")
+      this.changeInfoDialogVisible = true
+    },
+    deleteDataset() {
+
     }
   }
 }
