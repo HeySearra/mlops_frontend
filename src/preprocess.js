@@ -147,35 +147,35 @@ const nodeOptions=[
         },
       })
     },
-    {
-      label: '时序转换',
-      value: () => ({
-        meta: {
-          name: '2d_to_3d',
-          title: "时序转换",
-          params:{
-            id_col: {value:[], type:"ChooseCol", unique:false},
-            timestap_col: {value:[], type:"ChooseCol", unique:true},
-            to_tensor: {value:false, type:"Bool", unique:true}
-          },
-          description: ""
-        }
-      })
-    },
-    {
-      label: '多表合并',
-      value: () => ({
-        meta: {
-          name: 'merge',
-          title: "多表合并",
-          params:{
-            how: { value:"inner", type:"Enum", unique:true, options:["left","right","outer","inner","cross"]},
-            on: { value:[], type:"ChooseCol", unique:false}
-          },
-          description: ""
-        },
-      })
-    },
+    // {
+    //   label: '时序转换',
+    //   value: () => ({
+    //     meta: {
+    //       name: '2d_to_3d',
+    //       title: "时序转换",
+    //       params:{
+    //         id_col: {value:[], type:"ChooseCol", unique:false},
+    //         timestap_col: {value:[], type:"ChooseCol", unique:true},
+    //         to_tensor: {value:false, type:"Bool", unique:true}
+    //       },
+    //       description: ""
+    //     }
+    //   })
+    // },
+    // {
+    //   label: '多表合并',
+    //   value: () => ({
+    //     meta: {
+    //       name: 'merge',
+    //       title: "多表合并",
+    //       params:{
+    //         how: { value:"inner", type:"Enum", unique:true, options:["left","right","outer","inner","cross"]},
+    //         on: { value:[], type:"ChooseCol", unique:false}
+    //       },
+    //       description: ""
+    //     },
+    //   })
+    // },
   ]
 
 export default nodeOptions

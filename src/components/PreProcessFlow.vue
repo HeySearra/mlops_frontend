@@ -360,7 +360,6 @@ export default {
       }
     },
     //操控拖拽的回调函数！
-  }
     nodeItemMouseDown (evt, infoFun) {
       const {
         clientX,
@@ -393,6 +392,7 @@ export default {
 
       this.$el.appendChild(this.dragConf.ele)
     }
+  }
 }
 </script>
 
