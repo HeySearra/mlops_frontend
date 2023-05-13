@@ -1,9 +1,10 @@
 const nodeOptions=[
     {
-      label: 'dropna',
+      label: '删除缺失值',
       value: () => ({
         meta: {
           name: 'dropna',
+          title: "删除缺失值",
           params: {
             axis: { value:0,type: "Number", unique:true},
             how: { value:'any',type: "Enum", unique:true, options:["any","all"]},
@@ -15,10 +16,11 @@ const nodeOptions=[
       })
     },
     {
-      label: 'remove_duplicates',
+      label: '去除重复值',
       value: () => ({
         meta: {
           name: 'remove_duplicates',
+          title: "去除重复值",
           params:{
             keep: { value: "first",type:"Enum", unique:true, options:["first","last","mean"]},
             subset: { value:[], type:"ChooseCol", unique:false }
@@ -29,10 +31,11 @@ const nodeOptions=[
       })
     },
     {
-      label: 'time_normalization',
+      label: '时间标准化',
       value: () => ({
         meta: {
           name: 'time_normalization',
+          title: "时间标准化",
           params:{
             subset: {value:[], type:"ChooseCol", unique:false}
           },
@@ -41,10 +44,11 @@ const nodeOptions=[
       })
     },
     {
-      label: 'onehot_encode',
+      label: 'onehot编码',
       value: () => ({
         meta: {
           name: 'onehot_encode',
+          title: "onehot编码",
           params: {
             prefix: {value:"", type:"String", unique:false, tips:"需要输入多个字符串，请用 | 作为分隔符"},//TODO:???长度和subset长度对应？
             include_na: {value:false, type:"Bool", unique:true},
@@ -55,10 +59,11 @@ const nodeOptions=[
       })
     },
     {
-      label: 'normalize',
+      label: '归一化',
       value: () => ({
         meta: {
           name: 'normalize',
+          title: "归一化",
           params:{
             method: {value:"z-score", type:"Enum", unique:true, options:["z-score","min-max","max-abs"]},
             subset: {value:[], type:"ChooseCol", unique:false}
@@ -68,10 +73,11 @@ const nodeOptions=[
       })
     },
     {
-      label: 'imputation',
+      label: '缺失值填补',
       value: () => ({
         meta: {
           name: 'imputation',
+          title: "缺失值填补",
           params:{
             method: {value:"ffill", type:"Enum", unique:true, options:["ffill","bfill","meanfill","valuefill"]},
             value: {value:0, type:"Float", unique:true},
@@ -83,10 +89,11 @@ const nodeOptions=[
       })
     },
     {
-      label: 'variance_select',
+      label: '方差筛选',
       value: () => ({
         meta: {
           name: 'variance_select',
+          title: "方差筛选",
           params:{
             threshold: {value:0, type:"Float", unique:true},
             subset: {value:[], type:"ChooseCol", unique:false}
@@ -96,10 +103,11 @@ const nodeOptions=[
       })
     },
     {
-      label: 'test_select',
+      label: '假设检验筛选',
       value: () => ({
         meta: {
           name: 'test_select',
+          title: "假设检验筛选",
           params:{
             score_func: {value:"pearson", type:"Enum",unique:true,
                       options:["pearson","mutual_info_regression","chi2","ANOVA","mutual_info_classify"]},
@@ -112,10 +120,11 @@ const nodeOptions=[
       })
     },
     {
-      label: 'dimension_reduction',
+      label: '数据降维',
       value: () => ({
         meta: {
           name: 'dimension_reduction',
+          title: "数据降维",
           params:{
             method: {value:"pca", type:"Enum", unique:true, options:["pca","svd"]},
             n_components: {value:1, type:"Number", unique:true},
@@ -126,10 +135,11 @@ const nodeOptions=[
       })
     },
     {
-      label: 'get_subtable',
+      label: '获取子表',
       value: () => ({
         meta: {
           name: 'get_subtable',
+          title: '获取子表',
           params:{
             subset: {value:[], type:"ChooseCol", unique:false}
           },
@@ -138,10 +148,11 @@ const nodeOptions=[
       })
     },
     {
-      label: '2d_to_3d',
+      label: '时序转换',
       value: () => ({
         meta: {
           name: '2d_to_3d',
+          title: "时序转换",
           params:{
             id_col: {value:[], type:"ChooseCol", unique:false},
             timestap_col: {value:[], type:"ChooseCol", unique:true},
@@ -152,10 +163,11 @@ const nodeOptions=[
       })
     },
     {
-      label: 'merge',
+      label: '多表合并',
       value: () => ({
         meta: {
           name: 'merge',
+          title: "多表合并",
           params:{
             how: { value:"inner", type:"Enum", unique:true, options:["left","right","outer","inner","cross"]},
             on: { value:[], type:"ChooseCol", unique:false}

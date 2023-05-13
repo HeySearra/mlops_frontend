@@ -62,15 +62,15 @@
           <!-- TODO:貌似设置max-height也可以使表头固定 -->
           <el-table-column prop="idx" label="序号" width=40 fixed="left" />
           <el-table-column
-              v-for="(header,idx) in tableData.headers"
+              v-for="(a,idx) in tableData.headers"
               :key="idx"
-              :prop="header.label"
-              :label="header.label"
+              :prop="a.label"
+              :label="a.label"
               width=130
           >
 <!-- Tip:这里宽度的设置是table-header中table-header-frame的width+cell的width*2  -->
             <template slot="header">
-              <table-header :data_id="id" :col_id="idx"/>
+              <table-header :data_id="id" :col_id="idx" :format="a.type" :title="a.label"/>
             </template>
           </el-table-column>>
         </el-table>
@@ -99,20 +99,27 @@ export default {
       defaultRowLimit:300,
       tableData:{
         headers:[
-          { label:"一号列", type:"number"},
-          { label:"二号列", type:"number"},
-          { label:"三号列", type:"string"}
+          { label:"ST_NO",type:"CATEGORIES"},
+          { label:"TEM", type:"NUMBER"},
+          { label:"SLAB_THK", type:"NUMBER"},
+          { label:"MID_THK", type:"NUMBER"},
+          { label:"RE_RATE", type:"NUMBER"},
+          { label:"F_TEM", type:"NUMBER"},
+          { label:"L_TEM", type:"NUMBER"},
+          { label:"THK", type:"NUMBER"},
+          { label:"F_COM", type:"NUMBER"},
+          {}
         ],
         data:[
-          {"idx":1, "一号列":1,"二号列":2},
-          {"idx":2, "一号列":1,"二号列":2},
-          {"idx":3, "一号列":1,"二号列":2},
-          {"idx":4, "一号列":1,"二号列":2},
-          {"idx":5, "一号列":1,"二号列":2},
-          {"idx":6, "一号列":1,"二号列":2},
-          {"idx":7, "一号列":1,"二号列":2},
-          {"idx":8, "一号列":1,"二号列":2},
-          {"idx":9, "一号列":1,"二号列":2}
+          {"idx":1, "ST_NO":"ZA4E8100","TEM":1.2792,"SLAB_THK":1.324904,"MID_THK":0.035975,"RE_RATE":-0.91291,"F_TEM":-0.91291,"L_TEM":-0.70253,"THK":0.28379,"F_COM":0.729873},
+          {"idx":2, "ST_NO":"ZA4E8100","TEM":1.2792,"SLAB_THK":1.324904,"MID_THK":0.035975,"RE_RATE":-0.91291,"F_TEM":-0.91291,"L_TEM":-0.70253,"THK":0.28379,"F_COM":0.729873},
+          {"idx":3, "ST_NO":"ZA4E8100","TEM":1.2792,"SLAB_THK":1.324904,"MID_THK":0.035975,"RE_RATE":-0.91291,"F_TEM":-0.91291,"L_TEM":-0.70253,"THK":0.28379,"F_COM":0.729873},
+          {"idx":4, "ST_NO":"ZA4E8100","TEM":1.2792,"SLAB_THK":1.324904,"MID_THK":0.035975,"RE_RATE":-0.91291,"F_TEM":-0.91291,"L_TEM":-0.70253,"THK":0.28379,"F_COM":0.729873},
+          {"idx":5, "ST_NO":"ZA4E8100","TEM":1.2792,"SLAB_THK":1.324904,"MID_THK":0.035975,"RE_RATE":-0.91291,"F_TEM":-0.91291,"L_TEM":-0.70253,"THK":0.28379,"F_COM":0.729873},
+          {"idx":6, "ST_NO":"ZA4E8100","TEM":1.2792,"SLAB_THK":1.324904,"MID_THK":0.035975,"RE_RATE":-0.91291,"F_TEM":-0.91291,"L_TEM":-0.70253,"THK":0.28379,"F_COM":0.729873},
+          {"idx":7, "ST_NO":"ZA4E8100","TEM":1.2792,"SLAB_THK":1.324904,"MID_THK":0.035975,"RE_RATE":-0.91291,"F_TEM":-0.91291,"L_TEM":-0.70253,"THK":0.28379,"F_COM":0.729873},
+          {"idx":8, "ST_NO":"ZA4E8100","TEM":1.2792,"SLAB_THK":1.324904,"MID_THK":0.035975,"RE_RATE":-0.91291,"F_TEM":-0.91291,"L_TEM":-0.70253,"THK":0.28379,"F_COM":0.729873},
+          {"idx":9, "ST_NO":"ZA4E8100","TEM":1.2792,"SLAB_THK":1.324904,"MID_THK":0.035975,"RE_RATE":-0.91291,"F_TEM":-0.91291,"L_TEM":-0.70253,"THK":0.28379,"F_COM":0.729873},
         ]
       },
       tableBriefInfo:{

@@ -30,7 +30,7 @@
                 @dblclick="dialogConf.open(meta)"
                 :class="`flow-node flow-node-${meta.name}`">
                 <div :class="`node-header node-header-${meta.name}  ellipsis`">
-                  {{ meta.name }}
+                  {{ meta.title }}
                 </div>
                 <div class="node-main-params">
                   <div class="node-main-param-item ellipsis" v-for="(val,key,i) in meta.params" :key="i">
@@ -111,7 +111,7 @@
             class="super-flow-form-item">
           <el-input
             v-model="nodeDescription"
-            maxlength="10"
+            maxlength="20"
             size="small"/>
         </el-form-item>
       </el-form>
@@ -174,6 +174,7 @@ export default {
             coordinate: [20, 20],
             label: 'BEGIN',
             meta: {
+              title: "BEGIN",
               name: 'BEGIN',
               params: {}
             },

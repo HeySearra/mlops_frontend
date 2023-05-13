@@ -23,7 +23,7 @@
       <el-button type="primary" size="mini">应用</el-button>
     </div>
     <div class="col_info" slot="reference">
-      <span >{{col_name}}{{col_id}}</span>
+      <span >{{title}}</span>
       <span style="float:right"><i class="el-icon-more"/></span>
       
     </div>
@@ -68,12 +68,16 @@ let chart_set_option = (chart,data,type)=>{
         minInterval:1,
         maxInterval:20,
         silent: true,
-        data:data.categories
+        axisTick:{
+          show:false
+        },
+        axisLabel:{
+          show:false
+        }
       },
       yAxis: {
         show:false,
         type: "value",
-        min: 0,
       },
       series: [
         {
@@ -81,13 +85,16 @@ let chart_set_option = (chart,data,type)=>{
           data: data.data,
           itemStyle:{
             color: "rgba(137, 207, 240,1)",
-            opacity: 0.5
+            opacity: 0.5,
+            borderColor: '#000',
+            borderWidth: 1
           },
           emphasis:{
             focus: "self",
             blurScope: "global"
           },
-          barCategoryGap:'0%'
+          barCategoryGap:'0%',
+
         }
       ],
     })
@@ -163,7 +170,7 @@ export default {
       select_range: [0, 10],
       chartData:{
         categories:["ok!","ok!","ok!","ok!","ok!","ok!","ok!","ok!","ok!","ok!"],
-        data:[1,2,3,4,5,6,4,3,2,1],
+        data:[5,10,15,20,25,30,20,15,10,5],
         categoryData:{
           data:[
             {value:200, name:"奥特曼"},
@@ -185,6 +192,14 @@ export default {
     col_id:{
       type:Number,
       required:true
+    },
+    format:{
+      type:String,
+      required:true
+    },
+    title:{
+      type:String,
+      required:true
     }
   },
   created() {
@@ -193,12 +208,7 @@ export default {
   },
   mounted(){
     let chart = document.getElementById("col_chart"+this.col_id)
-    // Object.defineProperty(chart,'clientWidth',{
-    //   get(){return 150;}
-    // })
-    // Object.defineProperty(chart,'clientHeight',{
-    //   get(){return 150;}
-    // })
+
     var myChart = Echarts.init(chart);
 
     this.chart = myChart
@@ -207,7 +217,7 @@ export default {
     }
 
     // 绘制图表
-    chart_set_option(this.chart, this.chartData,"CATEGORIES")
+    chart_set_option(this.chart, this.chartData,this.format)
   }
 }
 </script>
