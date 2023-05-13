@@ -47,6 +47,7 @@
         :title="dialogConf.title"
         :visible.sync="dialogConf.visible"
         :close-on-click-modal="false"
+        destroy-on-close
         width="500px">
       <el-form
           @keyup.native.enter="settingSubmit"
@@ -144,11 +145,16 @@ export default {
         title: '修改参数',
         visible: false,
         open: (meta) => {
+          console.log(meta)
           const conf = this.dialogConf
           this.metaInfo = meta // meta是object，采用引用传递，故this.metaInfo就是node的真实meta
           this.curDialogParams = meta.params
           this.nodeDescription = meta.description
           conf.visible = true
+        },
+        close: () => {
+          this.dialogConf.visible = false
+          this.$refs.paramSetting.clearValidate()
         },
         cancel: () => {
           this.dialogConf.visible = false
@@ -294,11 +300,12 @@ export default {
       })
     },
     settingSubmit () { // node的meta是没有getter和setter的，所以需要手动$set
-      Object.keys(this.curDialogParams).forEach(key => {
-        this.$set(this.metaInfo.params, key, this.curDialogParams[key])
-      })
-      this.$set(this.metaInfo,"description",this.nodeDescription)
-      this.$refs.paramSetting.resetFields()
+      // console.log("?")
+      // Object.keys(this.curDialogParams).forEach(key => {
+      //   this.$set(this.metaInfo.params, key, this.curDialogParams[key])
+      // })
+      // this.$set(this.metaInfo,"description",this.nodeDescription)
+      // this.$refs.paramSetting.resetFields()
       this.dialogConf.visible = false
     },
     nodeMouseUp (evt) {
@@ -353,6 +360,7 @@ export default {
       }
     },
     //操控拖拽的回调函数！
+  }
     nodeItemMouseDown (evt, infoFun) {
       const {
         clientX,
@@ -385,7 +393,6 @@ export default {
 
       this.$el.appendChild(this.dragConf.ele)
     }
-  }
 }
 </script>
 
