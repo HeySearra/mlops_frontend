@@ -24,6 +24,14 @@ module.exports = {
         pathRewrite: {
           "^/wang": "",
         },
+      },
+      "/vis/": {
+        target: "http://162.105.88.214:4499/",
+        ws: true,
+        changOrigin: true, //允许跨域
+        pathRewrite: {
+          "^/vis": "",
+        },
       }
     }
   }

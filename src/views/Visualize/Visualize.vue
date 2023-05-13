@@ -1,27 +1,19 @@
 <template>
   <div class="container">
     <el-form>
-      <el-row :gutter="20">
-        <el-col :span="4"><el-form-item label="数据集">
-          <el-select v-model="cur_dataset" placeholder="选择数据集" @change="getDatasetId($event)">
-            <el-option v-for="item in datasetList" :value="item.dataset_id" :key="item.dataset_id"
-                       :label="item.dataset_name"></el-option>
-          </el-select>
-        </el-form-item></el-col>
-        <el-col :span="4"><el-form-item label="预处理">
-          <el-select v-model="cur_process" placeholder="选择预处理流程" @change="getProcess($event)">
-            <el-option v-for="item in processList" :value="item.process_id" :key="item.process_id"
-                       :label="item.process_name"></el-option>
-          </el-select>
-        </el-form-item>
-        </el-col>
-      </el-row>
+      <el-form-item label="选择数据集">
+        <el-select v-model="cur_dataset" placeholder="选择数据集" @change="getDatasetId($event)">
+          <el-option v-for="item in datasetList" :value="item.id" :key="item.id"
+                      :label="item.name"></el-option>
+        </el-select>
+      </el-form-item>
     </el-form>
 
     <el-table
         :data="staticInfo"
         :row-key="getRowKey"
         ref="staticTable"
+        height="500"
         stripe
         style="width: 100%"
         @selection-change="handleSelectionChange">
@@ -31,14 +23,24 @@
           :reserve-selection="true"
           width="55">
       </el-table-column>
-      <el-table-column prop="feature_name" label="特征"></el-table-column>
-      <el-table-column prop="min" label="最小值"></el-table-column>
-      <el-table-column prop="max" label="最大值"></el-table-column>
-      <el-table-column prop="mean" label="均值"></el-table-column>
-      <el-table-column prop="std" label="标准差"></el-table-column>
-      <el-table-column prop="p25" label="25%"></el-table-column>
-      <el-table-column prop="p50" label="50%"></el-table-column>
-      <el-table-column prop="p75" label="75%"></el-table-column>
+      <el-table-column prop="feature_name" label="特征" header-align="center"></el-table-column>
+      <el-table-column prop="min" label="最小值" header-align="center"></el-table-column>
+      <el-table-column prop="max" label="最大值" header-align="center"></el-table-column>
+      <el-table-column prop="mean" label="均值" header-align="center"></el-table-column>
+      <el-table-column prop="std" label="标准差" header-align="center"></el-table-column>
+      <el-table-column prop="p25" label="25%" header-align="center"></el-table-column>
+      <el-table-column prop="p50" label="50%" header-align="center"></el-table-column>
+      <el-table-column prop="p75" label="75%" header-align="center"></el-table-column>
+      <el-table-column label="正正态性检验态" header-align="center">
+        <el-table-column prop="ntest_s" label="统计值" header-align="center"></el-table-column>
+        <el-table-column prop="ntest_p" label="p值" header-align="center"></el-table-column>
+      </el-table-column>
+      <el-table-column prop="hist" label="频率分布直方图" header-align="center" >
+        <template slot-scope="scope">
+        <!-- <e-charts class="chart1" :option="getOption(scope.row.num)"></e-charts> -->
+        <div class="chart3" :ref="scope.row.feature_name"></div>
+        </template>
+      </el-table-column>
     </el-table>
     <div style="margin-top: 20px">
       <el-button @click="multiFeatureTest()">多特征检验</el-button>
@@ -99,8 +101,9 @@
         <template slot="label">mae</template>{{result_all.metrics.auprc}}</el-descriptions-item>
     </el-descriptions>
 
-    <div ref="chart" :style="{width: '1500px',height: '500px'}"></div>
-    <div ref="heatmap" :style="{width: '1500px',height: '500px'}"></div>
+    <!-- <div ref="chart" :style="{width: '1500px',height: '500px'}"></div> -->
+    <div ref="heatmap" :style="{width: '1500px',height: '300px'}"></div>
+    单条数据解释性展示
     <el-row>
       <el-col :span="4"><el-input placeholder="搜索单条数据" v-model="curSingleData"></el-input></el-col>
       <el-col :span="6"><el-button type="info" @click="showSingleData()">查看源数据和预测结果</el-button></el-col>
@@ -132,23 +135,11 @@ export default {
   data() {
     return {
       input: '',
-      cur_dataset: '',
+      cur_dataset: this.$route.query.param,
       cur_process: '',
       cur_model: '',
-      datasetList: [
-        {
-          dataset_id: "dataset_12321",
-          dataset_name: "hm"
-        },
-        {
-          dataset_id: "dataset_12322",
-          dataset_name: "tongji"
-        },
-        {
-          dataset_id: "dataset_12323",
-          dataset_name: "xianggang"
-        }
-      ],
+      datasetList: '',
+      dataset_id: 'dataset_123adfhhkjsdf',
       processList: [
         {
           process_id: "process_12321",
@@ -159,148 +150,35 @@ export default {
           process_name: "归一化"
         },
       ],
+      operations: [ "operation1",
+        "operation2",
+        "operation3"],
       staticInfo: [],
       staticMultipleSelection: [],
       limitNum: 2,
       MultiTestShow: false,
-      MultiTestTable: [
-        {
-          method: '皮尔逊相关系数',
-          value: '0.85'
-        },
-        {
-          method: 'T-test',
-          value: 't=1.1,p=0.75'
-        }
-      ],
+      MultiTestTable: [],
       modelList: [
-        {
-          model_id: "model_12321njk",
-          model_name: "model_name_adksjh1",
-          model_task: "mortality"
-        },
-        {
-          model_id: "model_12322njk",
-          model_name: "model_name_adksjh2",
-          model_task: "mortality"
-        },
-        {
-          model_id: "model_12323njk",
-          model_name: "model_name_adksjh3",
-          model_task: "mortality"
-        },
-        {
-          model_id: "model_12324njk",
-          model_name: "model_name_adksjh4",
-          model_task: "mortality"
-        }
+        
       ],
-      result_all: {
-        type: "b-cls",
-        metrics: {
-          auroc: 0.021,
-          auprc: 0.51,
-          minpse: 0.51,
-          acc: 0.51,
-          pre0: 0.51,
-          precision: 0.51,
-          specificity: 0.51,
-          recall: 0.51,
-          f1: 0.51
-        },
-        explanation: [
-          {
-            type: "att_visit",
-            data: {
-              feature1: [
-                0.51,
-                0.51,
-                0.51
-              ],
-              feature2: [
-                0.51,
-                0.51,
-                0.51
-              ]
-            }
-          },
-          {
-            type: "att_feature",
-            data: {
-              feature1: [
-                0.51,
-                0.51,
-                0.51
-              ],
-              feature2: [
-                0.51,
-                0.51,
-                0.51
-              ]
-            }
-          }
-        ]
-      },
+      model_id: 'd1_model1',
+      result_all: '',
+      globalXaxis: '',
+      globalData:'',
       dialogShow: false,
-      singleData: {
-        sample_data: {
-          feature1: [
-            1,
-            2,
-            3
-          ],
-          feature2: [
-            1,
-            2,
-            3
-          ]
-        },
-        output: [
-          0,
-          51,
-          0.51,
-          0.51
-        ],
-        explanation: [
-          {
-            type: "att_visit",
-            data: {
-              "feature1": [
-                0.51,
-                0.51,
-                0.51
-              ],
-              "feature2": [
-                0.51,
-                0.51,
-                0.51
-              ]
-            }
-          },
-          {
-            type: "att_feature",
-            data: {
-              "feature1": [
-                0.51,
-                0.51,
-                0.51
-              ],
-              "feature2": [
-                0.51,
-                0.51,
-                0.51
-              ]
-            }
-          }
-        ]
-      },
-      curSingleData:'',
+      singleData: '',
+      singleTimestep: '',
+      singleLegends: '',
+      singleSeries: '',
+      singleSelected: {},
+      curSingleData:'1231',
 
     }
   },
 
   created() {
-
+    this.getDatasetList();
+    this.getModelList();
   },
 
 
@@ -309,43 +187,49 @@ export default {
   },
 
   methods: {
+    getDatasetList() {
+      console.log(this.cur_dataset);
+      this.$http_vis({
+        url: "/predata/?list=1",
+        method: "get",
+      }).then((res) => {
+          let data = res.data.results
+          this.datasetList = data
+          console.log(this.datasetList);
+      })
+    },
+    getModelList() {
+      this.$http_vis({
+          url: "/interpretability/model/ids/",
+          method: "post",
+          data: {
+            dataset_id: this.dataset_id
+          }
+        }).then((res) => {
+          let data = res.data.data
+          this.modelList = data
+        })
+    },
     getDatasetId(val){
       console.log(val);
+      this.getProcess(val);
     },
     getProcess(val){
-      console.log(val);
-      this.staticInfo = [
-        {
-          feature_name: "K",
-          mean:0.21,
-          std:0.02,
-          min:0.18,
-          max:0.23,
-          p25:0.21,
-          p50:0.22,
-          p75:0.225,
-        },
-        {
-          feature_name: "Na",
-          mean:0.21,
-          std:0.02,
-          min:0.18,
-          max:0.23,
-          p25:0.21,
-          p50:0.22,
-          p75:0.225,
-        },
-        {
-          feature_name: "Ca",
-          mean:0.21,
-          std:0.02,
-          min:0.18,
-          max:0.23,
-          p25:0.21,
-          p50:0.22,
-          p75:0.225,
-        },
-      ]
+      this.$http_vis({
+          url: "/ana/sa/",
+          method: "post",
+        }).then((res) => {
+          let data = res.data.data;
+          console.log(data.metric);
+          this.staticInfo = [];
+          for (var i=0; i<data.feature_name.length; i++) {
+            let item = {feature_name: data.feature_name[i], min: data.metric.min[i], max:data.metric.max[i], mean:data.metric.mean[i], std:data.metric.std[i],
+                        p25:data.metric.quantile_25[i], p50:data.metric.quantitle_50[i], p75:data.metric.quantitle_75[i], ntest_s:data.metric.normaltest[i][0], 
+                      ntest_p:data.metric.normaltest[i][1], hist:data.metric.histogram[i]};
+            this.staticInfo.push(item);
+          }
+          this.tableCharts();
+        })
     },
     getRowKey(row){
       return row.id;
@@ -378,81 +262,162 @@ export default {
         return true
       }
     },
+    tableCharts() {
+      setTimeout(_ => {
+        this.staticInfo.forEach(e => {
+          let f_name = e.feature_name;
+          let myChart3 = echarts.init(this.$refs[f_name]);
+          myChart3.setOption({
+            xAxis: {
+              type: "category",
+              show: false
+            },
+            yAxis: {
+              type: "value",
+              show: false
+            },
+            series: [
+              {
+                data: e.hist,
+                type: "bar",
+              }
+            ]
+          });
+          window.addEventListener("resize", () => {
+            myChart3.resize();
+          });
+        });
+        
+      }, 1000);
+    },
     multiFeatureTest() {
       var features = [];
       for (let item in this.staticMultipleSelection) {
         features.push(this.staticMultipleSelection[item].feature_name);
       }
       console.log(features);
-      this.MultiTestShow = true;
+      this.$http_vis({
+          url: "/ana/fc/",
+          method: "post",
+          data: {
+            
+          }
+        }).then((res) => {
+          let data = res.data.data;
+          this.MultiTestTable = [];
+          this.MultiTestTable.push({method:"pearsonr", value:data.pearsonr});
+          var t_test_string = "t="+ data.ttest[0] + ",p=" + data.ttest[1];
+          this.MultiTestTable.push({method:"t-test", value:t_test_string});    
+          this.MultiTestShow = true;
+        })
     },
     getModelId(val){
-      console.log(val);
-      if (val=='model_12324njk') this.result_all.type = 'reg';
-      if (val=='model_12321njk') this.result_all.type = 'b-cls';
-      this.initCharts();
-      this.initHeatmap();
+      this.$http_vis({
+          url: "/interpretability/result/all/",
+          method: "post",
+          data: {
+            model_id: val
+          }
+        }).then((res) => {
+          let data = res.data.data;
+          this.result_all = data;
+          let features = this.result_all.explanation[0].data;
+          this.globalXaxis = [];
+          this.globalData = [];
+          var index = 0;
+          for (var key in features) {
+            this.globalXaxis.push(key);
+            this.globalData.push([index,0,features[key]]);
+            index += 1;
+          }
+          console.log(this.globalXaxis);
+          console.log(this.globalData);
+          // this.initCharts();
+          this.initHeatmap();
+        })
     },
     showSingleData() {
-      this.dialogShow = true;
-      this.initSingleCharts();
-      console.log(this.curSingleData);
-    },
-    initCharts () {
-      let myChart = echarts.init(this.$refs.chart);
-      // 绘制图表
-      myChart.setOption({
-        title: {
-          text: 'attention特征重要性'
-        },
-        tooltip: {
-          trigger: 'axis'
-        },
-        legend: {
-          data: ['K', 'Ca', 'Na']
-        },
-        grid: {
-          left: '3%',
-          right: '4%',
-          bottom: '3%',
-          containLabel: true
-        },
-        toolbox: {
-          feature: {
-            saveAsImage: {}
+      this.$http_vis({
+          url: "/interpretability/result/single/",
+          method: "post",
+          data: {
+            dataset_id: this.dataset_id,
+            operations: this.operations,
+            model_id: this.model_id,
+            sample_id: this.curSingleData,
           }
-        },
-        xAxis: {
-          type: 'category',
-          boundaryGap: false,
-          data: ['2022-1-2', '2022-2-4', '2022-3-1']
-        },
-        yAxis: {
-          type: 'value'
-        },
-        series: [
-          {
-            name: 'K',
-            type: 'line',
-            data: [0.2, 0.1, 0.25]
-          },
-          {
-            name: 'Ca',
-            type: 'line',
-            data: [0.4, 0.5, 0.25]
-          },
-          {
-            name: 'Na',
-            type: 'line',
-            data: [0.4, 0.4, 0.5]
-          },
-        ]
-      });
+        }).then((res) => {
+          let data = res.data.data
+          this.singleData = data
+          this.dialogShow = true;
+          this.singleLegends = Object.keys(this.singleData.sample_data);
+          this.singleTimestep = this.singleData.sample_data.timestep;
+          this.singleSeries = [];
+          for (var i=0; i<this.singleLegends.length; i++) {
+            if (this.singleLegends[i]=="timestep") {
+              this.singleLegends.splice(i, 1);
+            }
+          }
+          for (var key in this.singleData.sample_data) {
+            if (key!="timestep"){
+              let item = {name:key, type:"line", data:this.singleData.sample_data[key]};
+              this.singleSeries.push(item);
+            }
+          }
+          let outputItem = {name:"output", type: 'line',areaStyle: {opacity: 0.2},data: this.singleData.output};
+          this.singleSeries.push(outputItem);
+          var att_visit = this.singleData.explanation[0].data;
+          for (var key in att_visit) {
+            let item = {name:key, type:"line", data:att_visit[key], symbolSize: 0, showSymbol: false, lineStyle: {width: 0, color: 'rgba(0, 0, 0, 0)'}};
+            this.singleSeries.push(item);
+          }
+          console.log(this.singleSeries);
+          this.singleLegends.push("output");
+          this.initSingleCharts();
+        })
     },
+    // initCharts () {
+    //   let myChart = echarts.init(this.$refs.chart);
+    //   // 绘制图表
+    //   myChart.setOption({
+    //     title: {
+    //       text: 'attention特征重要性'
+    //     },
+    //     tooltip: {
+    //       trigger: 'axis'
+    //     },
+    //     legend: {
+    //       data: ['K', 'Ca', 'Na']
+    //     },
+    //     grid: {
+    //       left: '3%',
+    //       right: '4%',
+    //       bottom: '3%',
+    //       containLabel: true
+    //     },
+    //     toolbox: {
+    //       feature: {
+    //         saveAsImage: {}
+    //       }
+    //     },
+    //     xAxis: {
+    //       type: 'category',
+    //       boundaryGap: false,
+    //       data: this.singleTimestep
+    //     },
+    //     yAxis: {
+    //       type: 'value'
+    //     },
+    //     series: this.singleSeries
+    //   });
+    // },
     initHeatmap() {
       let myHeatmap = echarts.init(this.$refs.heatmap);
       myHeatmap.setOption(
         {
+          title: {
+          text: '全局特征重要性'
+          },
           tooltip: {
             position: 'top'
           },
@@ -462,14 +427,14 @@ export default {
           },
           xAxis: {
             type: 'category',
-            data: ['2022-1-2', '2022-2-4', '2022-3-1'],
+            data: this.globalXaxis,
             splitArea: {
               show: true
             }
           },
           yAxis: {
             type: 'category',
-            data: ['K', 'Ca', 'Na'],
+            data: ['重要性权重'],
             splitArea: {
               show: true
             }
@@ -489,7 +454,7 @@ export default {
             {
               name: '特征重要性',
               type: 'heatmap',
-              data: [[0,0,0.2],[0,1,0.1],[0,2,0.25],[1,0,0.4],[1,1,0.5],[1,2,0.25],[2,0,0.4],[2,1,0.4],[2,2,0.5]],
+              data: this.globalData,
               label: {
                 show: true
               },
@@ -521,25 +486,28 @@ export default {
       let myChart = echarts.init(this.$refs.single_chart);
       // 绘制图表
       myChart.setOption({
-        title: {
-          text: '单条数据展示'
-        },
         tooltip: {
           trigger: 'axis',
           formatter: (params) => {
             let result = params[0].name + "</br>";
-            for (var i=0; i<4; i++) {
+            var len = 0
+            for (var i=0; i<params.length; i++) {
               result += `${this.markDot(params[i].color)}${params[i].seriesName}：${params[i].data}</br>`
+              if (params[i].seriesName=="output") {
+                len = i;
+                break;
+              }
             }
             result += '动态特征重要性' + "</br>";
-            for (i=4; i<params.length; i++) {
+            for (i=len+1; i<params.length; i++) {
+              if (this.singleSelected[params[i].seriesName]==false) continue;
               result += `${this.markDot(params[i].color)}${params[i].seriesName}：${params[i].data}</br>`
             }
             return result;
           }
         },
         legend: {
-          data: ['K', 'Ca', 'Na','Output']
+          data: this.singleLegends
         },
         grid: {
           left: '3%',
@@ -555,54 +523,26 @@ export default {
         xAxis: {
           type: 'category',
           boundaryGap: false,
-          data: ['2022-1-2', '2022-2-4', '2022-3-1']
+          data: this.singleTimestep
         },
         yAxis: {
           type: 'value'
         },
-        series: [
-          {
-            name: 'K',
-            type: 'line',
-            data: [10, 23, 35]
-          },
-          {
-            name: 'Ca',
-            type: 'line',
-            data: [50, 45, 53]
-          },
-          {
-            name: 'Na',
-            type: 'line',
-            data: [42, 30, 38]
-          },
-          {
-            name: 'Output',
-            type: 'line',
-            areaStyle: {
-              opacity: 0.2
-            },
-            data: [24, 25, 32]
-          },
-          {
-            name: 'Na',
-            type: 'line',
-            data: ['33%', '30%', '25%'],
-            show: false
-          },
-          {
-            name: 'K',
-            type: 'line',
-            data: ['33%', '45%', '25%'],
-            show: false
-          },
-          {
-            name: 'Ca',
-            type: 'line',
-            data: ['33%', '25%', '50%'],
-            show: false
+        series: this.singleSeries,
+      });
+      var selectArr = myChart.getOption().legend[0].data;
+      for (var key in selectArr) {
+          this.singleSelected[selectArr[key]] = true;
+      }
+      let that = this;
+      myChart.on('legendselectchanged', function(obj) {
+        var selected = obj.selected;
+        var name = obj.name;
+        for (var key in selectArr) {
+          if (myChart.getOption().legend[0].selected[[selectArr[key]]]!=null) {
+            that.singleSelected[selectArr[key]] = myChart.getOption().legend[0].selected[[selectArr[key]]];
           }
-        ]
+        }
       });
     }
   }
@@ -621,6 +561,11 @@ export default {
 }
 .el-icon-arrow-down {
   font-size: 12px;
+}
+
+.chart3 {
+  width: 100px;
+  height: 100px;
 }
 
 a {

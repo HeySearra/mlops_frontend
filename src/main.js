@@ -5,7 +5,7 @@ import Element from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css';
 import './assets/iconfont'
 import '@/assets/css/global.css'
-import {http,http_wang} from './axios.js'
+import {http,http_wang, http_vis} from './axios.js'
 import VueClipboard from 'vue-clipboard2'
 import './assets/icons/iconfont'
 import * as echarts from 'echarts';
@@ -17,6 +17,7 @@ Vue.use(JsonViewer)
 Vue.config.productionTip = false
 Vue.prototype.$http = http
 Vue.prototype.$http_wang = http_wang
+Vue.prototype.$http_vis = http_vis
 Vue.prototype.$echarts = echarts
 Vue.prototype.$bus = new Vue() // 总线
 

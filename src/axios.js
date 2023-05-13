@@ -8,6 +8,14 @@ const http = axios.create({
     timeout: 10000,
     withCredentials: true,
 });
+
+const http_vis = axios.create({
+    baseURL: '/vis/',
+    timeout: 10000,
+    withCredentials: true,
+})
+http_vis.defaults.headers.post['Content-Type'] = 'application/json;charset=UTF-8'//post请求头的默认设置
+
 // create是创建一个全新的axios，要重新设置。
 const http_wang = axios.create({
     baseURL: '/wang/',
@@ -57,4 +65,4 @@ http_wang.interceptors.request.use(
     }
 )
 
-export {http, http_wang}
+export {http, http_wang, http_vis}
