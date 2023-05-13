@@ -5,6 +5,7 @@
         <div style="">
           <span style="font-size: 30px;color: #3c3c3c;font-family: Corbel,sans-serif;">{{tableBriefInfo.fileName}}</span>
           <span class="attr-label">文件大小</span><span class="attr-value">{{tableBriefInfo.fileSize}}</span>
+          <el-button  @click="toVisual()" style="margin-left:10px;">可视化</el-button>
         </div>
         <el-popover
             placement="left"
@@ -40,7 +41,6 @@
                 style="width: 100px"/>
             </span>
           </div>
-
           <div slot="reference">
             <span class="slice-label">展示范围:</span>
             <span class="slice" >
@@ -136,6 +136,12 @@ export default {
     },
     cellStyle({row, column, rowIndex, columnIndex}){
       return "font-size:10px;font-family:'Times New Roman',math,sans-serif"
+    },
+    toVisual(){
+      this.$router.push({
+					name: 'Visualize',
+					query: {param: 6}
+				})
     }
   },
   props:{

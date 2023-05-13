@@ -72,7 +72,8 @@ const routes = [
         path: '/visualize',
         name: 'Visualize',
         component: () =>
-            import ('../views/Visualize/Visualize.vue')
+            import ('../views/Visualize/Visualize.vue'),
+        props: route => ({param: route.query.param})
     },
 ]
 
