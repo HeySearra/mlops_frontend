@@ -46,23 +46,23 @@ http_wang.interceptors.response.use(
     }
 )
 
-http_wang.interceptors.request.use(
-    config => {
-        //登录注册相关接口不用认证
-        if (config.url.indexOf('/token') === 0||config.url.indexOf('/account') === 0) {
-            return config
-        }
-        if (localStorage.getItem('token')) {
-            const token = localStorage.getItem('token')
-            if (!config.headers) {
-                config.headers = {}
-            }
-            config.headers.Authorization = `Bearer ${token}`
-        }
-        return config
-    },error => {
-        return Promise.reject(error)
-    }
-)
+// http_wang.interceptors.request.use(
+//     config => {
+//         //登录注册相关接口不用认证
+//         if (config.url.indexOf('/token') === 0||config.url.indexOf('/account') === 0) {
+//             return config
+//         }
+//         if (localStorage.getItem('token')) {
+//             const token = localStorage.getItem('token')
+//             if (!config.headers) {
+//                 config.headers = {}
+//             }
+//             config.headers.Authorization = `Bearer ${token}`
+//         }
+//         return config
+//     },error => {
+//         return Promise.reject(error)
+//     }
+// )
 
 export {http, http_wang, http_vis}

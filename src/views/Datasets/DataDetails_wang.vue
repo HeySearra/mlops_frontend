@@ -222,6 +222,7 @@ export default {
       if (version != this.id) {
         this.get_datasets(version)
         this.id = version
+        this.$router.replace(version) 
       }
     },
     parseHistoryRecord() {
@@ -251,7 +252,26 @@ export default {
       this.changeInfoDialogVisible = true
     },
     deleteDataset() {
-
+      var that = this;
+      this.$http_wang({
+        url: "/predata/" + that.id + '/',
+        method: "delete",
+      }).then((res) => {
+        console.log(res)
+        if (res.status == 200) {
+          that.$notify({
+            title: res.response.data.message,
+            duration: 5000
+          });
+          // todo: 刷新页面
+        } else {
+          that.$notify({
+            title: '删除失败',
+            message: res.response.data,
+            duration: 5000
+          });
+        }
+      });
     }
   }
 }

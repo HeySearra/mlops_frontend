@@ -108,7 +108,6 @@ export default {
           { label:"L_TEM", type:"NUMBER"},
           { label:"THK", type:"NUMBER"},
           { label:"F_COM", type:"NUMBER"},
-          {}
         ],
         data:[
           {"idx":1, "ST_NO":"ZA4E8100","TEM":1.2792,"SLAB_THK":1.324904,"MID_THK":0.035975,"RE_RATE":-0.91291,"F_TEM":-0.91291,"L_TEM":-0.70253,"THK":0.28379,"F_COM":0.729873},
