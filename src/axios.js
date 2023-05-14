@@ -5,13 +5,13 @@ import router from "./router";
 
 const http = axios.create({
     baseURL: '/api/',
-    timeout: 10000,
+    timeout: 100000,
     withCredentials: true,
 });
 
 const http_vis = axios.create({
     baseURL: '/vis/',
-    timeout: 10000,
+    timeout: 100000,
     withCredentials: true,
 })
 http_vis.defaults.headers.post['Content-Type'] = 'application/json;charset=UTF-8'//post请求头的默认设置
@@ -19,10 +19,10 @@ http_vis.defaults.headers.post['Content-Type'] = 'application/json;charset=UTF-8
 // create是创建一个全新的axios，要重新设置。
 const http_wang = axios.create({
     baseURL: '/wang/',
-    timeout: 10000,
+    timeout: 1000000,
     withCredentials: true
 })
-http_wang.defaults.timeout = 10000 //超过10s则请求超时
+http_wang.defaults.timeout = 100000 //超过10s则请求超时
 http_wang.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8'//post请求头的默认设置
 
 //响应拦截器
