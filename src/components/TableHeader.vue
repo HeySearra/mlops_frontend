@@ -23,12 +23,13 @@
       <el-button type="primary" size="mini">应用</el-button>
     </div>
     <div class="col_info" slot="reference">
-      <span >{{title}}</span>
+      <span >{{stat.label}}</span>
       <span style="float:right"><i class="el-icon-more"/></span>
       
     </div>
   </el-popover>
-    <div class="table-header-chart" :id="`col_chart`+col_id"/>
+<!--    <div v-if="stat.type !== `NUMBER`" >UniqueValues:{{stat.unique}}</div>-->
+    <div class="table-header-chart" :id="`col_chart`+col_id" style="font-size: 5px;color: #555;opacity: 0.5">UniqueValues:{{stat.unique}}</div>
   </div>
 </template>
 <script>
@@ -54,12 +55,23 @@ let chart_set_option = (chart,data,type)=>{
           fontSize: 10
         },
         formatter(params){
-          // var rangeName = params[0].name
-          var rangeName = "ok了家人们"
-          var count = params[0].value[1]
+          var from = params[0].data.from.toFixed(5)
+          var to = params[0].data.to.toFixed(5)
+          var rangeName = from+" to "+to
+          var count = params[0].value
           return `<div>${rangeName}</div>
                   <div>${params[0].marker}Count:${count}</div>`
         },
+      },
+      legend:{
+        show:false
+      },
+      grid: {
+        top:5,
+        bottom:5
+      },
+      title:{
+        show:false
       },
       xAxis: {
         type: "category",// 由于后端不会传递所有的数据，所以在后端统计后，以分类的形式返回前端
@@ -81,8 +93,8 @@ let chart_set_option = (chart,data,type)=>{
       },
       series: [
         {
-          type: 'bar',
           data: data.data,
+          type: 'bar',
           itemStyle:{
             color: "rgba(137, 207, 240,1)",
             opacity: 0.5,
@@ -94,7 +106,6 @@ let chart_set_option = (chart,data,type)=>{
             blurScope: "global"
           },
           barCategoryGap:'0%',
-
         }
       ],
     })
@@ -169,14 +180,10 @@ export default {
       data_range: [0, 10],
       select_range: [0, 10],
       chartData:{
-        categories:["ok!","ok!","ok!","ok!","ok!","ok!","ok!","ok!","ok!","ok!"],
-        data:[5,10,15,20,25,30,20,15,10,5],
+        categories:[],
+        data:[],
         categoryData:{
           data:[
-            {value:200, name:"奥特曼"},
-            {value:100, name:"赛亚人"},
-            {value:400, name:"Apex猎杀者"},
-            {value:50, name:"钢铁侠"}
           ]
         }
       },
@@ -193,31 +200,30 @@ export default {
       type:Number,
       required:true
     },
-    format:{
-      type:String,
-      required:true
-    },
-    title:{
-      type:String,
+    stat:{
+      type:Object,
       required:true
     }
+
   },
   created() {
     //TODO: 搞清楚获取col info的方式。
     this.chartType= "NUMBER"
   },
   mounted(){
-    let chart = document.getElementById("col_chart"+this.col_id)
+    // 数值型直接绘制图表
+    if(this.stat.type === "NUMBER"){
+      let chart = document.getElementById("col_chart"+this.col_id)
 
-    var myChart = Echarts.init(chart);
-
-    this.chart = myChart
-    window.onresize = function(){
-      myChart.resize()
+      var myChart = Echarts.init(chart);
+      this.chart = myChart
+      window.onresize = function(){
+        myChart.resize()
+      }
+      this.chartData.data = this.stat.distribution
+      chart_set_option(this.chart, this.chartData,this.stat.type)
+      this.data_range=[this.stat.min,this.stat.max]
     }
-
-    // 绘制图表
-    chart_set_option(this.chart, this.chartData,this.format)
   }
 }
 </script>
@@ -236,7 +242,6 @@ export default {
   background-color: #fafafa;
 }
 .col_info{
-  margin-bottom: 3px;
   height:30px;
   width:100%;
   display: flex;

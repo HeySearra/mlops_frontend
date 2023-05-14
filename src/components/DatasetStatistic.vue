@@ -70,7 +70,7 @@
           >
 <!-- Tip:这里宽度的设置是table-header中table-header-frame的width+cell的width*2  -->
             <template slot="header">
-              <table-header :data_id="id" :col_id="idx" :format="a.type" :title="a.label"/>
+              <table-header :data_id="id" :col_id="idx" :stat="a"/>
             </template>
           </el-table-column>>
         </el-table>
@@ -99,27 +99,26 @@ export default {
       defaultRowLimit:300,
       tableData:{
         headers:[
-          { label:"ST_NO",type:"CATEGORIES"},
-          { label:"TEM", type:"NUMBER"},
-          { label:"SLAB_THK", type:"NUMBER"},
-          { label:"MID_THK", type:"NUMBER"},
-          { label:"RE_RATE", type:"NUMBER"},
-          { label:"F_TEM", type:"NUMBER"},
-          { label:"L_TEM", type:"NUMBER"},
-          { label:"THK", type:"NUMBER"},
-          { label:"F_COM", type:"NUMBER"},
-          {}
+          // { label:"ST_NO",type:"CATEGORIES"},
+          // { label:"TEM", type:"NUMBER"},
+          // { label:"SLAB_THK", type:"NUMBER"},
+          // { label:"MID_THK", type:"NUMBER"},
+          // { label:"RE_RATE", type:"NUMBER"},
+          // { label:"F_TEM", type:"NUMBER"},
+          // { label:"L_TEM", type:"NUMBER"},
+          // { label:"THK", type:"NUMBER"},
+          // { label:"F_COM", type:"NUMBER"},
         ],
         data:[
-          {"idx":1, "ST_NO":"ZA4E8100","TEM":1.2792,"SLAB_THK":1.324904,"MID_THK":0.035975,"RE_RATE":-0.91291,"F_TEM":-0.91291,"L_TEM":-0.70253,"THK":0.28379,"F_COM":0.729873},
-          {"idx":2, "ST_NO":"ZA4E8100","TEM":1.2792,"SLAB_THK":1.324904,"MID_THK":0.035975,"RE_RATE":-0.91291,"F_TEM":-0.91291,"L_TEM":-0.70253,"THK":0.28379,"F_COM":0.729873},
-          {"idx":3, "ST_NO":"ZA4E8100","TEM":1.2792,"SLAB_THK":1.324904,"MID_THK":0.035975,"RE_RATE":-0.91291,"F_TEM":-0.91291,"L_TEM":-0.70253,"THK":0.28379,"F_COM":0.729873},
-          {"idx":4, "ST_NO":"ZA4E8100","TEM":1.2792,"SLAB_THK":1.324904,"MID_THK":0.035975,"RE_RATE":-0.91291,"F_TEM":-0.91291,"L_TEM":-0.70253,"THK":0.28379,"F_COM":0.729873},
-          {"idx":5, "ST_NO":"ZA4E8100","TEM":1.2792,"SLAB_THK":1.324904,"MID_THK":0.035975,"RE_RATE":-0.91291,"F_TEM":-0.91291,"L_TEM":-0.70253,"THK":0.28379,"F_COM":0.729873},
-          {"idx":6, "ST_NO":"ZA4E8100","TEM":1.2792,"SLAB_THK":1.324904,"MID_THK":0.035975,"RE_RATE":-0.91291,"F_TEM":-0.91291,"L_TEM":-0.70253,"THK":0.28379,"F_COM":0.729873},
-          {"idx":7, "ST_NO":"ZA4E8100","TEM":1.2792,"SLAB_THK":1.324904,"MID_THK":0.035975,"RE_RATE":-0.91291,"F_TEM":-0.91291,"L_TEM":-0.70253,"THK":0.28379,"F_COM":0.729873},
-          {"idx":8, "ST_NO":"ZA4E8100","TEM":1.2792,"SLAB_THK":1.324904,"MID_THK":0.035975,"RE_RATE":-0.91291,"F_TEM":-0.91291,"L_TEM":-0.70253,"THK":0.28379,"F_COM":0.729873},
-          {"idx":9, "ST_NO":"ZA4E8100","TEM":1.2792,"SLAB_THK":1.324904,"MID_THK":0.035975,"RE_RATE":-0.91291,"F_TEM":-0.91291,"L_TEM":-0.70253,"THK":0.28379,"F_COM":0.729873},
+          // {"idx":1, "ST_NO":"ZA4E8100","TEM":1.2792,"SLAB_THK":1.324904,"MID_THK":0.035975,"RE_RATE":-0.91291,"F_TEM":-0.91291,"L_TEM":-0.70253,"THK":0.28379,"F_COM":0.729873},
+          // {"idx":2, "ST_NO":"ZA4E8100","TEM":1.2792,"SLAB_THK":1.324904,"MID_THK":0.035975,"RE_RATE":-0.91291,"F_TEM":-0.91291,"L_TEM":-0.70253,"THK":0.28379,"F_COM":0.729873},
+          // {"idx":3, "ST_NO":"ZA4E8100","TEM":1.2792,"SLAB_THK":1.324904,"MID_THK":0.035975,"RE_RATE":-0.91291,"F_TEM":-0.91291,"L_TEM":-0.70253,"THK":0.28379,"F_COM":0.729873},
+          // {"idx":4, "ST_NO":"ZA4E8100","TEM":1.2792,"SLAB_THK":1.324904,"MID_THK":0.035975,"RE_RATE":-0.91291,"F_TEM":-0.91291,"L_TEM":-0.70253,"THK":0.28379,"F_COM":0.729873},
+          // {"idx":5, "ST_NO":"ZA4E8100","TEM":1.2792,"SLAB_THK":1.324904,"MID_THK":0.035975,"RE_RATE":-0.91291,"F_TEM":-0.91291,"L_TEM":-0.70253,"THK":0.28379,"F_COM":0.729873},
+          // {"idx":6, "ST_NO":"ZA4E8100","TEM":1.2792,"SLAB_THK":1.324904,"MID_THK":0.035975,"RE_RATE":-0.91291,"F_TEM":-0.91291,"L_TEM":-0.70253,"THK":0.28379,"F_COM":0.729873},
+          // {"idx":7, "ST_NO":"ZA4E8100","TEM":1.2792,"SLAB_THK":1.324904,"MID_THK":0.035975,"RE_RATE":-0.91291,"F_TEM":-0.91291,"L_TEM":-0.70253,"THK":0.28379,"F_COM":0.729873},
+          // {"idx":8, "ST_NO":"ZA4E8100","TEM":1.2792,"SLAB_THK":1.324904,"MID_THK":0.035975,"RE_RATE":-0.91291,"F_TEM":-0.91291,"L_TEM":-0.70253,"THK":0.28379,"F_COM":0.729873},
+          // {"idx":9, "ST_NO":"ZA4E8100","TEM":1.2792,"SLAB_THK":1.324904,"MID_THK":0.035975,"RE_RATE":-0.91291,"F_TEM":-0.91291,"L_TEM":-0.70253,"THK":0.28379,"F_COM":0.729873},
         ]
       },
       tableBriefInfo:{
@@ -149,6 +148,43 @@ export default {
 					name: 'Visualize',
 					query: {param: 6}
 				})
+    },
+    getData(id, begin, end, sort, sort_field, filter_value, filter_field){
+      var that = this;
+      this.$http_wang({
+        url: "/predata/" + id + '/dataset_slice/',
+        method: "get",
+        params:{
+          "begin":begin,
+          "end":end,
+          "sort":sort,
+          "sort_field":sort_field,
+          "filter_value":filter_value,
+          "filter_field":filter_field
+        }
+      }).then((res) => {
+        console.log(res)
+        let data = []
+        for(let i = 0;i<res.data["nums"];i++){
+          var row = {}
+          res.data["headers"].forEach((col_name)=>{
+            row[col_name] = res.data["values"][col_name][i]
+          })
+          row["idx"]=i
+          data.push(row)
+        }
+        that.tableData.data = data
+      })
+    },
+    getAllStat(id){
+      var that = this;
+      this.$http_wang({
+        url: "/predata/" + id + '/dataset_stat/',
+        method: "get",
+      }).then((res) => {
+        console.log(res)
+        that.tableData.headers = res.data
+      })
     }
   },
   props:{
@@ -156,6 +192,10 @@ export default {
       type: Number,
       required: true
     }
+  },
+  mounted(){
+    this.getData(this.id, 0, 100)
+    this.getAllStat(this.id)
   }
 }
 </script>

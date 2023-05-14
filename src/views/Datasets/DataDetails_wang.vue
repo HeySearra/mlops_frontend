@@ -194,6 +194,7 @@ export default {
     },
     get_datasets(id) {
       var that = this;
+      console.log("?")
       this.$http_wang({
         url: "/predata/" + id + '/',
         method: "get",
@@ -225,7 +226,9 @@ export default {
       }
     },
     parseHistoryRecord() {
-
+      if(this.detail.process_code === ""){
+        return
+      }
       var processes = JSON.parse(this.detail.process_code)
       let list = []
       processes.forEach((record) => {
