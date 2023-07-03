@@ -10,10 +10,12 @@ import VueClipboard from 'vue-clipboard2'
 import './assets/icons/iconfont'
 import * as echarts from 'echarts';
 import JsonViewer from 'vue-json-viewer'
+import Network from  "vue2vis/src/components/Network";
 
 Vue.use(Element)
 Vue.use(VueClipboard)
 Vue.use(JsonViewer)
+Vue.use(Network)
 Vue.config.productionTip = false
 Vue.prototype.$http = http
 Vue.prototype.$http_wang = http_wang
@@ -23,6 +25,6 @@ Vue.prototype.$bus = new Vue() // 总线
 
 new Vue({
   router,
-  render: h => h(App)
+  render: h => h(App),
 }).$mount('#app')
 

@@ -71,6 +71,17 @@
           </svg>
           文档
         </span>
+        <router-link
+          to="/mapping"
+          class="menu-item">
+          <svg
+            class="icon"
+            aria-hidden="true"
+          >
+            <use xlink:href="#icon-data"></use>
+          </svg>
+          映射
+        </router-link>
       </div>
 
       <ul>

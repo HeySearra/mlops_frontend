@@ -199,6 +199,7 @@ export default {
         url: "/predata/" + id + '/',
         method: "get",
       }).then((res) => {
+        console.log("DataDetails_wang get_datasets")
         console.log(res)
         if (res.status == 200) {
           let data = res.data
@@ -224,6 +225,10 @@ export default {
         this.get_datasets(version)
         this.id = version
         this.$router.replace(version) 
+        // this.$refs.child.$emit('childMethod','发送给方法一的数据') // 方法1:触发监听事件
+        // this.$refs.child.getData(version, 0, 100) // 方法2:直接调用
+        this.$bus.$emit("xxx", version, 0, 100)
+        this.$bus.$emit("method2", version)
       }
     },
     parseHistoryRecord() {
@@ -263,10 +268,11 @@ export default {
         console.log(res)
         if (res.status == 200) {
           that.$notify({
-            title: res.response.data.message,
+            title: '删除成功',
             duration: 5000
           });
           // todo: 刷新页面
+          that.$router.go(0)
         } else {
           that.$notify({
             title: '删除失败',

@@ -3,6 +3,7 @@ import router from "./router";
 
 
 
+axios.defaults.withcredentials = true;  //允许使用cookie
 const http = axios.create({
     baseURL: '/api/',
     timeout: 100000,

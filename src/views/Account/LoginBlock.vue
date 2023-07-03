@@ -85,7 +85,7 @@ export default {
     signIn () {
       const _that = this
       this.$http_wang({
-          url: "/token/",
+          url: "/account/login/",
           method: "post",
           headers: {
             "Content-Type":'application/x-www-form-urlencoded;charset=UTF-8',

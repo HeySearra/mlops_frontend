@@ -290,6 +290,7 @@ export default {
             title: '创建成功',
             duration: 5000
           });
+          that.$router.go(0)
         } else{
           that.$notify({
             title: '创建失败',

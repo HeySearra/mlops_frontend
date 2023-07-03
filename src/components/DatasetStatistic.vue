@@ -185,7 +185,13 @@ export default {
         console.log(res)
         that.tableData.headers = res.data
       })
-    }
+    },
+    monitoring() { // 监听事件
+                this.$on('childMethod', (res) => {
+                    console.log('方法1:触发监听事件监听成功')
+                    console.log(res)
+                })
+            },
   },
   props:{
     id:{
@@ -194,6 +200,9 @@ export default {
     }
   },
   mounted(){
+    // this.monitoring() // 注册监听事件
+    this.$bus.$on("xxx", this.getData)
+    this.$bus.$on("method2", this.getAllStat)
     this.getData(this.id, 0, 100)
     this.getAllStat(this.id)
   }
