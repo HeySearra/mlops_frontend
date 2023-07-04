@@ -66,4 +66,13 @@ http_wang.interceptors.response.use(
 //     }
 // )
 
-export {http, http_wang, http_vis}
+const http_zyq = axios.create({
+    baseURL: '/v1/',
+    timeout: 1000000,
+    withCredentials: true
+})
+http_zyq.defaults.timeout = 100000 //超过10s则请求超时
+http_zyq.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8'//post请求头的默认设置
+
+
+export {http, http_wang, http_vis, http_zyq}

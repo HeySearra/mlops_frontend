@@ -34,6 +34,14 @@ module.exports = {
         pathRewrite: {
           "^/vis": "",
         },
+      },
+      "/v1/": {
+        target: "http://162.105.88.203:9136",
+        ws: true,
+        changOrigin: true, //允许跨域
+        pathRewrite: {
+          "^/v1": "",
+        },
       }
     }
   }

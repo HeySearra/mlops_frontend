@@ -18,6 +18,12 @@
           </el-option>
         </el-select>
       </el-form-item>
+      <el-form-item label="时间列" prop="time_series">
+        <el-input v-model="datasetInfo.time_series"></el-input>
+      </el-form-item>
+      <el-form-item label="id列" prop="id_col">
+        <el-input v-model="datasetInfo.id_col"></el-input>
+      </el-form-item>
       <!-- <el-form-item label="任务" :rules="[{ required: true }]">
         <el-select v-model="datasetInfo.task" placeholder="请选择">
           <el-option v-for="b in taskOptions" :key="b" :label="b" :value="b">
@@ -30,7 +36,7 @@
           :before-upload="beforeUpload"
           :on-preview="handlePreview"
           :file-list="fileList" 
-          :on-remove="handleRemoveFile" 
+          :on-remove="handleRemoveFile"
           :on-success="handleUploadSuccess"
           :on-progess="handleUploadProgess" 
           :on-change="handleFileListChange" 
@@ -191,8 +197,8 @@ export default {
         short_description: '',
         long_description: '',
         area: '',
-        time_series: "114514",
-        id_col: "114514",
+        time_series: "",
+        id_col: "",
         file: null,
         fileList: null,
       },
@@ -209,7 +215,9 @@ export default {
         long_description: [
           {required: true, message: '请填写详细介绍', trigger: 'blur' },
         ],
-        fileList: [{ required: true, message: '请上传文件', trigger: 'change' }]
+        fileList: [
+          {required: true, message: '请上传文件', trigger: 'blur' }
+        ],
         // file: [
         //   {required: true, message: '请上传文件', trigger: 'blur' },
         // ]
@@ -428,7 +436,6 @@ export default {
   created() {
     this.get_head_list();
     this.get_area();
-    this.$refs.upload.validate();
   },
 
   mounted() {
@@ -555,6 +562,17 @@ export default {
       params.append('long_description', this.datasetInfo.long_description)
       params.append('store_name', this.datasetInfo.store_name)
       params.append('process_code', "")
+      params.append('father_name', "")
+      var time_series = -1;
+      if(that.datasetInfo.time_series != ""){
+        time_series = that.datasetInfo.time_series
+      }
+      params.append('time_series', time_series)
+      var id_col = -1;
+      if(that.datasetInfo.id_col != ""){
+        id_col = that.datasetInfo.id_col
+      }
+      params.append('id_col', id_col)
 
       this.$http_wang({
         url:"/predata/",
@@ -584,11 +602,9 @@ export default {
     },
     handleRemoveFile() {
       this.show_head_upload = false;
-      this.datasetInfo.fileList = fileList;
+      this.datasetInfo.fileList = null;
+      this.datasetInfo.file = null;
       this.$refs.datasetInfoRef.validateField('fileList');
-    },
-    handleChange(file, fileList) {
-      this.datasetInfo.fileList = fileList;// 防止用户打开了文件选择框之后不选择文件而出现效验失败if(this.form.fileList){this.$refs.form.clearValidate('fileList');} 
     },
     handleUploadSuccess(res) {
       var that = this;
@@ -598,6 +614,7 @@ export default {
       // this.upload_data_dict = res.data_dict;
       this.tableData[0].fields = res.head;
       this.show_head_upload = true;
+      this.$refs.datasetInfoRef.validateField('fileList');
     },
     handleUploadProgess() {
 
@@ -606,7 +623,9 @@ export default {
 
     },
     handleFileListChange(file, fileList) {
-      this.fileList = fileList
+      // this.fileList = fileList
+      this.datasetInfo.fileList = fileList;// 防止用户打开了文件选择框之后不选择文件而出现效验失败if(this.form.fileList){this.$refs.form.clearValidate('fileList');} 
+      this.$refs.datasetInfoRef.validateField("fileList");
     },
     handlePreview() {
 
