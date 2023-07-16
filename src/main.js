@@ -5,7 +5,7 @@ import Element from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css';
 import './assets/iconfont'
 import '@/assets/css/global.css'
-import {http,http_wang, http_vis, http_zyq} from './axios.js'
+import {http, http_wang, http_vis, http_zyq} from './axios.js'
 import VueClipboard from 'vue-clipboard2'
 import './assets/icons/iconfont'
 import * as echarts from 'echarts';

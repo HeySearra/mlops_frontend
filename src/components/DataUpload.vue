@@ -13,7 +13,7 @@
         </el-input>
       </el-form-item>
       <el-form-item label="领域" prop="area">
-        <el-select v-model="datasetInfo.area" placeholder="请选择">
+        <el-select @change="selectChanged" v-model="datasetInfo.area" placeholder="请选择">
           <el-option v-for="a in areaOptions" :key="a" :label="a" :value="a">
           </el-option>
         </el-select>
@@ -57,7 +57,7 @@
       <el-container style="height: 100%; border: 1px solid #eee">
 
         <el-main>
-          <el-card shadow="never" style="height: 150px; overflow: scroll; overflow-x:hidden">
+          <el-card shadow="never" style="width: 600px; max-width: 600px; height: 200px; overflow: scroll; overflow-x:hidden">
             <div slot="header" style="font-size: 15px; font-weight: bold">
               <i class="el-icon-document-copy"></i>
               表中字段
@@ -80,13 +80,21 @@
           </el-card>
 
           <!--                    关系列表展示卡片                     -->
-          <el-card shadow="never" style="margin: 2%">
+          <el-card shadow="never" style="margin-top: 2%; width: 600px;">
             <div slot="header" style="font-size: 15px; font-weight: bold">
               <i class="el-icon-document-copy"></i>
               领域表头
               <el-tooltip class="item" effect="dark" content="请添加关系，并选择表中字段中该头/尾实体的关键属性，完成关系映射" placement="top-start">
                 <i class="el-icon-info" style="margin-left: 5px;margin-top: 3px"></i>
               </el-tooltip>
+
+              <el-select v-model="valueMeta" value-key="fromId" collapse-tags placeholder="请选择实例">
+                <div class="el-input" style="width:90%;margin-left:5%;">
+                  <input type="text" placeholder="请输入" class="el-input__inner" v-model="dropDownValue" @keyup="dropDownSearch">
+                </div>
+                <el-option v-for="item in optionsMetaShow" :key="item.fromId" :label="item.fromLabel" :value="item"></el-option>
+              </el-select>
+              <el-button size="small" type="primary" @click="handleMapping">推荐匹配</el-button>
               <!-- <el-button v-if="!tableData[handleTableIndex].mappingSaved" style="float: right" type="warning"
                 icon="el-icon-plus" plain size="small" @click="addEdgeInstance">新增
               </el-button> -->
@@ -95,16 +103,9 @@
             </div>
 
             <div v-if="tableData[handleTableIndex].edgeInstances.length > 0">
-              <el-row :gutter="20" style="margin-bottom: 20px;">
-                <el-col :span="150">
-                  <el-select v-model="valueMeta" value-key="fromId" collapse-tags placeholder="请选择实例">
-                    <div class="el-input" style="width:90%;margin-left:5%;">
-                      <input type="text" placeholder="请输入" class="el-input__inner" v-model="dropDownValue" @keyup="dropDownSearch">
-                    </div>
-                    <el-option v-for="item in optionsMetaShow" :key="item.fromId" :label="item.fromLabel" :value="item"></el-option>
-                  </el-select>
-                </el-col>
-              </el-row>
+              <!-- <el-row :gutter="20" style="margin-bottom: 20px;">
+                <el-col :span="150"></el-col>
+              </el-row> -->
               <div v-for="(edge, index) in tableData[handleTableIndex].edgeInstances" :key="index" style="margin-top:5px">
                 <el-row :gutter="20">
                   
@@ -263,33 +264,35 @@ export default {
         conceptInstances: {
           length: 1
         },
-        edgeInstances: [{
-          edgeId: '1',
-          fromId: '1',
-          // toId: '1',
-          fromValue: 'fromValue1',
-          // toValue: 'toValue',
-          fromLabel: 'flable1',
-          // toLabel: 'tlable',
-        },
-        {
-          edgeId: '2',
-          fromId: '2',
-          // toId: '1',
-          fromValue: 'fromValue2',
-          // toValue: 'toValue',
-          fromLabel: 'flable2',
-          // toLabel: 'tlable',
-        },
-        {
-          edgeId: '3',
-          fromId: '3',
-          // toId: '1',
-          fromValue: null,
-          // toValue: 'toValue',
-          fromLabel: 'flable3',
-          // toLabel: 'tlable',
-        }],
+        edgeInstances: [
+        //   {
+        //   edgeId: '1',
+        //   fromId: '1',
+        //   // toId: '1',
+        //   fromValue: 'fromValue1',
+        //   // toValue: 'toValue',
+        //   fromLabel: 'flable1',
+        //   // toLabel: 'tlable',
+        // },
+        // {
+        //   edgeId: '2',
+        //   fromId: '2',
+        //   // toId: '1',
+        //   fromValue: 'fromValue2',
+        //   // toValue: 'toValue',
+        //   fromLabel: 'flable2',
+        //   // toLabel: 'tlable',
+        // },
+        // {
+        //   edgeId: '3',
+        //   fromId: '3',
+        //   // toId: '1',
+        //   fromValue: null, //这是要置为tableData.field的
+        //   // toValue: 'toValue',
+        //   fromLabel: 'flable3',
+        //   // toLabel: 'tlable',
+        // }
+      ],
         conceptInstances: {
           conceptId: '1',
           conceptName: 'name',
@@ -434,13 +437,13 @@ export default {
     }
   },
   created() {
-    this.get_head_list();
     this.get_area();
   },
 
   mounted() {
   },
   methods: {
+
     get_head_list(){
       var that = this;
       this.$http_wang({
@@ -486,6 +489,13 @@ export default {
           // this.resultList = data.results
         })
     },
+    selectChanged() {
+      this.get_head_list();
+    },
+
+    selectEdgeChange(){
+      this.addEdge(this.valueMeta[0].fromValue, 'fromValue')
+    },
 
     dropDownSearch () {
       // this.get_head_list();
@@ -497,6 +507,60 @@ export default {
     filterSearch (item) {
       if(this.dropDownValue == "") return false;
       return item.fromLabel.includes(this.dropDownValue);
+    },
+
+    async handleMapping() {
+      var ontology_value = {};
+      var that = this;
+      for(var item in this.areaOptions){
+        var res = await this.$http_wang({
+            url: "/head/",
+            method: "get",
+            params: {
+              "area": this.areaOptions[item],
+            }
+          })
+        console.log("表头")
+        console.log(res.data)
+        var li = new Array();
+        for(var a in res.data.results){
+          li.push(res.data.results[a].name)
+        }
+        ontology_value[this.areaOptions[item]] = li
+      }
+
+      var params = {
+            ontology: JSON.stringify(ontology_value),
+            tables: {
+              table1: JSON.stringify(this.tableData[0].fields),
+            },
+            field: that.datasetInfo.area,
+            isModified: 0,
+          }
+      this.$http_zyq({
+        url:"/getOneTabColToAttributes/",
+        method: "post",
+        data: params
+      }).then((res)=>{
+        console.log("ok!",res)
+        if(res.status == 200){
+          console.log("upload done")
+          console.log(res)
+          that.upload_data_df = res
+          // that.show_table_upload = true
+          // that.$router.go(0); //刷新
+          that.$notify({
+            title: '推荐匹配成功',
+            duration: 5000
+          });
+        } else{
+          that.$notify({
+            title: '推荐匹配失败',
+            message:  res.response,
+            duration: 5000
+          });
+        }
+      })
     },
 
     beforeUpload(file) {
@@ -555,24 +619,30 @@ export default {
       console.log(this.file)
       var params = new FormData()
       params.append('file', this.file)
-      params.append('name', 'default_' + this.datasetInfo.name)
-      params.append('task', 'default_' + this.datasetInfo.name)
+      params.append('name', this.datasetInfo.name)
+      params.append('task', this.datasetInfo.name)
       params.append('area', this.datasetInfo.area)
       params.append('short_description', this.datasetInfo.short_description)
       params.append('long_description', this.datasetInfo.long_description)
-      params.append('store_name', this.datasetInfo.store_name)
+
+      var store_name = {};
+      for(var item in that.tableData[0].edgeInstances){
+        store_name[that.tableData[0].edgeInstances[item].fromLabel] = that.tableData[0].edgeInstances[item].fromValue
+      }
+
+      params.append('store_name', JSON.stringify(store_name))
       params.append('process_code', "")
       params.append('father_name', "")
-      var time_series = -1;
-      if(that.datasetInfo.time_series != ""){
-        time_series = that.datasetInfo.time_series
-      }
-      params.append('time_series', time_series)
-      var id_col = -1;
-      if(that.datasetInfo.id_col != ""){
-        id_col = that.datasetInfo.id_col
-      }
-      params.append('id_col', id_col)
+      // var time_series = -1;
+      // if(that.datasetInfo.time_series != ""){
+      //   time_series = that.datasetInfo.time_series
+      // }
+      params.append('time_series', that.datasetInfo.time_series)
+      // var id_col = -1;
+      // if(that.datasetInfo.id_col != ""){
+      //   id_col = that.datasetInfo.id_col
+      // }
+      params.append('id_col', that.datasetInfo.id_col)
 
       this.$http_wang({
         url:"/predata/",

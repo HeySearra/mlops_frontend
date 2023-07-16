@@ -67,7 +67,7 @@ http_wang.interceptors.response.use(
 // )
 
 const http_zyq = axios.create({
-    baseURL: '/v1/',
+    baseURL: '/v1/newOntMapping/',
     timeout: 1000000,
     withCredentials: true
 })

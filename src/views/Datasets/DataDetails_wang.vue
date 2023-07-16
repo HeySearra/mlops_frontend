@@ -272,7 +272,7 @@ export default {
             duration: 5000
           });
           // todo: 刷新页面
-          that.$router.go(0)
+          that.$router.push('/datasets')
         } else {
           that.$notify({
             title: '删除失败',

@@ -94,7 +94,7 @@
         </div>
         <el-divider></el-divider>
       </div>
-      <el-pagination :page-size="10" layout="prev, pager, next, jumper" :total="this.count">
+      <el-pagination :page-size="10" layout="prev, pager, next, jumper" :total="this.count" @current-change="handleCurrentChange">
       </el-pagination>
     </div>
 
@@ -242,7 +242,16 @@ export default {
             done();
           })
           .catch(_ => {});
-    }
+    },
+
+    // handleSizeChange(val) {
+  	// 	this.query.pageSize = val
+  	// 	this.getCateList() // 重新请求数据
+  	// },
+  	handleCurrentChange(val) {
+  		// this.query.currentPage = val
+  		this.get_datasets_list(val)
+  	}
   }
 
 }

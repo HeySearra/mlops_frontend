@@ -13,7 +13,7 @@ module.exports = {
       "/api/": {
         target: "http://cc.qk0.cc:8001/",
         ws: true,
-        changOrigin: true, //允许跨域 
+        changeOrigin: true, //允许跨域 
         pathRewrite: {
           "^/api": "",
         },
@@ -22,7 +22,7 @@ module.exports = {
         // target: "http://162.105.88.214:4499/",
         target: "http://localhost:8000/",
         ws: true,
-        changOrigin: true, //允许跨域
+        changeOrigin: true, //允许跨域
         pathRewrite: {
           "^/wang": "",
         },
@@ -30,15 +30,15 @@ module.exports = {
       "/vis/": {
         target: "http://162.105.88.214:4499/",
         ws: true,
-        changOrigin: true, //允许跨域
+        changeOrigin: true, //允许跨域
         pathRewrite: {
           "^/vis": "",
         },
       },
-      "/v1/": {
+      "/v1/newOntMapping/": {
         target: "http://162.105.88.203:9136",
         ws: true,
-        changOrigin: true, //允许跨域
+        changeOrigin: true, //允许跨域
         pathRewrite: {
           "^/v1": "",
         },
