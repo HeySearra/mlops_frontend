@@ -125,10 +125,10 @@ export default {
         fileName:"Fine.csv",
         fileSize:"30MB",
         sliceStart:0,
-        sliceEnd:500
+        sliceEnd:100
       },
       targetSliceStart:0,
-      targetSliceEnd:500,
+      targetSliceEnd:100,
       sliceDialogVisible: false
     }
   },
@@ -183,7 +183,7 @@ export default {
         method: "get",
       }).then((res) => {
         console.log(res)
-        that.tableData.headers = res.data
+        that.tableData.headers = res.data['result']
       })
     },
     monitoring() { // 监听事件

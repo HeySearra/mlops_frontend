@@ -31,19 +31,12 @@
         </el-select>
       </el-form-item> -->
       <el-form-item label="文件:" prop="fileList">
-        <el-upload id="upload-view" v-model="datasetInfo.file" drag multiple ref="upload" 
-          accept=".csv, .xlsx" 
-          :before-upload="beforeUpload"
-          :on-preview="handlePreview"
-          :file-list="fileList" 
-          :on-remove="handleRemoveFile"
-          :on-success="handleUploadSuccess"
-          :on-progess="handleUploadProgess" 
-          :on-change="handleFileListChange" 
-          :data="datasetInfo"
-          action="/wang/predata/pre_upload/">
-          
-        <!-- :auto-upload="false"  -->
+        <el-upload id="upload-view" v-model="datasetInfo.file" drag multiple ref="upload" accept=".csv, .xlsx"
+          :before-upload="beforeUpload" :on-preview="handlePreview" :file-list="fileList" :on-remove="handleRemoveFile"
+          :on-success="handleUploadSuccess" :on-progess="handleUploadProgess" :on-change="handleFileListChange"
+          :data="datasetInfo" action="/wang/predata/pre_upload/">
+
+          <!-- :auto-upload="false"  -->
           <i class="el-icon-upload" id="upload-view" />
           <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
           <div class="el-upload__tip" slot="tip">只能上传csv（或excel）数据文件</div>
@@ -57,7 +50,8 @@
       <el-container style="height: 100%; border: 1px solid #eee">
 
         <el-main>
-          <el-card shadow="never" style="width: 600px; max-width: 600px; height: 200px; overflow: scroll; overflow-x:hidden">
+          <el-card shadow="never"
+            style="width: 600px; max-width: 600px; height: 200px; overflow: scroll; overflow-x:hidden">
             <div slot="header" style="font-size: 15px; font-weight: bold">
               <i class="el-icon-document-copy"></i>
               表中字段
@@ -90,68 +84,79 @@
 
               <el-select v-model="valueMeta" value-key="fromId" collapse-tags placeholder="请选择实例">
                 <div class="el-input" style="width:90%;margin-left:5%;">
-                  <input type="text" placeholder="请输入" class="el-input__inner" v-model="dropDownValue" @keyup="dropDownSearch">
+                  <input type="text" placeholder="请输入" class="el-input__inner" v-model="dropDownValue"
+                    @keyup="dropDownSearch">
                 </div>
-                <el-option v-for="item in optionsMetaShow" :key="item.fromId" :label="item.fromLabel" :value="item"></el-option>
+                <el-option v-for="item in optionsMetaShow" :key="item.fromId" :label="item.fromLabel"
+                  :value="item"></el-option>
               </el-select>
               <el-button size="small" type="primary" @click="handleMapping">推荐匹配</el-button>
-              <!-- <el-button v-if="!tableData[handleTableIndex].mappingSaved" style="float: right" type="warning"
+              <el-button v-if="!tableData[handleTableIndex].mappingSaved" style="float: right" type="warning"
                 icon="el-icon-plus" plain size="small" @click="addEdgeInstance">新增
-              </el-button> -->
+              </el-button>
               <!-- <el-button style="float: right" type="danger" v-if="!tableData[handleTableIndex].mappingSaved"
                 icon="el-icon-delete" circle plain size="mini" @click="deleteEdgeInstance(index)"></el-button> -->
+
             </div>
 
-            <div v-if="tableData[handleTableIndex].edgeInstances.length > 0">
+            <el-table v-if="tableData[handleTableIndex].edgeInstances.length > 0"
+              :data="tableData[handleTableIndex].edgeInstances" :row-style="{height: '40px'}" :cell-style="{padding: '1px'}">
               <!-- <el-row :gutter="20" style="margin-bottom: 20px;">
                 <el-col :span="150"></el-col>
               </el-row> -->
-              <div v-for="(edge, index) in tableData[handleTableIndex].edgeInstances" :key="index" style="margin-top:5px">
-                <el-row :gutter="20">
-                  
-                  <el-col :span="150">
-                    <el-form label-width="130px" label-position="left">
-                      <el-form-item class="el-form-item--small" :label="edge.fromLabel" style="width: 90%;">
-                        <div v-if="tableData[handleTableIndex].mappingSaved">
-                          <div v-if="edge.fromValue === -1">
-                            <el-tag style="margin-right: 10px" size="small"> 当前实例</el-tag>
-                          </div>
-                          <div v-else-if="edge.fromValue !== null">
-                            <el-tag style="margin-right: 10px" size="small"> {{ edge.fromValue }}
-                            </el-tag>
-                          </div>
-                        </div>
-                        <div v-else>
-                          <div v-if="edge.fromValue === -1">
-                            <el-tag style="margin-right: 10px" size="small"> 当前实例</el-tag>
-                          </div>
-                          <div v-else-if="edge.fromValue === null">
-                            <el-button @click="addEdge(index, 'fromValue')" icon="el-icon-plus" size="mini" plain>选择字段
-                            </el-button>
-                          </div>
-                          <div v-else>
-                            <el-tag style="margin-right: 10px" closable size="small" type="info"
-                              @close="deletePropMapping(index, 'fromValue', 0)"> {{ edge.fromValue }}
-                            </el-tag>
-                          </div>
-                        </div>
-                      </el-form-item>
-                    </el-form>
-                  </el-col>
-                  
-                </el-row>
+                <el-table-column label="待对齐特征" width="150" >
+                  <template slot-scope="scope">
+                    <el-popover trigger="hover" :content="scope.row.fromName">
+                      <div slot="reference" style="margin: 0; padding: 0">
+                        <!-- 问题列显示文本 即触发Popover显示的HTML元素 -->
+                        {{scope.row.fromLabel}}
+                    </div>
+                    </el-popover>
+                  </template>
+                </el-table-column>
 
-              </div>
-            </div>
+              <el-table-column>
+                <template slot-scope="scope">
+                  <div v-if="tableData[handleTableIndex].mappingSaved">
+                    <div v-if="scope.row.fromValue === -1">
+                      <el-tag style="margin-right: 10px" size="small"> 当前实例</el-tag>
+                    </div>
+                    <div v-else-if="scope.row.fromValue !== null">
+                      <el-tag style="margin-right: 10px" size="small"> {{ scope.row.fromValue }}
+                      </el-tag>
+                    </div>
+                  </div>
+                  <div v-else>
+                    <div v-if="scope.row.fromValue === -1">
+                      <el-tag style="margin-right: 10px" size="small"> 当前实例</el-tag>
+                    </div>
+                    <div v-else-if="scope.row.fromValue === null">
+                      <el-button @click="addEdge(scope.$index, 'fromValue')" icon="el-icon-plus" size="mini" plain>选择字段
+                      </el-button>
+                    </div>
+                    <div v-else>
+                      <el-tag style="margin-right: 10px" closable size="small" type="info"
+                        @close="deletePropMapping(scope.$index, 'fromValue', 0)"> {{ scope.row.fromValue }}
+                      </el-tag>
+                    </div>
+                  </div>
+                </template>
+              </el-table-column>
+              <el-table-column label="操作" width="100">
+                <template slot-scope="scope">
+                  <el-button type="text" @click="deleteEdgeInstance(scope.row, scope.$index)">删除</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
             <div v-else style="color: #909399; font-size: 12px; margin-left: 45%">
-              暂无关系
+              未选择领域或该领域下无特征
             </div>
           </el-card>
         </el-main>
       </el-container>
       <!--    新增关系实例对话框    -->
-      <el-dialog title="请选择新增的关系边" :visible.sync="dialogAddingEdgeVisible" append-to-body style="width: auto ">
-
+      <el-dialog title="新增系统特征" :visible.sync="dialogAddingEdgeVisible" append-to-body style="width: auto ">
+<!-- 
         <el-card shadow="never" style="margin: 2%">
 
           <div slot="header" style="font-size: 15px; font-weight: bold">
@@ -161,14 +166,29 @@
               {{ concept }}
             </span>
           </div>
-          <!--  本体模型交互图   -->
-          <div>
-            <network ref="interactGraph" style="height: 200px" :nodes="tableData[handleTableIndex].networkNodes"
-              :edges="tableData[handleTableIndex].networkEdges" :options="network.options"
-              :manipulation-options="network.options.manipulation" @click="selectEdge">
-            </network>
-          </div>
-        </el-card>
+
+        </el-card> -->
+
+        <div id="upload-frame">
+          <el-form ref="headUploadRef" :rules="rules" :model="headUpload" label-width="80px" size="mini">
+            <el-form-item label="领域" prop="area">
+              <el-select @change="selectChanged" v-model="headUpload.area" placeholder="请选择">
+                <el-option v-for="a in areaOptions" :key="a" :label="a" :value="a">
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="特征名" prop="name">
+              <el-input v-model="headUpload.name"></el-input>
+            </el-form-item>
+            <!-- <el-form-item label="类型" prop="type">
+              <el-select @change="selectChanged" v-model="headUpload.type" placeholder="请选择">
+                <el-option v-for="a in typeOption" :key="a" :label="a" :value="a">
+                </el-option>
+              </el-select>
+            </el-form-item> -->
+          </el-form>
+          <el-button size="small" type="primary" @click="handleHeadUpload">新增</el-button>
+        </div>
       </el-dialog>
 
 
@@ -179,18 +199,15 @@
 </template>
 
 <script>
-import Network from "vue2vis/src/components/Network";
 // 我们似乎需要上传时附带Cookie....
 export default {
-  components: {
-    Network
-  },
   data() {
     return {
       search: '',
       need_refresh: false,
       fileList: [],
       areaOptions: ["1"],
+      typeOption: ['String', 'Int', 'Float'],
       taskOptions: ["通用"],
       datasetInfo: {
         name: '',
@@ -203,21 +220,29 @@ export default {
         file: null,
         fileList: null,
       },
+      headUpload: {
+        area: '',
+        type: '',
+        name: '',
+      },
       rules: {
         name: [
-          { required: true, message: '请输入数据库名称', trigger: 'blur' },
+          { required: true, message: '请输入名称', trigger: 'blur' },
         ],
         area: [
-          {required: true, message: '请选择数据领域', trigger: 'blur' },
+          { required: true, message: '请选择领域', trigger: 'blur' },
         ],
         short_description: [
-          {required: true, message: '请填写数据简介', trigger: 'blur' },
+          { required: true, message: '请填写数据简介', trigger: 'blur' },
         ],
         long_description: [
-          {required: true, message: '请填写详细介绍', trigger: 'blur' },
+          { required: true, message: '请填写详细介绍', trigger: 'blur' },
         ],
         fileList: [
-          {required: true, message: '请上传文件', trigger: 'blur' }
+          { required: true, message: '请上传文件', trigger: 'blur' }
+        ],
+        type: [
+          { required: true, message: '请选择特征类型', trigger: 'blur' }
         ],
         // file: [
         //   {required: true, message: '请上传文件', trigger: 'blur' },
@@ -247,10 +272,6 @@ export default {
       conceptKeyProp: new Map,
 
       /*******  第二步：关系表与概念映射 数据定义 ******/
-      //新增、查看概念映射对话框
-      dialogAddConceptVisible: false,
-      dialogLookConceptVisible: false,
-      dialogDeleteTableVisible: false,
 
       // 当前新增所在行
       addRow: 0,
@@ -265,34 +286,34 @@ export default {
           length: 1
         },
         edgeInstances: [
-        //   {
-        //   edgeId: '1',
-        //   fromId: '1',
-        //   // toId: '1',
-        //   fromValue: 'fromValue1',
-        //   // toValue: 'toValue',
-        //   fromLabel: 'flable1',
-        //   // toLabel: 'tlable',
-        // },
-        // {
-        //   edgeId: '2',
-        //   fromId: '2',
-        //   // toId: '1',
-        //   fromValue: 'fromValue2',
-        //   // toValue: 'toValue',
-        //   fromLabel: 'flable2',
-        //   // toLabel: 'tlable',
-        // },
-        // {
-        //   edgeId: '3',
-        //   fromId: '3',
-        //   // toId: '1',
-        //   fromValue: null, //这是要置为tableData.field的
-        //   // toValue: 'toValue',
-        //   fromLabel: 'flable3',
-        //   // toLabel: 'tlable',
-        // }
-      ],
+          //   {
+          //   edgeId: '1',
+          //   fromId: '1',
+          //   // toId: '1',
+          //   fromValue: 'fromValue1',
+          //   // toValue: 'toValue',
+          //   fromLabel: 'flable1',
+          //   // toLabel: 'tlable',
+          // },
+          // {
+          //   edgeId: '2',
+          //   fromId: '2',
+          //   // toId: '1',
+          //   fromValue: 'fromValue2',
+          //   // toValue: 'toValue',
+          //   fromLabel: 'flable2',
+          //   // toLabel: 'tlable',
+          // },
+          // {
+          //   edgeId: '3',
+          //   fromId: '3',
+          //   // toId: '1',
+          //   fromValue: null, //这是要置为tableData.field的
+          //   // toValue: 'toValue',
+          //   fromLabel: 'flable3',
+          //   // toLabel: 'tlable',
+          // }
+        ],
         conceptInstances: {
           conceptId: '1',
           conceptName: 'name',
@@ -301,19 +322,6 @@ export default {
             2: 2,
           },
         },
-        networkNodes: [{
-          id: 1,
-          label: '1'
-        }, {
-          id: 2,
-          label: '2'
-        }],
-        networkEdges: [{
-          id: 1,
-          label: '1',
-          fromId: 1,
-          toId: 2,
-        }]
       }],
 
 
@@ -329,82 +337,6 @@ export default {
       nodes: [],
       edges: [],
 
-      // 交互图配置项 vis-network configuration：
-      network: {
-        data: {},
-        options: {
-          nodes: {
-            physics: true,
-            borderWidth: 0,
-            shape: 'dot',
-            size: 80,
-            font: {
-              face: 'PingFang SC',
-              size: 50
-            },
-            shadow: {
-              enabled: false,
-              color: 'rgba(0,0,0,0.5)',
-              size: 16,
-              x: 6,
-              y: 6
-            }
-          },
-          edges: {
-            physics: true,
-            arrows: {
-              to: {
-                enabled: true,
-                type: "arrow"
-              }
-            },
-            color: {
-              color: '#bcbcbc',
-              highlight: '#bcbcbc',
-              hover: '#bcbcbc',
-              inherit: false,
-              opacity: 1
-            },
-            font: {
-              size: 50,
-              face: "tahoma",
-              strokeWidth: 1
-            },
-            smooth: {
-              enabled: true,
-              type: 'dynamic',
-              forceDirection: "none",
-              roundness: 0.5
-            },
-          },
-          interaction: {
-            hover: true,
-            tooltipDelay: 150,
-            hideEdgesOnDrag: false,
-            hideEdgesOnZoom: false,
-            multiselect: false,
-            dragNodes: true,
-          },
-          physics: {
-            enabled: true,
-            barnesHut: {
-              gravitationalConstant: -50000,
-              centralGravity: 0.1,
-              springLength: 400,
-              springConstant: 0.03,
-              damping: 0.09,
-              avoidOverlap: 0
-            }
-          },
-          configure: {
-            enabled: false
-          },
-          manipulation: {
-            enabled: false
-          }
-        }
-      },
-
       // 定义当前正在做的属性映射，结构为 handlePropInfo = 'concept_index'+'_'+'prop'，用来存储当前点击的"概念下标_属性名"
       // 每次完成一次映射时更新、handleTableIndex改变时更新
       handlePropInfo: '',
@@ -412,19 +344,6 @@ export default {
 
       // 添加关系边对话框是否显示
       dialogAddingEdgeVisible: false,
-
-      // 是否正在读取数据
-      getTableContentFinish: false,
-      tableContentSize: [],
-      tableContentNameList: [],
-
-      // 导入进程提示
-      tip: '',
-      Loading: false,
-      ontMappingImportProgressTimer: '',
-
-      generateFinish: false,
-      generateFailed: false,
 
       // 导入数量结果
       instanceNum: 0,
@@ -444,106 +363,106 @@ export default {
   },
   methods: {
 
-    get_head_list(){
+    get_head_list() {
       var that = this;
       this.$http_wang({
-          url: "/head/",
-          method: "get",
-          params: {
-            "area": that.datasetInfo.area,
-          }
-        }).then((res) => {
-          let data = res.data
-          console.log("表头")
-          console.log(res.data)
-          that.tableData[0].edgeInstances = []
-          for(let item in res.data.results){
-            that.tableData[0].edgeInstances.push({
-              edgeId: res.data.results[item].id,
-              fromId: res.data.results[item].id,
-              // toId: '1',
-              fromValue: null,
-              // toValue: 'toValue',
-              fromLabel: res.data.results[item].name,
-              fromName: res.data.results[item].description,
-            })
-          }
-          // this.count = data.count
-          // this.resultList = data.results
-        })
+        url: "/head/",
+        method: "get",
+        params: {
+          "area": that.datasetInfo.area,
+        }
+      }).then((res) => {
+        let data = res.data
+        console.log("表头")
+        console.log(res.data)
+        that.tableData[0].edgeInstances = []
+        for (let item in res.data.results) {
+          that.tableData[0].edgeInstances.push({
+            edgeId: res.data.results[item].id,
+            fromId: res.data.results[item].id,
+            // toId: '1',
+            fromValue: null,
+            // toValue: 'toValue',
+            fromLabel: res.data.results[item].name,
+            fromName: res.data.results[item].description,
+          })
+        }
+        // this.count = data.count
+        // this.resultList = data.results
+      })
     },
 
-    get_area(){
+    get_area() {
       var that = this;
       this.$http_wang({
-          url: "/head/get_area/",
-          method: "get",
-          params: {
-          }
-        }).then((res) => {
-          let data = res.data
-          console.log("area")
-          console.log(res.data)
-          that.areaOptions = res.data.areas
-          // this.count = data.count
-          // this.resultList = data.results
-        })
+        url: "/head/get_area/",
+        method: "get",
+        params: {
+        }
+      }).then((res) => {
+        let data = res.data
+        console.log("area")
+        console.log(res.data)
+        that.areaOptions = res.data.areas
+        // this.count = data.count
+        // this.resultList = data.results
+      })
     },
     selectChanged() {
       this.get_head_list();
     },
 
-    selectEdgeChange(){
+    selectEdgeChange() {
       this.addEdge(this.valueMeta[0].fromValue, 'fromValue')
     },
 
-    dropDownSearch () {
+    dropDownSearch() {
       // this.get_head_list();
       var that = this;
       that.valueMeta = [];
       that.optionsMetaShow = that.tableData[0].edgeInstances.filter(that.filterSearch);
     },
 
-    filterSearch (item) {
-      if(this.dropDownValue == "") return false;
+    filterSearch(item) {
+      if (this.dropDownValue == "") return false;
       return item.fromLabel.includes(this.dropDownValue);
     },
 
     async handleMapping() {
       var ontology_value = {};
       var that = this;
-      for(var item in this.areaOptions){
+      for (var item in this.areaOptions) {
         var res = await this.$http_wang({
-            url: "/head/",
-            method: "get",
-            params: {
-              "area": this.areaOptions[item],
-            }
-          })
+          url: "/head/",
+          method: "get",
+          params: {
+            "area": this.areaOptions[item],
+          }
+        })
         console.log("表头")
         console.log(res.data)
         var li = new Array();
-        for(var a in res.data.results){
+        for (var a in res.data.results) {
           li.push(res.data.results[a].name)
         }
         ontology_value[this.areaOptions[item]] = li
       }
 
       var params = {
-            ontology: JSON.stringify(ontology_value),
-            tables: {
-              table1: JSON.stringify(this.tableData[0].fields),
-            },
-            field: that.datasetInfo.area,
-            isModified: 0,
-          }
+        ontology: JSON.stringify(ontology_value),
+        tables: {
+          table1: JSON.stringify(this.tableData[0].fields),
+        },
+        field: that.datasetInfo.area,
+        isModified: 0,
+      }
       this.$http_zyq({
-        url:"/getOneTabColToAttributes/",
+        url: "/getOneTabColToAttributes/",
         method: "post",
         data: params
-      }).then((res)=>{
-        console.log("ok!",res)
-        if(res.status == 200){
+      }).then((res) => {
+        console.log("ok!", res)
+        if (res.status == 200) {
           console.log("upload done")
           console.log(res)
           that.upload_data_df = res
@@ -553,10 +472,10 @@ export default {
             title: '推荐匹配成功',
             duration: 5000
           });
-        } else{
+        } else {
           that.$notify({
             title: '推荐匹配失败',
-            message:  res.response,
+            message: res.response,
             duration: 5000
           });
         }
@@ -599,7 +518,7 @@ export default {
 
     handleUpload() {
       // this.$refs.upload.submit();
-      
+
       var that = this;
       that.$refs["datasetInfoRef"].validate((valid) => {
         if (!valid) {
@@ -626,7 +545,7 @@ export default {
       params.append('long_description', this.datasetInfo.long_description)
 
       var store_name = {};
-      for(var item in that.tableData[0].edgeInstances){
+      for (var item in that.tableData[0].edgeInstances) {
         store_name[that.tableData[0].edgeInstances[item].fromLabel] = that.tableData[0].edgeInstances[item].fromValue
       }
 
@@ -645,12 +564,12 @@ export default {
       params.append('id_col', that.datasetInfo.id_col)
 
       this.$http_wang({
-        url:"/predata/",
+        url: "/predata/",
         method: "post",
         data: params
-      }).then((res)=>{
-        console.log("ok!",res)
-        if(res.status == 200){
+      }).then((res) => {
+        console.log("ok!", res)
+        if (res.status == 200) {
           console.log("upload done")
           console.log(res)
           that.upload_data_df = res
@@ -661,10 +580,10 @@ export default {
             duration: 5000
           });
           that.$router.go(0)
-        } else{
+        } else {
           that.$notify({
             title: '创建失败',
-            message:  res.response,
+            message: res.response,
             duration: 5000
           });
         }
@@ -734,38 +653,31 @@ export default {
       return true;
     },
 
+    async handleHeadUpload() {
+      var that = this;
+      that.$refs["headUploadRef"].validate((valid) => {
+        if (!valid) {
+          // that.alert_msg.warning("请正确输入表单内容");
+          this.$message.warning('请正确输入表单内容')
+          return false;
+        }
+      })
+      var params = new FormData()
+      params.append('name', that.file)
+      params.append('area', that.file)
+      params.append('description', that.file)
+      params.append('type', that.file)
 
-    //"上一步"按钮界面切换和变量更新
-    lastStep() {
-      switch (this.active_step) {
-        case 1:
-          this.active_step--;
-          break;
-        case 2:
-          this.active_step--;
-          break;
-        case 3:
-          this.active_step--;
-          break;
-      }
+      var res = await that.$http_wang({
+        url: "/predata/",
+        method: "post",
+        data: params
+      })
+      console.log(res.data)
+      this.dialogAddingEdgeVisible = false
     },
 
     /*******  第二步：关系表与概念映射 方法定义 ******/
-    //增加新的概念映射
-    addConcept() {
-      //对已选择的概念进行限制
-      if (this.tableData[this.addRow].concepts.indexOf(this.newConcept) !== -1) {
-        this.$message.error('错了哦，这个概念已经映射过啦');
-      } else {
-        // Vue不能检测利用数组索引直接修改一个数组项，必须用$set方法来进行修改
-        let tmp = this.tableData[this.addRow]
-        tmp.concepts.push(this.newConcept)
-        tmp.conceptMapped = true
-        this.$set(this.tableData, this.addRow, tmp)
-        //关闭dialog
-        this.dialogAddConceptVisible = false;
-      }
-    },
 
     // 删除概念映射标签
     deleteConcept(index, row) {
@@ -796,40 +708,8 @@ export default {
       });
     },
 
-    //判断是否所有表都已映射
-    checkTableMappingStatus() {
-      for (let item in this.tableData)
-        if (this.tableData[item].conceptMapped === false)
-          return false
-      return true
-    },
-
-    // 进入下一步
-    submitTableMapping() {
-      if (!this.checkTableMappingStatus()) {
-        this.$message.error('请完成所有表格映射！')
-      } else {
-        this.constructNetworkData()
-        this.active_step++
-      }
-    },
-
     /*******  第三步：关系表字段与谓词映射 方法定义 ******/
 
-    // 对实例卡片的el-table进行分列操作，mapProps为待分割的map，col为当前列数[1,3]
-    tableSlice(mapProps, col) {
-      // 把size平均分为3份，如果col==1，则将%多的部分分到前两列
-      let n = Math.floor(mapProps.size / 3)
-      let a = mapProps.size % 3
-      let num = [n, n, n]
-      if (a > 0) num[0] += 1
-      if (a === 2) num[1] += 1
-      // 将mapProps转为数组
-      let list = [...mapProps]
-      if (col === 1) return new Map(list.slice(0, num[0]))
-      if (col === 2) return new Map(list.slice(num[0], num[0] + num[1]))
-      if (col === 3) return new Map(list.slice(num[0] + num[1]))
-    },
 
     // 根据映射到的概念，为每张表添加新实例
     addInstances() {
@@ -886,42 +766,9 @@ export default {
       });
     },
 
-    // 新增关系实例
     addEdgeInstance() {
       // 弹出交互图对话框
       this.dialogAddingEdgeVisible = true
-    },
-
-    // 构造每张表的交互图节点集和边集
-    constructNetworkData() {
-      for (let i in this.tableData) {
-        let nodeSet = new Set()
-        let edgeSet = new Set()
-
-        // 先清空之前的数据
-        this.tableData[i].networkNodes = []
-        this.tableData[i].networkEdges = []
-
-        // 把映射到的概念的nodes和edges加进集合
-        for (let c in this.tableData[i].concepts) {
-          let concept_name = this.tableData[i].concepts[c]
-          let concept_id = this.conceptName.findIndex((i => i === concept_name))
-          for (let n in this.conceptData[concept_id].nodes) {
-            let node = this.conceptData[concept_id].nodes[n]
-            if (!nodeSet.has(node.id)) {
-              this.tableData[i].networkNodes.push(node)
-              nodeSet.add(node.id)
-            }
-          }
-          for (let e in this.conceptData[concept_id].edges) {
-            let edge = this.conceptData[concept_id].edges[e]
-            if (!edgeSet.has(edge.id)) {
-              this.tableData[i].networkEdges.push(edge)
-              edgeSet.add(edge.id)
-            }
-          }
-        }
-      }
     },
 
     // 交互图选择边
@@ -984,15 +831,24 @@ export default {
     },
 
     // 删除所选关系实例
-    deleteEdgeInstance(instance_index) {
+    deleteEdgeInstance(item, instance_index) {
       this.$confirm('是否删除所选实例?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning',
         center: true
-      }).then(() => {
-        let table = this.tableData[this.handleTableIndex]
+      }).then(async () => {
+        var res = await this.$http_wang({
+          url: "/head/" + item.edgeId + "/",
+          method: "delete",
+          // params: {
+          //   "id": item.edgeId,
+          // }
+        })
+        console.log(res.data.message)
+        let table = this.tableData[0]
         let edge_instance = table.edgeInstances[instance_index]
+        console.log(item)
         // 把头尾映射值归位
         let from_value = edge_instance.fromValue
         let to_value = edge_instance.toValue
@@ -1000,21 +856,14 @@ export default {
         if (to_value !== -1 && to_value !== null) table.fields.push(to_value)
         // 删除实例
         table.edgeInstances.splice(instance_index, 1)
+
         this.$message({
           type: 'success',
-          message: '清空成功!'
+          message: '删除成功!'
         });
       }).catch(() => {
-        this.$message.error('清空失败')
+        this.$message.error('删除失败')
       });
-    },
-
-    // 菜单栏数据表menu，参数为当前选中菜单项的index
-    tableMenuSelect(key, keyPath) {
-      // keyPath参数必须使用，数组类型，第一项为menu选择的index
-      this.handleTableIndex = keyPath[0]
-      //清空handlePropInfo
-      this.handlePropInfo = ''
     },
 
     // 选择属性时，对概念-属性信息进行记录
@@ -1201,119 +1050,8 @@ export default {
       this.tableData[this.handleTableIndex].mappingSaved = true
     },
 
-    // 修改本表映射
-    changeMappingResult() {
-      this.tableData[this.handleTableIndex].mappingSaved = false
-    },
 
-    /*******  第四步：提交映射，进入实例生成阶段 ******/
-    allMappingSaved() {
-      for (let i in this.tableData)
-        if (!this.tableData[i].mappingSaved) return false
-      return true
-    },
 
-    // 提交数据并生成实例
-    generateInstances() {
-      // 判断是否已保存映射
-      if (!this.allMappingSaved()) {
-        this.$message.error("请先保存每张表的映射！")
-      } else {
-        // 先写生成实例的数据吧！！
-        // 以实例列表的形式生成，表项为实例对象，包括：{tableName, conceptId, conceptName, mapProps}
-        let result = []
-        for (let i in this.tableData) {
-          let table = this.tableData[i]
-          let instance = table.conceptInstances[0]
-          // map需要先转为json再传，否则后台接收为空
-          let map_json = Object.create(null);
-          for (let [k, v] of instance.mapProps) map_json[k] = v
-
-          let result_item = {
-            tableName: table.name,
-            conceptId: instance.conceptId,
-            conceptName: instance.conceptName,
-            mapProps: map_json,
-            edgeInstances: []
-          }
-
-          for (let j in table.edgeInstances) {
-            let edge = table.edgeInstances[j]
-            let ins = {
-              edgeId: edge.edgeId,
-              fromId: edge.fromId,
-              toId: edge.toId,
-              fromValue: edge.fromValue,
-              toValue: edge.toValue
-            }
-            result_item.edgeInstances.push(ins)
-          }
-          // 将 result_item 加入 result 列表
-          result.push(result_item)
-        }
-        console.log(result)
-        _.postData('/i3city-evo/v1/newOntMapping/postMappingResult', result, res => {
-          if (res.data) {
-            this.active_step++;
-            // 先读表，再生成实例
-            this.Loading = true
-            this.tip = "读取表文件中..."
-            _.get('/i3city-evo/v1/newOntMapping/getTableContent', {}, res => {
-              // 展示读表结果
-              this.getTableContentFinish = true
-              this.Loading = false
-              for (let i in res.data) {
-                let name = res.data[i].split("+")[0]
-                let size = res.data[i].split("+")[1]
-                this.tableContentNameList.push(name)
-                this.tableContentSize.push(size)
-              }
-              // 生成实例
-              this.Loading = true
-              _.get('/i3city-evo/v1/newOntMapping/generateInstances', {}, res => {
-                this.instanceNum = res.data[0];
-                this.edgeNum = res.data[1];
-                this.generateFinish = true;
-              }, () => {
-                this.$message.error('实例生成失败')
-                this.generateFailed = true
-              })
-
-              // 定时查询导入进程，通过element-loading-text显示出来
-              // this.ontMappingImportProgressTimer = setInterval(function(){
-              //   _.get('/i3city-evo/v1/newOntMapping/checkGenerateProgress', {}, res => {
-              //     if(res.data.length === 1) this.tip = res.data // [tip]
-              //     else { // 导入完成
-              //       clearInterval(this.ontMappingImportProgressTimer)
-              //       this.Loading = false
-              //     }
-              //   })
-              // }, 3000)
-            })
-          }
-        })
-      }
-    },
-
-    finishAndReturn() {
-      // 清空导入结果记录变量
-      this.getTableContentFinish = false
-      this.tableContentSize = []
-      this.tableContentNameList = []
-      this.generateFinish = false
-      this.generateFailed = false
-      this.instanceNum = 0
-      this.edgeNum = 0
-      // 清空所有数据变量
-      this.tableData = []
-      this.conceptData = []
-      this.conceptName = []
-      this.addRow = 0
-      this.handleTableIndex = 0
-
-      // 回到第一页
-      this.active_step = 0
-    }
   }
 }
 
