@@ -2,9 +2,15 @@
   <div class="container">
     <el-form>
       <el-form-item label="选择数据集">
-        <el-select v-model="cur_dataset" placeholder="选择数据集" @change="getDatasetId($event)">
+        <el-select v-model="cur_dataset_id" placeholder="选择数据集" @change="getDatasetId($event)">
           <el-option v-for="item in datasetList" :value="item.id" :key="item.id"
                       :label="item.name"></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="选择子数据集">
+        <el-select v-model="dataset_id" placeholder="选择子数据集" @change="getChildDatasetId($event)">
+          <el-option v-for="item in childDatasetList" :value="item.children_name" :key="item.children_id"
+                      :label="item.children_name"></el-option>
         </el-select>
       </el-form-item>
     </el-form>
@@ -110,7 +116,7 @@
       :visible.sync="filterVisible"
       width="30%"
       :before-close="handleClose">
-      <span>请输入过滤信息，格式为[字段名]=***，如pid=35</span>
+      <span>请输入过滤信息，格式为[字段名]==***，如pdid==98</span>
       <el-input v-model="filterString" placeholder="请输入内容"></el-input>
       <span slot="footer" class="dialog-footer">
         <el-button @click="filterVisible = false">取 消</el-button>
@@ -190,24 +196,12 @@ export default {
   data() {
     return {
       input: '',
-      cur_dataset: this.$route.query.param,
-      cur_process: '',
+      cur_dataset_id: this.$route.query.param,
+      cur_dataset_name: "",
       cur_model: '',
       datasetList: '',
       dataset_id: '',
-      processList: [
-        {
-          process_id: "process_12321",
-          process_name: "补全"
-        },
-        {
-          process_id: "process_12322",
-          process_name: "归一化"
-        },
-      ],
-      operations: [ "operation1",
-        "operation2",
-        "operation3"],
+      childDatasetList: [],
       staticInfo: [],
       staticMultipleSelection: [],
       limitNum: 2,
@@ -219,7 +213,7 @@ export default {
           id: "line",
         },
         {
-          name: "柱状图",
+          name: "频次分布直方图",
           id: "bar",
         }
       ],
@@ -276,14 +270,14 @@ export default {
 
   methods: {
     getDatasetList() {
-      console.log(this.cur_dataset);
+      // console.log(this.cur_dataset);
       this.$http_vis({
         url: "/predata/?list=1",
         method: "get",
       }).then((res) => {
           let data = res.data.results
           this.datasetList = data
-          console.log(this.datasetList);
+          // console.log(this.datasetList);
       })
     },
     getModelList() {
@@ -299,6 +293,36 @@ export default {
         })
     },
     getDatasetId(val){
+      let url = "/predata/" + this.cur_dataset_id + "/";
+      this.$http_vis({
+        url: url,
+        method: "get",
+        // params: {
+        //   id: this.cur_dataset
+        // }
+      }).then((res) => {
+        let data = res.data;
+        this.childDatasetList = [];
+        this.childDatasetList.push({
+          children_id: this.cur_dataset_id,
+          children_name: data.name
+        })
+        // console.log(data);
+        // this.childDatasetList = data.children;
+        for (let i in data.children) {
+          let childItem = {
+            children_id: data.children[i].children_id[0],
+            children_name: data.children[i].children_name[0]
+          }
+          this.childDatasetList.push(childItem);
+        }
+        // console.log(this.childDatasetList);
+      })
+      // console.log(val);
+      // this.dataset_id = val;
+      // this.getProcess(val);
+    },
+    getChildDatasetId(val) {
       console.log(val);
       this.getProcess(val);
     },
@@ -306,9 +330,12 @@ export default {
       this.$http_vis({
           url: "/ana/sa/",
           method: "post",
+          data: {
+            dataset_id: this.dataset_id
+          }
         }).then((res) => {
           let data = res.data.data;
-          console.log(data.metric);
+          console.log(data);
           this.staticInfo = [];
           for (var i=0; i<data.feature_name.length; i++) {
             let item = {feature_name: data.feature_name[i], min: data.metric.min[i], max:data.metric.max[i], mean:data.metric.mean[i], std:data.metric.std[i],
