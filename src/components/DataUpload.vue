@@ -45,150 +45,142 @@
     </el-form>
 
     <!--      第三步：关系表与谓词映射        -->
-      <el-container style="height: 100%; border: 1px solid #eee">
+    <el-container style="height: 100%; border: 1px solid #eee">
 
-        <el-main>
-          <el-card shadow="never"
-            style="width: 600px; max-width: 600px; height: 200px; overflow: scroll; overflow-x:hidden">
-            <div slot="header" style="font-size: 15px; font-weight: bold">
-              <i class="el-icon-document-copy"></i>
-              表中字段
-            </div>
-            <div v-if="show_head_upload">
-              <div style="display:inline;margin-right:10px; height: 100%"
-                v-for="(item, index) in tableData[handleTableIndex].fields" :key="index">
-                <!--          引入推荐           -->
-                <el-button v-if="isFieldRecommend(item)" type="warning" plain size="mini" style="margin-bottom: 8px"
-                  @click="selectField(index)">{{ item }}
-                </el-button>
-                <el-button v-else type="info" plain size="mini" style="margin-bottom: 8px" @click="selectField(index)">{{
-                  item }}
-                </el-button>
-              </div>
-            </div>
-            <div v-else>
-              暂未上传用户文件
-            </div>
-          </el-card>
-
-          <!--                    关系列表展示卡片                     -->
-          <el-card shadow="never" style="margin-top: 2%; width: 600px;">
-            <div slot="header" style="font-size: 15px; font-weight: bold">
-              <i class="el-icon-document-copy"></i>
-              领域表头
-              <el-tooltip class="item" effect="dark" content="请添加关系，并选择表中字段中该头/尾实体的关键属性，完成关系映射" placement="top-start">
-                <i class="el-icon-info" style="margin-left: 5px;margin-top: 3px"></i>
-              </el-tooltip>
-
-              <el-select v-model="valueMeta" value-key="fromId" collapse-tags placeholder="请选择实例">
-                <div class="el-input" style="width:90%;margin-left:5%;">
-                  <input type="text" placeholder="请输入" class="el-input__inner" v-model="dropDownValue"
-                    @keyup="dropDownSearch">
-                </div>
-                <el-option v-for="item in optionsMetaShow" :key="item.fromId" :label="item.fromLabel"
-                  :value="item"></el-option>
-              </el-select>
-              <el-button size="small" type="primary" @click="handleMapping">推荐匹配</el-button>
-              <el-button v-if="!tableData[handleTableIndex].mappingSaved" style="float: right" type="warning"
-                icon="el-icon-plus" plain size="small" @click="addEdgeInstance">新增
-              </el-button>
-              <!-- <el-button style="float: right" type="danger" v-if="!tableData[handleTableIndex].mappingSaved"
-                icon="el-icon-delete" circle plain size="mini" @click="deleteEdgeInstance(index)"></el-button> -->
-
-            </div>
-
-            <el-table v-if="tableData[handleTableIndex].edgeInstances.length > 0"
-              :data="tableData[handleTableIndex].edgeInstances" :row-style="{height: '40px'}" :cell-style="{padding: '1px'}" style="overflow: scroll; overflow-x:hidden; height: 500px;">
-              <!-- <el-row :gutter="20" style="margin-bottom: 20px;">
-                <el-col :span="150"></el-col>
-              </el-row> -->
-                <el-table-column label="待对齐特征" width="150" >
-                  <template slot-scope="scope">
-                    <el-popover trigger="hover" :content="scope.row.fromName">
-                      <div slot="reference" style="margin: 0; padding: 0">
-                        <!-- 问题列显示文本 即触发Popover显示的HTML元素 -->
-                        {{scope.row.fromLabel}}
-                    </div>
-                    </el-popover>
-                  </template>
-                </el-table-column>
-
-              <el-table-column>
-                <template slot-scope="scope">
-                  <div v-if="tableData[handleTableIndex].mappingSaved">
-                    <div v-if="scope.row.fromValue === -1">
-                      <el-tag style="margin-right: 10px" size="small"> 当前实例</el-tag>
-                    </div>
-                    <div v-else-if="scope.row.fromValue !== null">
-                      <el-tag style="margin-right: 10px" size="small"> {{ scope.row.fromValue }}
-                      </el-tag>
-                    </div>
-                  </div>
-                  <div v-else>
-                    <div v-if="scope.row.fromValue === -1">
-                      <el-tag style="margin-right: 10px" size="small"> 当前实例</el-tag>
-                    </div>
-                    <div v-else-if="scope.row.fromValue === null">
-                      <el-button @click="addEdge(scope.$index, 'fromValue')" icon="el-icon-plus" size="mini" plain>选择字段
-                      </el-button>
-                    </div>
-                    <div v-else>
-                      <el-tag style="margin-right: 10px" closable size="small" type="info"
-                        @close="deletePropMapping(scope.$index, 'fromValue', 0)"> {{ scope.row.fromValue }}
-                      </el-tag>
-                    </div>
-                  </div>
-                </template>
-              </el-table-column>
-              <el-table-column label="操作" width="100">
-                <template slot-scope="scope">
-                  <el-button type="text" @click="deleteEdgeInstance(scope.row, scope.$index)">删除</el-button>
-                </template>
-              </el-table-column>
-            </el-table>
-            <div v-else style="color: #909399; font-size: 12px; margin-left: 45%">
-              未选择领域或该领域下无特征
-            </div>
-          </el-card>
-        </el-main>
-      </el-container>
-      <!--    新增关系实例对话框    -->
-      <el-dialog title="新增系统特征" :visible.sync="dialogAddingEdgeVisible" append-to-body style="width: auto ">
-<!-- 
-        <el-card shadow="never" style="margin: 2%">
-
+      <el-main>
+        <el-card shadow="never"
+          style="width: 600px; max-width: 600px; height: 200px; overflow: scroll; overflow-x:hidden">
           <div slot="header" style="font-size: 15px; font-weight: bold">
             <i class="el-icon-document-copy"></i>
-            概念：
-            <span style="display:inline" v-for="(concept, index) in tableData[handleTableIndex].concepts" :key="index">
-              {{ concept }}
-            </span>
+            用户表中字段
+          </div>
+          <div v-if="show_head_upload">
+            <div style="display:inline;margin-right:10px; height: 100%"
+              v-for="(item, index) in tableData[handleTableIndex].fields" :key="index">
+              <!--          引入推荐           -->
+              <el-button v-if="isFieldRecommend(item)" type="warning" plain size="mini" style="margin-bottom: 8px"
+                @click="selectField(index)">{{ item }}
+              </el-button>
+              <el-button v-else type="info" plain size="mini" style="margin-bottom: 8px" @click="selectField(index)">{{
+                item }}
+              </el-button>
+            </div>
+          </div>
+          <div v-else>
+            暂未上传用户文件
+          </div>
+        </el-card>
+
+        <!--                    关系列表展示卡片                     -->
+        <el-card shadow="never" style="margin-top: 2%; width: 600px;">
+          <div slot="header" style="font-size: 15px; font-weight: bold">
+            <i class="el-icon-document-copy"></i>
+            领域表头
+            <el-tooltip class="item" effect="dark" content="请添加关系，并选择表中字段中该头/尾实体的关键属性，完成关系映射" placement="top-start">
+              <i class="el-icon-info" style="margin-left: 5px;margin-top: 3px"></i>
+            </el-tooltip>
+
+            <el-select v-model="valueMeta" value-key="fromId" collapse-tags placeholder="请选择实例">
+              <div class="el-input" style="width:90%;margin-left:5%;">
+                <input type="text" placeholder="请输入" class="el-input__inner" v-model="dropDownValue"
+                  @keyup="dropDownSearch">
+              </div>
+              <el-option v-for="item in optionsMetaShow" :key="item.fromId" :label="item.fromLabel"
+                :value="item"></el-option>
+            </el-select>
+            <el-button size="small" type="primary" @click="handleMapping">推荐匹配</el-button>
+            <el-button v-if="!tableData[handleTableIndex].mappingSaved" style="float: right" type="warning"
+              icon="el-icon-plus" plain size="small" @click="addEdgeInstance">新增
+            </el-button>
+            <!-- <el-button style="float: right" type="danger" v-if="!tableData[handleTableIndex].mappingSaved"
+                icon="el-icon-delete" circle plain size="mini" @click="deleteEdgeInstance(index)"></el-button> -->
+
           </div>
 
-        </el-card> -->
+          <el-table v-if="tableData[handleTableIndex].edgeInstances.length > 0"
+            :data="tableData[handleTableIndex].edgeInstances" :row-style="{ height: '40px' }"
+            :cell-style="{ padding: '1px' }" style="overflow: scroll; overflow-x:hidden; height: 500px;">
+            <!-- <el-row :gutter="20" style="margin-bottom: 20px;">
+                <el-col :span="150"></el-col>
+              </el-row> -->
+            <el-table-column label="待对齐特征" width="150">
+              <template slot-scope="scope">
+                <el-popover trigger="hover" :content="scope.row.fromName">
+                  <div slot="reference" style="margin: 0; padding: 0">
+                    <!-- 问题列显示文本 即触发Popover显示的HTML元素 -->
+                    {{ scope.row.fromLabel }}
+                  </div>
+                </el-popover>
+              </template>
+            </el-table-column>
 
-        <div id="upload-frame">
-          <el-form ref="headUploadRef" :rules="rules" :model="headUpload" label-width="80px" size="mini">
-            <el-form-item label="领域" prop="area">
-              <el-select @change="selectChanged" v-model="headUpload.area" placeholder="请选择">
-                <el-option v-for="a in areaOptions" :key="a" :label="a" :value="a">
-                </el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item label="特征名" prop="name">
-              <el-input v-model="headUpload.name"></el-input>
-            </el-form-item>
-            <!-- <el-form-item label="类型" prop="type">
+            <el-table-column>
+              <template slot-scope="scope">
+                <div v-if="tableData[handleTableIndex].mappingSaved">
+                  <div v-if="scope.row.fromValue === -1">
+                    <el-tag style="margin-right: 10px" size="small"> 当前实例</el-tag>
+                  </div>
+                  <div v-else-if="scope.row.fromValue !== null">
+                    <el-tag style="margin-right: 10px" size="small"> {{ scope.row.fromValue }}
+                    </el-tag>
+                  </div>
+                </div>
+                <div v-else>
+                  <div v-if="scope.row.fromValue === -1">
+                    <el-tag style="margin-right: 10px" size="small"> 当前实例</el-tag>
+                  </div>
+                  <div v-else-if="scope.row.fromValue === null">
+                    <el-button @click="addEdge(scope.$index, 'fromValue')" icon="el-icon-plus" size="mini" plain>选择字段
+                    </el-button>
+                  </div>
+                  <div v-else>
+                    <el-tag style="margin-right: 10px" closable size="small" type="info"
+                      @close="deletePropMapping(scope.$index, 'fromValue', 0)"> {{ scope.row.fromValue }}
+                    </el-tag>
+                  </div>
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column label="操作" width="100">
+              <template slot-scope="scope">
+                <el-button type="text" @click="deleteEdgeInstance(scope.row, scope.$index)">删除</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+          <div v-else style="color: #909399; font-size: 12px; margin-left: 45%">
+            未选择领域或该领域下无特征
+          </div>
+        </el-card>
+      </el-main>
+    </el-container>
+    <!--    新增关系实例对话框    -->
+    <el-dialog title="新增系统特征" :visible.sync="dialogAddingEdgeVisible" append-to-body style="width: auto ">
+
+      <div id="upload-frame">
+        <el-form ref="headUploadRef" :rules="rules" :model="headUpload" label-width="80px" size="mini">
+          <el-form-item label="领域" prop="area">
+            <el-select @change="selectChanged" v-model="headUpload.area" placeholder="请选择">
+              <el-option v-for="a in areaOptions" :key="a" :label="a" :value="a">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="特征名" prop="name">
+            <el-input v-model="headUpload.name"></el-input>
+          </el-form-item>
+          <el-form-item label="特征简介" prop="description">
+            <el-input type="textarea" autosize placeholder="请输入特征简介" v-model="headUpload.description">
+            </el-input>
+          </el-form-item>
+          <!-- <el-form-item label="类型" prop="type">
               <el-select @change="selectChanged" v-model="headUpload.type" placeholder="请选择">
                 <el-option v-for="a in typeOption" :key="a" :label="a" :value="a">
                 </el-option>
               </el-select>
             </el-form-item> -->
-          </el-form>
-          <el-button size="small" type="primary" @click="handleHeadUpload">新增</el-button>
-        </div>
-      </el-dialog>
-
+        </el-form>
+        <el-button size="small" type="primary" @click="handleHeadUpload">新增</el-button>
+      </div>
+    </el-dialog>
 
 
     <el-button size="small" type="primary" @click="handleUpload">上传</el-button>
@@ -221,6 +213,7 @@ export default {
         area: '',
         type: '',
         name: '',
+        description: '',
       },
       rules: {
         name: [
@@ -428,14 +421,16 @@ export default {
         },
         field: that.datasetInfo.area,
         isModified: 0,
+        thresholdofTable: 0.35,
+        thresholdofcol: 1.05
       }
       this.$http_zyq({
         url: "/getOneTabColToAttributes/",
         method: "post",
         data: params,
         headers: {
-        'Content-Type': 'application/json'
-      },
+          'Content-Type': 'application/json'
+        },
       }).then((res) => {
         console.log("ok!", res)
         if (res.status == 200) {
@@ -449,20 +444,20 @@ export default {
           let edge_instance = that.tableData[this.handleTableIndex].edgeInstances
           let res_mapping = res.data.colToAttribute.table1
           let new_res_mapping = {};
-          for(let key in res_mapping){
+          for (let key in res_mapping) {
             new_res_mapping[res_mapping[key]['value']] = key
           }
-          for(let item in edge_instance){
-            if(Object.keys(new_res_mapping).indexOf(edge_instance[item].fromLabel) > -1){
+          for (let item in edge_instance) {
+            if (Object.keys(new_res_mapping).indexOf(edge_instance[item].fromLabel) > -1) {
               edge_instance[item].fromValue = new_res_mapping[edge_instance[item].fromLabel]
             }
           }
           that.tableData[this.handleTableIndex].edgeInstances = edge_instance
           let res_mapping_keys = Object.keys(res_mapping)
-          for(let a in res_mapping_keys){
-            this.tableData[this.handleTableIndex].fields.forEach(function (item,index,arr){
+          for (let a in res_mapping_keys) {
+            this.tableData[this.handleTableIndex].fields.forEach(function (item, index, arr) {
               if (item == res_mapping_keys[a]) {
-                arr.splice(index,1);
+                arr.splice(index, 1);
               }
             });
           }
@@ -654,19 +649,29 @@ export default {
           return false;
         }
       })
-      var params = new FormData()
-      params.append('name', that.file)
-      params.append('area', that.file)
-      params.append('description', that.file)
-      params.append('type', that.file)
+      var params = {
+        'name': that.headUpload['name'],
+        'area': that.headUpload['area'],
+        'description': that.headUpload['description'],
+      }
 
       var res = await that.$http_wang({
-        url: "/predata/",
+        url: "/head/",
         method: "post",
         data: params
       })
       console.log(res.data)
+      that.headUpload = {
+        area: '',
+        name: '',
+        description: '',
+      }
       this.dialogAddingEdgeVisible = false
+      this.get_head_list()
+      this.$message({
+        type: 'success',
+        message: '添加成功!'
+      });
     },
 
     /*******  第三步：关系表字段与谓词映射 方法定义 ******/
@@ -737,7 +742,7 @@ export default {
 
     // 删除所选关系实例
     deleteEdgeInstance(item, instance_index) {
-      this.$confirm('是否删除所选实例?', '提示', {
+      this.$confirm('是否删除所选系统特征?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning',
@@ -754,12 +759,9 @@ export default {
         let table = this.tableData[0]
         let edge_instance = table.edgeInstances[instance_index]
         console.log(item)
-        // 把头尾映射值归位
+        // 把映射值归位
         let from_value = edge_instance.fromValue
-        let to_value = edge_instance.toValue
         if (from_value !== -1 && from_value !== null) table.fields.push(from_value)
-        if (to_value !== -1 && to_value !== null) table.fields.push(to_value)
-        // 删除实例
         table.edgeInstances.splice(instance_index, 1)
 
         this.$message({
