@@ -35,12 +35,12 @@ module.exports = {
           "^/vis": "",
         },
       },
-      "/v1/newOntMapping/": {
+      "/zyq/v1/newOntMapping/": {
         target: "http://162.105.88.203:9136",
         ws: true,
         changeOrigin: true, //允许跨域
         pathRewrite: {
-          "^/v1": "",
+          "^/zyq": "",
         },
       }
     }
