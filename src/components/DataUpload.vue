@@ -45,8 +45,6 @@
     </el-form>
 
     <!--      第三步：关系表与谓词映射        -->
-    <div v-if="active_step === 3">
-
       <el-container style="height: 100%; border: 1px solid #eee">
 
         <el-main>
@@ -100,7 +98,7 @@
             </div>
 
             <el-table v-if="tableData[handleTableIndex].edgeInstances.length > 0"
-              :data="tableData[handleTableIndex].edgeInstances" :row-style="{height: '40px'}" :cell-style="{padding: '1px'}">
+              :data="tableData[handleTableIndex].edgeInstances" :row-style="{height: '40px'}" :cell-style="{padding: '1px'}" style="overflow: scroll; overflow-x:hidden; height: 500px;">
               <!-- <el-row :gutter="20" style="margin-bottom: 20px;">
                 <el-col :span="150"></el-col>
               </el-row> -->
@@ -192,7 +190,6 @@
       </el-dialog>
 
 
-    </div>
 
     <el-button size="small" type="primary" @click="handleUpload">上传</el-button>
   </div>
@@ -248,16 +245,8 @@ export default {
         //   {required: true, message: '请上传文件', trigger: 'blur' },
         // ]
       },
-      // upload_form: {
-      //   data_set: '',
-      //   data_info: '',
-      //   data_source: '湘钢Q235B',
-      // },
-
       show_head_upload: false,
 
-      /*******  第0步：基本功能所需数据定义  ******/
-      active_step: 3,
       //所有概念名
       conceptName: [],
 
@@ -268,14 +257,6 @@ export default {
         { 'name': '概念3' },
       ],
 
-      // 所有概念的主属性
-      conceptKeyProp: new Map,
-
-      /*******  第二步：关系表与概念映射 数据定义 ******/
-
-      // 当前新增所在行
-      addRow: 0,
-      newConcept: '',
       //我的系统里tableData只能有一行
       tableData: [{
         name: 'name',
@@ -324,12 +305,6 @@ export default {
         },
       }],
 
-
-      /*******  第三步：关系表字段与谓词映射 数据定义 ******/
-      // 卡片显示状态变量
-      // instanceEditing: false,
-      // edgeEditing: false,
-
       // 当前正在处理的表的index（由于default-active接收String，因此再设定一个handleTableIndex的String类型的变量）
       handleTableIndex: 0,
 
@@ -342,12 +317,8 @@ export default {
       handlePropInfo: '',
       handleEdgeInfo: '',
 
-      // 添加关系边对话框是否显示
+      // 添加系统表头对话框是否显示
       dialogAddingEdgeVisible: false,
-
-      // 导入数量结果
-      instanceNum: 0,
-      edgeNum: 0,
 
       //搜索框
       dropDownValue: '',
@@ -376,15 +347,15 @@ export default {
         console.log("表头")
         console.log(res.data)
         that.tableData[0].edgeInstances = []
-        for (let item in res.data.results) {
+        for (let item in res.data) {
           that.tableData[0].edgeInstances.push({
-            edgeId: res.data.results[item].id,
-            fromId: res.data.results[item].id,
+            edgeId: res.data[item].id,
+            fromId: res.data[item].id,
             // toId: '1',
             fromValue: null,
             // toValue: 'toValue',
-            fromLabel: res.data.results[item].name,
-            fromName: res.data.results[item].description,
+            fromLabel: res.data[item].name,
+            fromName: res.data[item].description,
           })
         }
         // this.count = data.count
@@ -442,16 +413,18 @@ export default {
         console.log("表头")
         console.log(res.data)
         var li = new Array();
-        for (var a in res.data.results) {
-          li.push(res.data.results[a].name)
+        for (var a in res.data) {
+          li.push(res.data[a].name)
         }
         ontology_value[this.areaOptions[item]] = li
       }
 
       var params = {
-        ontology: JSON.stringify(ontology_value),
+        // ontology: JSON.stringify(ontology_value),
+        ontology: ontology_value,
         tables: {
-          table1: JSON.stringify(this.tableData[0].fields),
+          // table1: JSON.stringify(this.tableData[0].fields),
+          table1: this.tableData[0].fields,
         },
         field: that.datasetInfo.area,
         isModified: 0,
@@ -459,19 +432,40 @@ export default {
       this.$http_zyq({
         url: "/getOneTabColToAttributes/",
         method: "post",
-        data: params
+        data: params,
+        headers: {
+        'Content-Type': 'application/json'
+      },
       }).then((res) => {
         console.log("ok!", res)
         if (res.status == 200) {
           console.log("upload done")
           console.log(res)
-          that.upload_data_df = res
-          // that.show_table_upload = true
-          // that.$router.go(0); //刷新
+          // that.upload_data_df = res
           that.$notify({
             title: '推荐匹配成功',
             duration: 5000
           });
+          let edge_instance = that.tableData[this.handleTableIndex].edgeInstances
+          let res_mapping = res.data.colToAttribute.table1
+          let new_res_mapping = {};
+          for(let key in res_mapping){
+            new_res_mapping[res_mapping[key]['value']] = key
+          }
+          for(let item in edge_instance){
+            if(Object.keys(new_res_mapping).indexOf(edge_instance[item].fromLabel) > -1){
+              edge_instance[item].fromValue = new_res_mapping[edge_instance[item].fromLabel]
+            }
+          }
+          that.tableData[this.handleTableIndex].edgeInstances = edge_instance
+          let res_mapping_keys = Object.keys(res_mapping)
+          for(let a in res_mapping_keys){
+            this.tableData[this.handleTableIndex].fields.forEach(function (item,index,arr){
+              if (item == res_mapping_keys[a]) {
+                arr.splice(index,1);
+              }
+            });
+          }
         } else {
           that.$notify({
             title: '推荐匹配失败',
@@ -573,8 +567,6 @@ export default {
           console.log("upload done")
           console.log(res)
           that.upload_data_df = res
-          // that.show_table_upload = true
-          // that.$router.go(0); //刷新
           that.$notify({
             title: '上传成功',
             duration: 5000
@@ -677,94 +669,7 @@ export default {
       this.dialogAddingEdgeVisible = false
     },
 
-    /*******  第二步：关系表与概念映射 方法定义 ******/
-
-    // 删除概念映射标签
-    deleteConcept(index, row) {
-      row.concepts.splice(index, 1)
-      if (row.concepts.length === 0)
-        row.conceptMapped = false
-    },
-
-    //删除整行表格
-    deleteTable(index) {
-      this.$confirm('是否删除该关系表?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning',
-        center: true
-      }).then(() => {
-        //删除该行表格
-        this.tableData.splice(index, 1)
-        this.$message({
-          type: 'success',
-          message: '删除成功!'
-        });
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消删除'
-        });
-      });
-    },
-
     /*******  第三步：关系表字段与谓词映射 方法定义 ******/
-
-
-    // 根据映射到的概念，为每张表添加新实例
-    addInstances() {
-      // 获取当前表
-      let table = this.tableData[this.handleTableIndex]
-      // 每张表多实例的写法：
-      if (table.conceptInstances.length !== 0) {
-        this.$message.error('实例已存在了哦！')
-      } else {
-        // 初始化实例（这里设置成循环，就是将每种概念都各生成一个实例）
-        for (let j in table.concepts) {
-          // 根据concept名字，找到其在conceptData中的下标，从而获取concept信息
-          let concept = this.conceptData[this.conceptName.findIndex(i => i === table.concepts[j])]
-          let ins = {
-            conceptId: concept.id,
-            conceptName: concept.name,
-            mapProps: new Map,
-          }
-          // 将属性映射map初始化为null
-          for (let k in concept.props) ins.mapProps.set(concept.props[k].toString(), null)
-          // 将ins存入conceptInstances这个Map中
-          table.conceptInstances.push(ins)
-
-          this.$message({
-            type: 'success',
-            message: '添加成功!'
-          });
-        }
-      }
-    },
-
-    // 删除所选概念实例
-    deleteConceptInstance(instance_index) {
-      this.$confirm('是否删除所选实例?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning',
-        center: true
-      }).then(() => {
-        // 需要先把已有的映射标签归位
-        let table = this.tableData[this.handleTableIndex]
-        let mapProps = table.conceptInstances[instance_index].mapProps
-
-        for (let value of mapProps.values())
-          if (value !== null) table.fields.push(value)
-        // 删除实例
-        table.conceptInstances.splice(instance_index, 1)
-        this.$message({
-          type: 'success',
-          message: '清空成功!'
-        });
-      }).catch(() => {
-        this.$message.error('清空失败')
-      });
-    },
 
     addEdgeInstance() {
       // 弹出交互图对话框
@@ -991,65 +896,6 @@ export default {
       // 恢复字段标签
       this.tableData[this.handleTableIndex].fields.push(field)
     },
-
-    // 保存本表映射
-    saveMappingResult() {
-      // 至少完成属性映射或关系映射中的一个
-      if (this.tableData[this.handleTableIndex].conceptInstances.length === 0
-        && this.tableData[this.handleTableIndex].edgeInstances.length === 0) {
-        this.$message.error("请完成实例映射/关系映射！")
-        return
-      }
-
-      if (this.tableData[this.handleTableIndex].conceptInstances.length !== 0) {
-        // 检查所有实例的主属性是否都映射到了
-        let keyMapped = true
-        for (let i in this.tableData[this.handleTableIndex].conceptInstances) {
-          let instance = this.tableData[this.handleTableIndex].conceptInstances[i]
-          let keyProp = this.conceptKeyProp.get(instance.conceptId)
-          if (instance.mapProps.get(keyProp) === null)
-            keyMapped = false
-          break
-        }
-        if (!keyMapped) {
-          this.$message.error("请保证实例的主属性映射不为空！")
-          return
-        }
-
-        // 检查所有实例是否都至少映射到了一个字段
-        let oneMapped = false
-        for (let i in this.tableData[this.handleTableIndex].conceptInstances) {
-          let instance = this.tableData[this.handleTableIndex].conceptInstances[i]
-          for (let item of instance.mapProps.values()) {
-            if (item !== null)
-              oneMapped = true
-            break
-          }
-        }
-        if (!oneMapped) {
-          this.$message.error("请保证实例的属性映射不全为空！")
-          return
-        }
-      }
-
-      if (this.tableData[this.handleTableIndex].edgeInstances.length !== 0) {
-        // 检查所有边的头尾节点是否都不为null
-        let edgeMapped = true
-        for (let i in this.tableData[this.handleTableIndex].edgeInstances) {
-          let edge = this.tableData[this.handleTableIndex].edgeInstances[i]
-          if (edge.fromValue === null || edge.toValue === null)
-            edgeMapped = false
-          break
-        }
-        if (!edgeMapped) {
-          this.$message.error("请保证边映射头尾节点均不为空！")
-          return
-        }
-      }
-
-      this.tableData[this.handleTableIndex].mappingSaved = true
-    },
-
 
 
   }
