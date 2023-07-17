@@ -63,6 +63,61 @@
       </el-table>
     </el-dialog>
 
+    <el-form>
+      <div style="margin-top: 20px;">
+        <el-row>
+          <el-col :span="6">
+            <el-form-item label="数据可视化控件">
+              <el-select v-model="figureClass" placeholder="图表类型" @change="getFigureClass">
+                <el-option v-for="item in figureList" :value="item.id" :key="item.id"
+                            :label="item.name"></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="横轴">
+              <el-select v-model="xFeature" placeholder="横轴" >
+                <el-option v-for="item in featureList" :value="item" :key="item"
+                            :label="item"></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="纵轴">
+              <el-select multiple v-model="yFeature" placeholder="纵轴" :disabled="yDisabled">
+                <el-option v-for="item in featureList" :value="item" :key="item"
+                            :label="item"></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="3">
+            <el-form-item>
+              <el-button @click="filterVisible = true">过滤器</el-button>
+            </el-form-item>
+          </el-col>
+          <el-col :span="3">
+            <el-form-item>
+              <el-button @click="showFigure()">生成</el-button>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </div>
+    </el-form>
+    <div ref="explore_chart" :style="{width: '100%',height: '500px'}"></div>
+
+    <el-dialog
+      title="过滤"
+      :visible.sync="filterVisible"
+      width="30%"
+      :before-close="handleClose">
+      <span>请输入过滤信息，格式为[字段名]=***，如pid=35</span>
+      <el-input v-model="filterString" placeholder="请输入内容"></el-input>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="filterVisible = false">取 消</el-button>
+        <el-button type="primary" @click="figureFilter()">确 定</el-button>
+      </span>
+    </el-dialog>
+
     <div style="margin-top: 40px">
     </div>
 
@@ -108,7 +163,7 @@
       <el-col :span="4"><el-input placeholder="搜索单条数据" v-model="curSingleData"></el-input></el-col>
       <el-col :span="6"><el-button type="info" @click="showSingleData()">查看源数据和预测结果</el-button></el-col>
     </el-row>
-    <div ref="single_chart" :style="{width: '1500px',height: '500px'}"></div>
+    <div ref="single_chart" :style="{width: '1000px',height: '500px'}"></div>
     <el-dialog title="源数据和预测结果"
                :visible.sync="dialogShow"
                width="40%">
@@ -139,7 +194,7 @@ export default {
       cur_process: '',
       cur_model: '',
       datasetList: '',
-      dataset_id: 'dataset_123adfhhkjsdf',
+      dataset_id: '',
       processList: [
         {
           process_id: "process_12321",
@@ -158,6 +213,39 @@ export default {
       limitNum: 2,
       MultiTestShow: false,
       MultiTestTable: [],
+      figureList: [
+        {
+          name: "折线图",
+          id: "line",
+        },
+        {
+          name: "柱状图",
+          id: "bar",
+        }
+      ],
+      figureClass: "",
+      featureList: ["pdid", "尿素", "血蛋白", "日期"],
+      xFeature: "",
+      yFeature: [],
+      yDisabled: false,
+      figureData: {
+        xFeature: {
+          name: "Date",
+          data: ["2019-5-11", "2019-6-13", "2019-6-30", "2019-8-1", "2019-9-12"]
+        },
+        yFeature: [
+          {
+            name: "K",
+            data: [0.1, 0.2, 0.3, 0.2, 0.3]
+          },
+          {
+            name: "Na",
+            data: [0.2, 0.3, 0.1, 0.3, 0.5]
+          }
+        ]
+      },
+      filterVisible: false,
+      filterString: "",
       modelList: [
         
       ],
@@ -261,6 +349,89 @@ export default {
       } else {
         return true
       }
+    },
+    getFigureClass(val) {
+      console.log(val);
+      if (val=="bar") {
+        this.yDisabled = true;
+      }else {
+        this.yDisabled = false;
+      }
+    },
+    showFigure() {
+      this.dataset_id = "北医三院动态数据集标准化";
+      // console.log(this.dataset_id, this.xFeature, this.yFeature, this.figureClass, this.filterString);
+      let requestData = {};
+      if (this.figureClass=="line") {
+        requestData = {
+          dataset_id: this.dataset_id,
+            x_feature: this.xFeature,
+            y_features: this.yFeature,
+            pic_type: this.figureClass,
+            filter_str: this.filterString
+        };
+      }else {
+        requestData = {
+          dataset_id: this.dataset_id,
+            x_feature: this.xFeature,
+            pic_type: "hist",
+            other_args:  {
+              bins_num: 5
+            }
+        }
+      }
+      this.$http_vis({
+          url: "/visualcomp/comp/data/",
+          method: "post",
+          data: requestData
+        }).then((res) => {
+          // console.log(res.data.data.figureData);
+          let resdata = res.data.data.figureData;
+          this.figureData = resdata;
+          console.log(this.figureData);
+          let myChart = echarts.init(this.$refs.explore_chart);
+          let xAxis = {
+            type: "category",
+            data: this.figureData.xFeature.data
+          };
+          let yAxis = {
+            type: "value",
+          };
+          let legend = {
+            data:[]
+          }
+          let series = [];
+          for (let i in this.figureData.yFeature) {
+            legend.data.push(this.figureData.yFeature[i].name);
+            series.push({
+              data: this.figureData.yFeature[i].data,
+              name: this.figureData.yFeature[i].name,
+              type: this.figureClass
+            });
+          }
+          myChart.setOption({
+            xAxis:xAxis, yAxis:yAxis, series:series, legend:legend,
+            tooltip: {
+              trigger: 'axis'
+            },
+            toolbox: {
+              feature: {
+                saveAsImage: {}
+              }
+            }
+          });
+        });
+    },
+    figureFilter() {
+      this.filterVisible = false;
+      // console.log(this.filterString);
+    },
+    handleClose(done) {
+      this.$confirm('确认关闭？')
+        .then(_ => {
+          done();
+        })
+        .catch(_ => {});
     },
     tableCharts() {
       setTimeout(_ => {
