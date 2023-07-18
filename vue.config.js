@@ -20,7 +20,7 @@ module.exports = {
       },
       "/wang/": {
         // target: "http://162.105.88.214:4499/",
-        target: "http://localhost:8000/",
+        target: "http://162.105.88.214:4499/",
         ws: true,
         changeOrigin: true, //允许跨域
         pathRewrite: {

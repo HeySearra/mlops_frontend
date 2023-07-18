@@ -78,7 +78,6 @@
       <el-button type="primary" icon="el-icon-edit" circle size="mini" style="margin-right: 10px" @click="changeInfo"></el-button>
       <el-button type="danger" icon="el-icon-delete" circle size="mini" style="margin-right: 10px" @click="deleteDataset"></el-button>
       <el-select v-model="version_choose" size="small" @change="versionChange">
-        <el-option label="原始数据" :value="origin_id"></el-option>
         <el-option
             v-for="(version, index) in detail.children"
             :key="version.children_id[0]"
@@ -150,7 +149,7 @@ export default {
       exp_count: 2,
       exp_list: [],
       activeName: 'first',
-      version_choose: 0,
+      version_choose: null,
       form: {
         'name': 'name',
         'region': 'region',
@@ -203,11 +202,14 @@ export default {
         console.log(res)
         if (res.status == 200) {
           let data = res.data
-          if (data.children.length == 0) {
+          if (data.father == null) {
             data.children.push({
-              'children_id': data.id,
-              'children_name': '原始版本',
+              'children_id': [data.id],
+              'children_name': [data.name],
             })
+          }
+          else{
+            data.children = that.detail.children
           }
           that.detail = data
           that.parseHistoryRecord()

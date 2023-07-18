@@ -23,8 +23,8 @@ const http_wang = axios.create({
     timeout: 1000000,
     withCredentials: true
 })
-http_wang.defaults.timeout = 100000 //超过10s则请求超时
-http_wang.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8'//post请求头的默认设置
+http_wang.defaults.timeout = 200000 //超过10s则请求超时
+http_wang.defaults.headers.post['Content-Type'] = 'application/json;charset=UTF-8'//post请求头的默认设置
 
 //响应拦截器
 http_wang.interceptors.response.use(
@@ -71,8 +71,8 @@ const http_zyq = axios.create({
     timeout: 1000000,
     withCredentials: true
 })
-http_zyq.defaults.timeout = 100000 //超过10s则请求超时
-http_zyq.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8'//post请求头的默认设置
+http_zyq.defaults.timeout = 200000 //超过10s则请求超时
+http_zyq.defaults.headers.post['Content-Type'] = 'application/json;charset=UTF-8'//post请求头的默认设置
 
 
 export {http, http_wang, http_vis, http_zyq}
