@@ -5,79 +5,44 @@
         <div id="head-title">
           <span style="padding-left:8px">模型库</span>
         </div>
-        <router-link
-          to="/datasets"
-          class="menu-item"
-        >
-          <svg
-            class="icon"
-            aria-hidden="true"
-          >
+        <router-link to="/datasets" class="menu-item">
+          <svg class="icon" aria-hidden="true">
             <use xlink:href="#icon-data"></use>
           </svg>
           数据集
         </router-link>
-        <router-link
-          to='/model'
-          class="menu-item"
-        >
-          <svg
-            class="icon"
-            aria-hidden="true"
-          >
+        <router-link to='/model' class="menu-item">
+          <svg class="icon" aria-hidden="true">
             <use xlink:href="#icon-model"></use>
           </svg>
           模型
         </router-link>
-        <router-link
-          to='/experiment'
-          class="menu-item"
-        >
-          <svg
-            class="icon"
-            aria-hidden="true"
-          >
+        <router-link to='/experiment' class="menu-item">
+          <svg class="icon" aria-hidden="true">
             <use xlink:href="#icon-code"></use>
           </svg>
           实验
         </router-link>
-        <router-link
-            to='/visualize'
-            class="menu-item"
-        >
-          <svg
-              class="icon"
-              aria-hidden="true"
-          >
+        <router-link to='/visualize' class="menu-item">
+          <svg class="icon" aria-hidden="true">
             <use xlink:href="#icon-data1"></use>
           </svg>
           分析
         </router-link>
         <span class="menu-item">
-          <svg
-            class="icon"
-            aria-hidden="true"
-          >
+          <svg class="icon" aria-hidden="true">
             <use xlink:href="#icon-data1"></use>
           </svg>
           数据监测
         </span>
         <span class="menu-item">
-          <svg
-            class="icon"
-            aria-hidden="true"
-          >
+          <svg class="icon" aria-hidden="true">
             <use xlink:href="#icon-file"></use>
           </svg>
           文档
         </span>
-        <router-link
-          to="/mapping"
-          class="menu-item">
-          <svg
-            class="icon"
-            aria-hidden="true"
-          >
+        <router-link to="/mapping" class="menu-item">
+          <svg class="icon" aria-hidden="true">
             <use xlink:href="#icon-data"></use>
           </svg>
           映射
@@ -86,7 +51,7 @@
 
       <ul>
         <li>
-          <router-link to="/login"> {{username === ""?"登录":username}}</router-link>
+          <router-link to="/login"> {{ username === "" ? "登录" : username }}</router-link>
         </li>
       </ul>
 
@@ -102,7 +67,9 @@ export default {
   name: 'Home',
   data() {
     return {
-      username:""
+      username: "",
+      state: false,
+      token: "",
     }
   },
   methods:
@@ -112,14 +79,15 @@ export default {
     }
   },
   mounted() {
-    var _that = this
-    this.$bus.$on("usernameUpdate",(name)=>{
-        _that.username = name
-    })
-    var name = localStorage.getItem('username')
-    if(name){
-      this.name = name
+    if (this.login_manager.get()) {
+      this.state = true
+      this.username = this.login_manager.get_name()
+      // this.token = this.login_manager.get_token()
     }
+    var _that = this
+    this.$bus.$on("usernameUpdate", (name) => {
+      _that.username = name
+    })
   }
 
 }
@@ -161,13 +129,15 @@ export default {
   font-weight: bold;
   color: #094299;
 }
-.header_nav > ul {
+
+.header_nav>ul {
   margin: 0;
   list-style: none;
   display: flex;
   align-items: center;
 }
-.header_nav > ul > li * {
+
+.header_nav>ul>li * {
   display: inline-block;
   font-size: 1em;
   color: #333333;
@@ -181,11 +151,13 @@ export default {
 li :hover {
   color: #008fff;
 }
+
 .menu-item {
   font-size: 1em;
   color: #333333;
   padding-left: 30px;
 }
+
 .dropdown {
   padding-right: 30px;
 }

@@ -11,7 +11,7 @@ import './assets/icons/iconfont'
 import * as echarts from 'echarts';
 import JsonViewer from 'vue-json-viewer'
 import Network from  "vue2vis/src/components/Network";
-import {alert_msg} from './global.js'
+import {alert_msg, login_manager} from './global.js'
 
 Vue.use(Element)
 Vue.use(VueClipboard)
@@ -24,6 +24,7 @@ Vue.prototype.$http_vis = http_vis
 Vue.prototype.$http_zyq = http_zyq
 Vue.prototype.$echarts = echarts
 Vue.prototype.alert_msg = alert_msg;
+Vue.prototype.login_manager = login_manager;
 Vue.prototype.$bus = new Vue() // 总线
 
 new Vue({

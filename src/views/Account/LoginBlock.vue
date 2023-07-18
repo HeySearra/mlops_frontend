@@ -92,8 +92,9 @@ export default {
           },
           data: QS.stringify(_that.form)
       }).then(res => {
-        localStorage.setItem('token', res.data.access)
+        // localStorage.setItem('token', res.data.access)
         localStorage.setItem('username', this.form.username)
+        _that.login_manager.set(true, "", this.form.username, "")
         _that.$notify.success({
           title: '成功',
           message: '登录成功'
