@@ -80,7 +80,7 @@
               <i class="el-icon-info" style="margin-left: 5px;margin-top: 3px"></i>
             </el-tooltip>
 
-            <el-select v-model="valueMeta" value-key="fromId" collapse-tags placeholder="请选择实例">
+            <el-select v-model="valueMeta" value-key="fromId" collapse-tags placeholder="请选择实例" @change="selectEdgeChange">
               <div class="el-input" style="width:90%;margin-left:5%;">
                 <input type="text" placeholder="请输入" class="el-input__inner" v-model="dropDownValue"
                   @keyup="dropDownSearch">
@@ -376,8 +376,13 @@ export default {
       this.get_head_list();
     },
 
-    selectEdgeChange() {
-      this.addEdge(this.valueMeta[0].fromValue, 'fromValue')
+
+    selectEdgeChange(value) {
+      let proNum = this.tableData[0].edgeInstances.findIndex((item, index) =>{
+        return item.edgeId == value.edgeId
+      })
+
+      this.addEdge(proNum, 'fromValue')
     },
 
     dropDownSearch() {
@@ -690,65 +695,6 @@ export default {
     addEdgeInstance() {
       // 弹出交互图对话框
       this.dialogAddingEdgeVisible = true
-    },
-
-    // 交互图选择边
-    selectEdge(params) {
-      // 判断点击的是否是边
-      if (params.nodes.length === 0 && params.edges.length === 1) {
-        let edge_id = params.edges[0]
-        // 找到对应的edge的label（虽然可能有多个概念，但由于跨表连接的情况中两个概念都出现在了图中，因此遍历谁的边集都一样，这里选择concepts[0].edges进行遍历）
-        let concept_name = this.tableData[this.handleTableIndex].concepts[0]
-        let concept = this.conceptData[this.conceptName.findIndex(i => i === concept_name)]
-        // 设置edge为目标边，包含id、label、to、from
-        let edge
-        for (let e in concept.edges)
-          if (concept.edges[e].id === edge_id)
-            edge = concept.edges[e]
-
-        // 让用户确认是否选择添加这条边
-        this.$confirm('是否添加"' + edge.label + '"边的实例？', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning',
-          center: true
-        }).then(() => {
-          // 去concept的nodes列表里寻找头/尾节点的label
-          let from_label
-          let to_label
-          for (let i in concept.nodes) {
-            if (concept.nodes[i].id === edge.from) from_label = concept.nodes[i].label
-            if (concept.nodes[i].id === edge.to) to_label = concept.nodes[i].label
-          }
-          // 新建一个关系实例
-          let edgeInstance = {
-            edgeId: edge_id,
-            edgeLabel: edge.label,
-            fromId: edge.from,
-            toId: edge.to,
-            fromLabel: from_label,
-            toLabel: to_label,
-            fromValue: null, // 头节点映射值
-            toValue: null  // 尾节点映射值
-          }
-          // 将头/尾节点为本实例的Value映射值设置为-1（注意此魔法值！但应该不会有表关键字段叫-1的，所以应该是合理的嘎嘎）
-          if (concept_name === from_label) edgeInstance.fromValue = -1
-          else edgeInstance.toValue = -1
-          // 将关系实例加入关系实例列表中
-          this.tableData[this.handleTableIndex].edgeInstances.push(edgeInstance)
-
-          // 对话框隐藏
-          this.dialogAddingEdgeVisible = false
-          this.$message({
-            type: 'success',
-            message: '添加成功!'
-          });
-        }).catch(() => {
-          this.$message.error('添加失败')
-          // 对话框隐藏
-          this.dialogAddingEdgeVisible = false
-        });
-      }
     },
 
     // 删除所选关系实例
