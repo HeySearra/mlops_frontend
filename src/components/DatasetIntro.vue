@@ -61,7 +61,7 @@ export default {
   },
   methods: {
     Download(){
-      window.open("http://localhost:8000/predata/"+this.id+"/download")
+      window.open("http://162.105.88.214:4499/"+this.id+"/download")
     },
     cellStyle(){
       return "font-size:10px;font-family:'Times New Roman',math,sans-serif"
