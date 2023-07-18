@@ -80,7 +80,8 @@
               <i class="el-icon-info" style="margin-left: 5px;margin-top: 3px"></i>
             </el-tooltip>
 
-            <el-select v-model="valueMeta" value-key="fromId" collapse-tags placeholder="请选择实例" @change="selectEdgeChange">
+            <el-select v-model="valueMeta" value-key="fromId" collapse-tags placeholder="请选择实例"
+              @change="selectEdgeChange">
               <div class="el-input" style="width:90%;margin-left:5%;">
                 <input type="text" placeholder="请输入" class="el-input__inner" v-model="dropDownValue"
                   @keyup="dropDownSearch">
@@ -326,6 +327,11 @@ export default {
   mounted() {
   },
   methods: {
+    getCookie(name) {
+      var value = '; ' + document.cookie
+      var parts = value.split('; ' + name + '=')
+      if (parts.length === 2) return parts.pop().split(';').shift()
+    },
 
     get_head_list() {
       var that = this;
@@ -378,7 +384,7 @@ export default {
 
 
     selectEdgeChange(value) {
-      let proNum = this.tableData[0].edgeInstances.findIndex((item, index) =>{
+      let proNum = this.tableData[0].edgeInstances.findIndex((item, index) => {
         return item.edgeId == value.edgeId
       })
 
@@ -439,7 +445,7 @@ export default {
       }).then((res) => {
         console.log("ok!", res)
         if (res.status == 200) {
-          console.log("upload done")
+          console.log("auto mapping done")
           console.log(res)
           // that.upload_data_df = res
           that.$notify({
@@ -549,11 +555,11 @@ export default {
 
       var store_name = {};
       for (var item in that.tableData[0].edgeInstances) {
-        if(that.tableData[0].edgeInstances[item].fromValue != null){
-          if(time_series == that.tableData[0].edgeInstances[item].fromValue){
+        if (that.tableData[0].edgeInstances[item].fromValue != null) {
+          if (time_series == that.tableData[0].edgeInstances[item].fromValue) {
             time_series = that.tableData[0].edgeInstances[item].fromLabel
           }
-          else if(id_col == that.tableData[0].edgeInstances[item].fromValue){
+          else if (id_col == that.tableData[0].edgeInstances[item].fromValue) {
             id_col = that.tableData[0].edgeInstances[item].fromLabel
           }
           store_name[that.tableData[0].edgeInstances[item].fromLabel] = that.tableData[0].edgeInstances[item].fromValue
@@ -570,7 +576,8 @@ export default {
         method: "post",
         data: params,
         headers: {
-          'Content-Type': 'multipart/form-data'
+          'Content-Type': 'multipart/form-data',
+          // 'X-CSRFToken': that.getCookie('csrftoken'),
         },
       }).then((res) => {
         console.log("ok!", res)

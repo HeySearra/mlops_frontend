@@ -10,6 +10,13 @@ const http = axios.create({
     withCredentials: true,
 });
 
+// axios.interceptors.request.use((config) => {
+//     config.headers['X-Requested-With'] = 'XMLHttpRequest';
+//     let regex = /.*csrftoken=([^;.]*).*$/; // 用于从cookie中匹配 csrftoken值
+//     config.headers['X-CSRFToken'] = document.cookie.match(regex) === null ? null : document.cookie.match(regex)[1];
+//     return config
+//   });
+
 const http_vis = axios.create({
     baseURL: '/vis/',
     timeout: 100000,
@@ -47,8 +54,14 @@ http_wang.interceptors.response.use(
     }
 )
 
-// http_wang.interceptors.request.use(
-//     config => {
+http_wang.interceptors.request.use((config) => {
+    config.headers['X-Requested-With'] = 'XMLHttpRequest';
+    let regex = /.*csrftoken=([^;.]*).*$/; // 用于从cookie中匹配 csrftoken值
+    config.headers['X-CSRFToken'] = document.cookie.match(regex) === null ? null : document.cookie.match(regex)[1];
+    return config
+  });
+
+// http_wang.interceptors.request.use(config => {
 //         //登录注册相关接口不用认证
 //         if (config.url.indexOf('/token') === 0||config.url.indexOf('/account') === 0) {
 //             return config
