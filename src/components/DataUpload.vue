@@ -533,29 +533,40 @@ export default {
       params.append('short_description', this.datasetInfo.short_description)
       params.append('long_description', this.datasetInfo.long_description)
 
-      var store_name = {};
-      for (var item in that.tableData[0].edgeInstances) {
-        store_name[that.tableData[0].edgeInstances[item].fromLabel] = that.tableData[0].edgeInstances[item].fromValue
-      }
-
-      params.append('store_name', JSON.stringify(store_name))
-      params.append('process_code', "")
-      params.append('father_name', "")
-      // var time_series = -1;
+      var time_series = that.datasetInfo.time_series;
       // if(that.datasetInfo.time_series != ""){
       //   time_series = that.datasetInfo.time_series
       // }
-      params.append('time_series', that.datasetInfo.time_series)
-      // var id_col = -1;
+      var id_col = that.datasetInfo.id_col;
       // if(that.datasetInfo.id_col != ""){
       //   id_col = that.datasetInfo.id_col
       // }
-      params.append('id_col', that.datasetInfo.id_col)
 
+      var store_name = {};
+      for (var item in that.tableData[0].edgeInstances) {
+        if(that.tableData[0].edgeInstances[item].fromValue != null){
+          if(time_series == that.tableData[0].edgeInstances[item].fromValue){
+            time_series = that.tableData[0].edgeInstances[item].fromLabel
+          }
+          else if(id_col == that.tableData[0].edgeInstances[item].fromValue){
+            id_col = that.tableData[0].edgeInstances[item].fromLabel
+          }
+          store_name[that.tableData[0].edgeInstances[item].fromLabel] = that.tableData[0].edgeInstances[item].fromValue
+        }
+      }
+      params.append('store_name', JSON.stringify(store_name))
+      params.append('process_code', "")
+      params.append('father_name', "")
+
+      params.append('time_series', time_series)
+      params.append('id_col', id_col)
       this.$http_wang({
         url: "/predata/",
         method: "post",
-        data: params
+        data: params,
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        },
       }).then((res) => {
         console.log("ok!", res)
         if (res.status == 200) {
