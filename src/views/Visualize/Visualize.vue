@@ -201,6 +201,7 @@ export default {
       cur_model: '',
       datasetList: '',
       dataset_id: '',
+      dataset_id_num: '',
       childDatasetList: [],
       staticInfo: [],
       staticMultipleSelection: [],
@@ -223,23 +224,9 @@ export default {
       yFeature: [],
       yDisabled: false,
       figureData: {
-        xFeature: {
-          name: "Date",
-          data: ["2019-5-11", "2019-6-13", "2019-6-30", "2019-8-1", "2019-9-12"]
-        },
-        yFeature: [
-          {
-            name: "K",
-            data: [0.1, 0.2, 0.3, 0.2, 0.3]
-          },
-          {
-            name: "Na",
-            data: [0.2, 0.3, 0.1, 0.3, 0.5]
-          }
-        ]
       },
       filterVisible: false,
-      filterString: "",
+      filterString: "pdid==98",
       modelList: [
         
       ],
@@ -316,6 +303,9 @@ export default {
           }
           this.childDatasetList.push(childItem);
         }
+        this.dataset_id = data.name;
+        this.dataset_id_num = this.cur_dataset_id;
+        this.getProcess();
         // console.log(this.childDatasetList);
       })
       // console.log(val);
@@ -324,9 +314,24 @@ export default {
     },
     getChildDatasetId(val) {
       console.log(val);
-      this.getProcess(val);
+      for (let i in this.childDatasetList) {
+        if (this.childDatasetList[i].children_name == val) {
+          this.dataset_id_num = this.childDatasetList[i].children_id;
+          break;
+        } 
+      }
+      this.getProcess();
     },
-    getProcess(val){
+    getProcess(){
+      let url = "/predata/" + this.dataset_id_num + "/";
+      this.$http_vis({
+        url: url,
+        method: "get",
+        }).then((res) => {
+          // console.log(res.data);
+          let fList = res.data.sample.head;
+          this.featureList = fList;
+      });
       this.$http_vis({
           url: "/ana/sa/",
           method: "post",
@@ -386,7 +391,6 @@ export default {
       }
     },
     showFigure() {
-      this.dataset_id = "北医三院动态数据集标准化";
       // console.log(this.dataset_id, this.xFeature, this.yFeature, this.figureClass, this.filterString);
       let requestData = {};
       if (this.figureClass=="line") {
@@ -493,12 +497,12 @@ export default {
       for (let item in this.staticMultipleSelection) {
         features.push(this.staticMultipleSelection[item].feature_name);
       }
-      console.log(features);
       this.$http_vis({
           url: "/ana/fc/",
           method: "post",
           data: {
-            
+            dataset_id: this.dataset_id,
+            columns: features
           }
         }).then((res) => {
           let data = res.data.data;
