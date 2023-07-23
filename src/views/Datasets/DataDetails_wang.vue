@@ -90,7 +90,7 @@
     <div>
       <el-tabs v-model="activeName" id="tab">
         <el-tab-pane label="详情" name="first">
-          <dataset-intro :detail="detail" :id="id" > </dataset-intro>
+          <dataset-intro :detail="detail" :id="id" :history="resultList"> </dataset-intro>
         </el-tab-pane>
 
         <el-tab-pane label="实验" name="second">
@@ -214,9 +214,9 @@ export default {
           that.detail = data
           that.parseHistoryRecord()
         } else {
-          that.$notify({
-            title: '获取失败',
-            message: res.response.data,
+          that.$notify.error({
+            title: '服务器失败 :/predata/' + id + ' get',
+            message: res.response,
             duration: 5000
           });
         }
@@ -276,9 +276,9 @@ export default {
           // todo: 刷新页面
           that.$router.push('/datasets')
         } else {
-          that.$notify({
-            title: '删除失败',
-            message: res.response.data,
+          that.$notify.error({
+            title: '服务器失败 :/predata/ delete',
+            message: res.response,
             duration: 5000
           });
         }

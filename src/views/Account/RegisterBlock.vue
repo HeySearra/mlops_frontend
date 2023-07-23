@@ -119,8 +119,10 @@ export default {
           .catch(function (error) {
             console.log(error)
             that.$notify.error({
-              title: '好像发生什么错误'
-            })
+              title: '服务器失败 :/account/register/ post',
+              message: res.response,
+              duration: 5000
+            });
           })
     }
   }

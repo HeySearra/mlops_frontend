@@ -173,9 +173,18 @@ export default {
             name: this.search_word
           }
         }).then((res) => {
-          let data = res.data
-          this.count = data.count
-          this.resultList = data.results
+          if(res.status == 200){
+            let data = res.data
+            this.count = data.count
+            this.resultList = data.results
+          }
+          else{
+            that.$notify.error({
+              title: '服务器失败 :/predata/ get',
+              message: res.response,
+              duration: 5000
+            });
+          }
         })
       }
 

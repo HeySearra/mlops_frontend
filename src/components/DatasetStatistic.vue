@@ -4,7 +4,7 @@
       <el-header id="header">
         <div style="">
           <span style="font-size: 30px;color: #3c3c3c;font-family: Corbel,sans-serif;">{{tableBriefInfo.fileName}}</span>
-          <span class="attr-label">文件大小</span><span class="attr-value">{{tableBriefInfo.fileSize}}</span>
+          <!-- <span class="attr-label">文件大小</span><span class="attr-value">{{tableBriefInfo.fileSize}}</span> -->
           <el-button  @click="toVisual()" style="margin-left:10px;">可视化</el-button>
         </div>
         <el-popover
@@ -66,13 +66,13 @@
               :key="idx"
               :prop="a.label"
               :label="a.label"
-              width=130
+              width=150
           >
 <!-- Tip:这里宽度的设置是table-header中table-header-frame的width+cell的width*2  -->
             <template slot="header">
               <table-header :data_id="id" :col_id="idx" :stat="a"/>
             </template>
-          </el-table-column>>
+          </el-table-column>
         </el-table>
       </el-main>
     </el-container>
@@ -122,7 +122,7 @@ export default {
         ]
       },
       tableBriefInfo:{
-        fileName:"Fine.csv",
+        fileName:"特征统计",
         fileSize:"30MB",
         sliceStart:0,
         sliceEnd:100
@@ -151,6 +151,7 @@ export default {
     },
     getData(id, begin, end, sort, sort_field, filter_value, filter_field){
       var that = this;
+      this.tableData.data = []
       this.$http_wang({
         url: "/predata/" + id + '/dataset_slice/',
         method: "get",
@@ -163,27 +164,46 @@ export default {
           "filter_field":filter_field
         }
       }).then((res) => {
-        console.log(res)
-        let data = []
-        for(let i = 0;i<res.data["nums"];i++){
-          var row = {}
-          res.data["headers"].forEach((col_name)=>{
-            row[col_name] = res.data["values"][col_name][i]
-          })
-          row["idx"]=i
-          data.push(row)
+        if(res.status == 200){
+          console.log(res)
+          let data = []
+          for(let i = 0;i<res.data["nums"];i++){
+            var row = {}
+            res.data["headers"].forEach((col_name)=>{
+              row[col_name] = res.data["values"][col_name][i]
+            })
+            row["idx"]=i
+            data.push(row)
+          }
+          that.tableData.data = data
         }
-        that.tableData.data = data
+        else{
+          that.$notify.error({
+            title: '服务器失败 :/predata/' + id + '/dataset_slice/',
+            message: res.response,
+            duration: 5000
+          });
+        }
       })
     },
     getAllStat(id){
       var that = this;
+      that.tableData.headers = []
       this.$http_wang({
         url: "/predata/" + id + '/dataset_stat/',
         method: "get",
       }).then((res) => {
-        console.log(res)
-        that.tableData.headers = res.data['result']
+        // console.log(res)
+        if(res.status == 200){
+          that.tableData.headers = res.data['result']
+        }
+        else{
+          that.$notify.error({
+            title: '服务器失败 :/predata/' + id + '/dataset_stat/',
+            message: res.response,
+            duration: 5000
+          });
+        }
       })
     },
     monitoring() { // 监听事件
@@ -200,6 +220,7 @@ export default {
     }
   },
   mounted(){
+    this.tableData.data = []
     // this.monitoring() // 注册监听事件
     this.$bus.$on("xxx", this.getData)
     this.$bus.$on("method2", this.getAllStat)

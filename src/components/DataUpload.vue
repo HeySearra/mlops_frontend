@@ -342,20 +342,29 @@ export default {
           "area": that.datasetInfo.area,
         }
       }).then((res) => {
-        let data = res.data
-        console.log("表头")
-        console.log(res.data)
-        that.tableData[0].edgeInstances = []
-        for (let item in res.data) {
-          that.tableData[0].edgeInstances.push({
-            edgeId: res.data[item].id,
-            fromId: res.data[item].id,
-            // toId: '1',
-            fromValue: null,
-            // toValue: 'toValue',
-            fromLabel: res.data[item].name,
-            fromName: res.data[item].description,
-          })
+        if (res.status == 200) {
+          let data = res.data
+          console.log("表头")
+          console.log(res.data)
+          that.tableData[0].edgeInstances = []
+          for (let item in res.data) {
+            that.tableData[0].edgeInstances.push({
+              edgeId: res.data[item].id,
+              fromId: res.data[item].id,
+              // toId: '1',
+              fromValue: null,
+              // toValue: 'toValue',
+              fromLabel: res.data[item].name,
+              fromName: res.data[item].description,
+            })
+          }
+        }
+        else {
+          that.$notify.error({
+            title: '服务器失败 :/head/ area=' + that.datasetInfo.area,
+            message: res.response,
+            duration: 5000
+          });
         }
         // this.count = data.count
         // this.resultList = data.results
@@ -370,12 +379,20 @@ export default {
         params: {
         }
       }).then((res) => {
-        let data = res.data
-        console.log("area")
-        console.log(res.data)
-        that.areaOptions = res.data.areas
-        // this.count = data.count
-        // this.resultList = data.results
+        // console.log("area")
+        // console.log(res.data)
+        if (res.status == 200) {
+          that.areaOptions = res.data.areas
+          // this.count = data.count
+          // this.resultList = data.results
+        }
+        else {
+          that.$notify.error({
+            title: '服务器失败 :/head/get_area/',
+            message: res.response,
+            duration: 5000
+          });
+        }
       })
     },
     selectChanged() {
@@ -414,13 +431,22 @@ export default {
             "area": this.areaOptions[item],
           }
         })
-        console.log("表头")
-        console.log(res.data)
-        var li = new Array();
-        for (var a in res.data) {
-          li.push(res.data[a].name)
+        // console.log("表头")
+        // console.log(res.data)
+        if (res.status == 200) {
+          var li = new Array();
+          for (var a in res.data) {
+            li.push(res.data[a].name)
+          }
+          ontology_value[this.areaOptions[item]] = li
         }
-        ontology_value[this.areaOptions[item]] = li
+        else {
+          that.$notify.error({
+            title: '服务器失败 :/head/ area=' + this.areaOptions[item],
+            message: res.response,
+            duration: 5000
+          });
+        }
       }
 
       var params = {
@@ -473,8 +499,8 @@ export default {
             });
           }
         } else {
-          that.$notify({
-            title: '推荐匹配失败',
+          that.$notify.error({
+            title: '服务器失败 :/getOneTabColToAttributes/',
             message: res.response,
             duration: 5000
           });
@@ -591,8 +617,8 @@ export default {
           });
           that.$router.go(0)
         } else {
-          that.$notify({
-            title: '创建失败',
+          that.$notify.error({
+            title: '服务器失败 :/predata/ post',
             message: res.response,
             duration: 5000
           });
@@ -683,18 +709,27 @@ export default {
         method: "post",
         data: params
       })
-      console.log(res.data)
-      that.headUpload = {
-        area: '',
-        name: '',
-        description: '',
+      // console.log(res.data)
+      if (res.status == 200) {
+        that.headUpload = {
+          area: '',
+          name: '',
+          description: '',
+        }
+        this.dialogAddingEdgeVisible = false
+        this.get_head_list()
+        this.$message({
+          type: 'success',
+          message: '添加成功!'
+        });
       }
-      this.dialogAddingEdgeVisible = false
-      this.get_head_list()
-      this.$message({
-        type: 'success',
-        message: '添加成功!'
-      });
+      else {
+        that.$notify.error({
+          title: '服务器失败 :/head/ post',
+          message: res.response,
+          duration: 5000
+        });
+      }
     },
 
     /*******  第三步：关系表字段与谓词映射 方法定义 ******/
@@ -733,7 +768,11 @@ export default {
           message: '删除成功!'
         });
       }).catch(() => {
-        this.$message.error('删除失败')
+        that.$notify.error({
+          title: '服务器失败 :"head/' + item.edgeId + '/',
+          message: res.response,
+          duration: 5000
+        });
       });
     },
 

@@ -292,9 +292,9 @@ export default {
           });
           that.$router.go(0)
         } else{
-          that.$notify({
-            title: '创建失败',
-            message:  res.response.data,
+          that.$notify.error({
+            title: '服务器失败 :/predata/' + id + '/process/ post',
+            message: res.response,
             duration: 5000
           });
         }

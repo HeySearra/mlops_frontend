@@ -83,27 +83,27 @@ export default {
       this.$refs[formName].resetFields()
     },
     signIn () {
-      const _that = this
+      const that = this
       this.$http_wang({
           url: "/account/login/",
           method: "post",
           headers: {
             "Content-Type":'application/x-www-form-urlencoded;charset=UTF-8',
           },
-          data: QS.stringify(_that.form)
+          data: QS.stringify(that.form)
       }).then(res => {
         // localStorage.setItem('token', res.data.access)
         localStorage.setItem('username', this.form.username)
-        _that.login_manager.set(true, "", this.form.username, "")
-        _that.$notify.success({
+        that.login_manager.set(true, "", this.form.username, "")
+        that.$notify.success({
           title: '成功',
           message: '登录成功'
         })
         this.$bus.$emit("usernameUpdate", this.form.username)
-        _that.$router.push("/datasets")
+        that.$router.push("/datasets")
       }).catch(err => {
         console.log(err)
-        _that.$notify.error({
+        that.$notify.error({
           title: '用户名或密码错误'
         })
       })

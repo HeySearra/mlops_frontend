@@ -1,48 +1,5 @@
 <template>
   <div>
-    <div class="table" style="margin-bottom: 50px">
-      <el-card shadow="never">
-        <div slot="header" class="card-title">
-          <span>数据历史处理记录</span>
-        </div>
-        <el-table border tooltip-effect="dark" style="width: 100%" max-height="210" :data="history"
-                :row-style="{height: '10px'}"
-                :cell-style="{padding: '0'}"
-                :header-cell-style="{
-                'font-size': '14px',
-                color: '#778192',
-                'font-weight': 'normal',
-                'text-align': 'center',
-                'background-color': '#fafafa',
-              }">
-        <el-table-column prop="task" label="任务名" width="160" align="center" show-overflow-tooltip/>
-        <el-table-column label="开始时间" prop="created" width="160" align="center" show-overflow-tooltip/>
-        <el-table-column label="状态" width="100" align="center">
-          <template slot-scope="scope">
-            <el-tag align="center" :type="scope.row.run_status == 'running' ? 'warning' : 'success'" disable-transitions>
-              {{scope.row.run_status }}
-            </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column prop="description" label="描述" show-overflow-tooltip/>
-        <el-table-column prop="owner" label="创建用户" width="80" align="center" show-overflow-tooltip />
-
-        <el-table-column type="expand">
-          <template slot-scope="props">
-            <div class="expand" >
-                <p><i class="el-icon-s-operation"/>预处理参数</p>
-                <el-descriptions :column="2" border size="small" labelClassName="d-label" contentClassName="d-content">
-                  <template v-for="(value, key) in props.row.model_config">
-                    <el-descriptions-item :key="key" :label="key">{{ value }}</el-descriptions-item>
-                  </template>
-                </el-descriptions>
-            </div>
-          </template>
-        </el-table-column>
-
-      </el-table>
-      </el-card>
-    </div>
     <el-card shadow="never">
       <div slot="header" class="card-title">
         <span>创建新流程</span><span class="tips">拖动左侧方块来编辑流程</span>
