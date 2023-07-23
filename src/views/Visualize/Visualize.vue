@@ -1,19 +1,32 @@
 <template>
   <div class="container">
-    <el-form>
-      <el-form-item label="选择数据集">
-        <el-select v-model="cur_dataset_id" placeholder="选择数据集" @change="getDatasetId($event)">
-          <el-option v-for="item in datasetList" :value="item.id" :key="item.id"
-                      :label="item.name"></el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item label="选择子数据集">
-        <el-select v-model="dataset_id" placeholder="选择子数据集" @change="getChildDatasetId($event)">
-          <el-option v-for="item in childDatasetList" :value="item.children_name" :key="item.children_id"
-                      :label="item.children_name"></el-option>
-        </el-select>
-      </el-form-item>
+    <el-form class="dataset-list-form-container">
+      <div class="form-row">
+        <el-form-item label="选择数据集">
+          <el-select v-model="cur_dataset_id" placeholder="选择数据集" @change="getDatasetId($event)">
+            <el-option v-for="item in datasetList" :value="item.id" :key="item.id"
+                        :label="item.name"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="选择子数据集">
+          <el-select v-model="dataset_id" placeholder="选择子数据集" @change="getChildDatasetId($event)">
+            <el-option v-for="item in childDatasetList" :value="item.children_name" :key="item.children_id"
+                        :label="item.children_name"></el-option>
+          </el-select>
+        </el-form-item>
+      </div>
+      
     </el-form>
+    <el-descriptions title="数据集基本信息" class="dataset-info">
+      <el-descriptions-item label="数据集ID">{{ datasetInfo.id }}</el-descriptions-item>
+      <el-descriptions-item label="数据集任务">{{ datasetInfo.task }}</el-descriptions-item>
+      <el-descriptions-item label="数据集领域">{{ datasetInfo.area }}</el-descriptions-item>
+      <el-descriptions-item label="数据集创建者">{{ datasetInfo.owner }}</el-descriptions-item>
+      <el-descriptions-item label="数据集创建时间">{{ datasetInfo.created }}</el-descriptions-item>
+      <el-descriptions-item label="描述信息">{{ datasetInfo.long_description }}</el-descriptions-item>
+  </el-descriptions>
+
+  <dataset-statistic ref="dataView" :id="dataset_id_num"></dataset-statistic>
 
     <el-table
         :data="staticInfo"
@@ -21,7 +34,7 @@
         ref="staticTable"
         height="500"
         stripe
-        style="width: 100%"
+        class="static-info"
         @selection-change="handleSelectionChange">
       <el-table-column
           type="selection"
@@ -70,7 +83,7 @@
     </el-dialog>
 
     <el-form>
-      <div style="margin-top: 20px;">
+      <div style="margin-top: 40px;">
         <el-row>
           <el-col :span="6">
             <el-form-item label="数据可视化控件">
@@ -185,12 +198,13 @@
 
 <script>
 import { features } from 'process';
+import DatasetStatistic from "../../components/DatasetStatistic";
 
 const echarts = require('echarts');
 export default {
 
   components: {
-
+    DatasetStatistic
   },
 
   data() {
@@ -202,6 +216,7 @@ export default {
       datasetList: '',
       dataset_id: '',
       dataset_id_num: '',
+      datasetInfo: '',
       childDatasetList: [],
       staticInfo: [],
       staticMultipleSelection: [],
@@ -288,6 +303,7 @@ export default {
         //   id: this.cur_dataset
         // }
       }).then((res) => {
+        this.datasetInfo = res.data;
         let data = res.data;
         this.childDatasetList = [];
         this.childDatasetList.push({
@@ -305,6 +321,7 @@ export default {
         }
         this.dataset_id = data.name;
         this.dataset_id_num = this.cur_dataset_id;
+        this.getDataView();
         this.getProcess();
         // console.log(this.childDatasetList);
       })
@@ -320,6 +337,7 @@ export default {
           break;
         } 
       }
+      this.getDataView();
       this.getProcess();
     },
     getProcess(){
@@ -329,6 +347,7 @@ export default {
         method: "get",
         }).then((res) => {
           // console.log(res.data);
+          this.datasetInfo = res.data;
           let fList = res.data.sample.head;
           this.featureList = fList;
       });
@@ -350,6 +369,10 @@ export default {
           }
           this.tableCharts();
         })
+    },
+    getDataView() {
+      this.$refs.dataView.getData(this.dataset_id_num, 0, 100);
+      this.$refs.dataView.getAllStat(this.dataset_id_num);
     },
     getRowKey(row){
       return row.id;
@@ -407,7 +430,7 @@ export default {
             x_feature: this.xFeature,
             pic_type: "hist",
             other_args:  {
-              bins_num: 5
+              bins_num: 10
             }
         }
       }
@@ -421,13 +444,38 @@ export default {
           this.figureData = resdata;
           console.log(this.figureData);
           let myChart = echarts.init(this.$refs.explore_chart);
+          myChart.clear();
           let xAxis = {
             type: "category",
             data: this.figureData.xFeature.data
           };
-          let yAxis = {
-            type: "value",
-          };
+          let yAxis = [];
+          for (let i in this.figureData.yFeature) {
+            yAxis.push({
+              type: 'value',
+              name: this.figureData.yFeature[i].name,
+              position: 'right',
+              offset: i*90,
+              nameLocation: 'end',
+              scale: true,
+              axisTick: {
+                show: true
+              },
+              splitLine: {
+                show: false
+              },
+              axisLine: {
+                show: true,
+                onZero: false
+              },
+              axisLabel: {
+                show: true,
+                formatter(params){
+                  return (params).toFixed(0)
+                }
+              }
+            })
+          }
           let legend = {
             data:[]
           }
@@ -437,11 +485,17 @@ export default {
             series.push({
               data: this.figureData.yFeature[i].data,
               name: this.figureData.yFeature[i].name,
-              type: this.figureClass
+              type: this.figureClass,
+              yAxisIndex: i
             });
           }
+          let grid = {
+            top: '15%',
+            right: (this.figureData.yFeature.length-1) * 90,
+            containLabel: true
+          };
           myChart.setOption({
-            xAxis:xAxis, yAxis:yAxis, series:series, legend:legend,
+            xAxis:xAxis, yAxis:yAxis, series:series, legend:legend, grid:grid,
             tooltip: {
               trigger: 'axis'
             },
@@ -756,7 +810,23 @@ export default {
 .container {
   padding: 40px 80px;
 }
-
+.dataset-info {
+  margin-top: 40px;
+  margin-bottom: 40px;
+}
+.static-info {
+  width: 100%;
+  margin-top: 40px;
+}
+.form-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+.form-row {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
 .el-dropdown-link {
   cursor: pointer;
   color: #409EFF;

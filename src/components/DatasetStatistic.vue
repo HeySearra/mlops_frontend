@@ -5,7 +5,6 @@
         <div style="">
           <span style="font-size: 30px;color: #3c3c3c;font-family: Corbel,sans-serif;">{{tableBriefInfo.fileName}}</span>
           <!-- <span class="attr-label">文件大小</span><span class="attr-value">{{tableBriefInfo.fileSize}}</span> -->
-          <el-button  @click="toVisual()" style="margin-left:10px;">可视化</el-button>
         </div>
         <el-popover
             placement="left"
@@ -99,30 +98,12 @@ export default {
       defaultRowLimit:300,
       tableData:{
         headers:[
-          // { label:"ST_NO",type:"CATEGORIES"},
-          // { label:"TEM", type:"NUMBER"},
-          // { label:"SLAB_THK", type:"NUMBER"},
-          // { label:"MID_THK", type:"NUMBER"},
-          // { label:"RE_RATE", type:"NUMBER"},
-          // { label:"F_TEM", type:"NUMBER"},
-          // { label:"L_TEM", type:"NUMBER"},
-          // { label:"THK", type:"NUMBER"},
-          // { label:"F_COM", type:"NUMBER"},
         ],
         data:[
-          // {"idx":1, "ST_NO":"ZA4E8100","TEM":1.2792,"SLAB_THK":1.324904,"MID_THK":0.035975,"RE_RATE":-0.91291,"F_TEM":-0.91291,"L_TEM":-0.70253,"THK":0.28379,"F_COM":0.729873},
-          // {"idx":2, "ST_NO":"ZA4E8100","TEM":1.2792,"SLAB_THK":1.324904,"MID_THK":0.035975,"RE_RATE":-0.91291,"F_TEM":-0.91291,"L_TEM":-0.70253,"THK":0.28379,"F_COM":0.729873},
-          // {"idx":3, "ST_NO":"ZA4E8100","TEM":1.2792,"SLAB_THK":1.324904,"MID_THK":0.035975,"RE_RATE":-0.91291,"F_TEM":-0.91291,"L_TEM":-0.70253,"THK":0.28379,"F_COM":0.729873},
-          // {"idx":4, "ST_NO":"ZA4E8100","TEM":1.2792,"SLAB_THK":1.324904,"MID_THK":0.035975,"RE_RATE":-0.91291,"F_TEM":-0.91291,"L_TEM":-0.70253,"THK":0.28379,"F_COM":0.729873},
-          // {"idx":5, "ST_NO":"ZA4E8100","TEM":1.2792,"SLAB_THK":1.324904,"MID_THK":0.035975,"RE_RATE":-0.91291,"F_TEM":-0.91291,"L_TEM":-0.70253,"THK":0.28379,"F_COM":0.729873},
-          // {"idx":6, "ST_NO":"ZA4E8100","TEM":1.2792,"SLAB_THK":1.324904,"MID_THK":0.035975,"RE_RATE":-0.91291,"F_TEM":-0.91291,"L_TEM":-0.70253,"THK":0.28379,"F_COM":0.729873},
-          // {"idx":7, "ST_NO":"ZA4E8100","TEM":1.2792,"SLAB_THK":1.324904,"MID_THK":0.035975,"RE_RATE":-0.91291,"F_TEM":-0.91291,"L_TEM":-0.70253,"THK":0.28379,"F_COM":0.729873},
-          // {"idx":8, "ST_NO":"ZA4E8100","TEM":1.2792,"SLAB_THK":1.324904,"MID_THK":0.035975,"RE_RATE":-0.91291,"F_TEM":-0.91291,"L_TEM":-0.70253,"THK":0.28379,"F_COM":0.729873},
-          // {"idx":9, "ST_NO":"ZA4E8100","TEM":1.2792,"SLAB_THK":1.324904,"MID_THK":0.035975,"RE_RATE":-0.91291,"F_TEM":-0.91291,"L_TEM":-0.70253,"THK":0.28379,"F_COM":0.729873},
         ]
       },
       tableBriefInfo:{
-        fileName:"特征统计",
+        fileName:"数据视图",
         fileSize:"30MB",
         sliceStart:0,
         sliceEnd:100
@@ -143,15 +124,9 @@ export default {
     cellStyle({row, column, rowIndex, columnIndex}){
       return "font-size:10px;font-family:'Times New Roman',math,sans-serif"
     },
-    toVisual(){
-      this.$router.push({
-					name: 'Visualize',
-					query: {param: 6}
-				})
-    },
     getData(id, begin, end, sort, sort_field, filter_value, filter_field){
       var that = this;
-      this.tableData.data = []
+      that.tableData.data = []
       this.$http_wang({
         url: "/predata/" + id + '/dataset_slice/',
         method: "get",
@@ -222,10 +197,10 @@ export default {
   mounted(){
     this.tableData.data = []
     // this.monitoring() // 注册监听事件
-    this.$bus.$on("xxx", this.getData)
-    this.$bus.$on("method2", this.getAllStat)
-    this.getData(this.id, 0, 100)
-    this.getAllStat(this.id)
+    // this.$bus.$on("xxx", this.getData)
+    // this.$bus.$on("method2", this.getAllStat)
+    // this.getData(this.id, 0, 100)
+    // this.getAllStat(this.id)
   }
 }
 </script>
