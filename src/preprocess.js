@@ -147,6 +147,33 @@ const nodeOptions=[
         },
       })
     },
+    {
+      label: '格式转化',
+      value: () => ({
+        meta: {
+          name: 'to_type',
+          title: "格式转化",
+          params: {
+            to_type: { value:'any',type: "Enum", unique:true, options:['int', 'float', 'str', 'datetime']},
+            subset: { value:[], type:"ChooseCol", unique:false}
+          },
+          description: ""
+        },
+      })
+    },
+    {
+      label: '清理字符串null',
+      value: () => ({
+        meta: {
+          name: 'str_null',
+          title: "格式转化",
+          params: {
+            str_list: { value:'any',type: "Enum", unique:true, options:['null', 'NULL', 'None', 'none', '0', '']},
+          },
+          description: ""
+        },
+      })
+    },
     // {
     //   label: '时序转换',
     //   value: () => ({
