@@ -1,84 +1,78 @@
 <template>
   <div class="dataset-intro-frame">
-    <div style="margin-bottom: 50px">
+    <div style="margin-bottom: 20px">
       <el-card shadow="never">
         <div slot="header" class="card-title">
           <span>数据详情介绍</span>
         </div>
-        <mavon-editor
-            class='md'
-            v-model="detail.long_description"
-            defaultOpen="preview"
-            :subfield="false"
-            :editable="false"
-            :toolbarsFlag="false"
-            :shortCut="false"
-            :boxShadow="false"
-        />
+        <mavon-editor class='md' v-model="detail.long_description" defaultOpen="preview" :subfield="false"
+          :editable="false" :toolbarsFlag="false" :shortCut="false" :boxShadow="false" />
       </el-card>
     </div>
 
-
-    <el-card shadow="never">
-      <div slot="header" class="card-title">
+    <div style="margin-bottom: 20px">
+      <el-card shadow="never">
+        <div slot="header" class="card-title">
           <span>数据集预览</span>
-        <span class="attr-label">Col-count:</span><span class="attr-value">{{detail.sample.head.length}}</span>
-        <span class="attr-label">Record-count:</span><span class="attr-value">{{detail.record_count}}</span>
+          <span class="attr-label">Col-count:</span><span class="attr-value">{{ detail.sample.head.length }}</span>
+          <span class="attr-label">Record-count:</span><span class="attr-value">{{ detail.record_count }}</span>
           <el-button style="float: right; padding: 3px 0" type="text" icon="el-icon-download"
-                     @click="Download">下载数据集</el-button>
-      </div>
-      <el-table :data='detail.sample.sample' max-height="400" border :cell-style="cellStyle">
-        <el-table-column v-for="(item,idx) in detail.sample.head" :formatter="trimFloat" :key="idx" :prop="item" :label="item" width="100"/>
-      </el-table>
-    </el-card>
-    <div class="table" style="margin-bottom: 50px">
+            @click="Download">下载数据集</el-button>
+        </div>
+        <el-table :data='detail.sample.sample' max-height="400" border :cell-style="cellStyle">
+          <el-table-column v-for="(item, idx) in detail.sample.head" :formatter="trimFloat" :key="idx" :prop="item"
+            :label="item" width="100" />
+        </el-table>
+      </el-card>
+    </div>
+
+    <div class="table">
       <el-card shadow="never">
         <div slot="header" class="card-title">
           <span>数据历史处理记录</span>
         </div>
         <el-table border tooltip-effect="dark" style="width: 100%" max-height="210" :data="history"
-                :row-style="{height: '10px'}"
-                :cell-style="{padding: '0'}"
-                :header-cell-style="{
-                'font-size': '14px',
-                color: '#778192',
-                'font-weight': 'normal',
-                'text-align': 'center',
-                'background-color': '#fafafa',
-              }">
-        <el-table-column prop="task" label="任务名" width="160" align="center" show-overflow-tooltip/>
-        <el-table-column label="开始时间" prop="created" width="160" align="center" show-overflow-tooltip/>
-        <el-table-column label="状态" width="100" align="center">
-          <template slot-scope="scope">
-            <el-tag align="center" :type="scope.row.run_status == 'running' ? 'warning' : 'success'" disable-transitions>
-              {{scope.row.run_status }}
-            </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column prop="description" label="描述" show-overflow-tooltip/>
-        <el-table-column prop="owner" label="创建用户" width="80" align="center" show-overflow-tooltip />
+          :row-style="{ height: '10px' }" :cell-style="{ padding: '0' }" :header-cell-style="{
+            'font-size': '14px',
+            color: '#778192',
+            'font-weight': 'normal',
+            'text-align': 'center',
+            'background-color': '#fafafa',
+          }">
+          <el-table-column prop="task" label="任务名" width="160" align="center" show-overflow-tooltip />
+          <el-table-column label="开始时间" prop="created" width="160" align="center" show-overflow-tooltip />
+          <el-table-column label="状态" width="100" align="center">
+            <template slot-scope="scope">
+              <el-tag align="center" :type="scope.row.run_status == 'running' ? 'warning' : 'success'"
+                disable-transitions>
+                {{ scope.row.run_status }}
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column prop="description" label="描述" show-overflow-tooltip />
+          <el-table-column prop="owner" label="创建用户" width="80" align="center" show-overflow-tooltip />
 
-        <el-table-column type="expand">
-          <template slot-scope="props">
-            <div class="expand" >
-                <p><i class="el-icon-s-operation"/>预处理参数</p>
+          <el-table-column type="expand">
+            <template slot-scope="props">
+              <div class="expand">
+                <p><i class="el-icon-s-operation" />预处理参数</p>
                 <el-descriptions :column="2" border size="small" labelClassName="d-label" contentClassName="d-content">
                   <template v-for="(value, key) in props.row.model_config">
                     <el-descriptions-item :key="key" :label="key">{{ value }}</el-descriptions-item>
                   </template>
                 </el-descriptions>
-            </div>
-          </template>
-        </el-table-column>
+              </div>
+            </template>
+          </el-table-column>
 
-      </el-table>
+        </el-table>
       </el-card>
     </div>
   </div>
 </template>
 
 <script>
-import {mavonEditor} from "mavon-editor";
+import { mavonEditor } from "mavon-editor";
 import "mavon-editor/dist/css/index.css";
 
 export default {
@@ -86,37 +80,37 @@ export default {
   components: {
     mavonEditor
   },
-  data(){
-    return{
+  data() {
+    return {
 
     }
   },
-  props:{
-    detail:{
+  props: {
+    detail: {
       type: Object,
       required: true,
       default: null,
     },
-    id:{
+    id: {
       type: Number,
       required: true,
     },
-    history:{
-      type:Array,
-      require:false
+    history: {
+      type: Array,
+      require: false
     }
   },
   methods: {
-    Download(){
-      window.open("http://162.105.88.214:4499/predata/"+this.id+"/download")
+    Download() {
+      window.open("http://162.105.88.214:4499/predata/" + this.id + "/download")
     },
-    cellStyle(){
+    cellStyle() {
       return "font-size:10px;font-family:'Times New Roman',math,sans-serif"
     },
-    trimFloat(row, column, cellValue, index){
-      if(typeof cellValue === 'number'&&cellValue.toString().indexOf(".")!==-1){
+    trimFloat(row, column, cellValue, index) {
+      if (typeof cellValue === 'number' && cellValue.toString().indexOf(".") !== -1) {
         return cellValue.toFixed(5)
-      }else{
+      } else {
         return cellValue
       }
     }
@@ -131,24 +125,25 @@ export default {
   color: #555;
 }
 
-.dataset-intro-frame{
+.dataset-intro-frame {
   display: flex;
   flex-direction: column;
 }
+
 /*设置mavon编辑器的框的样式*/
-.v-note-wrapper{
+.v-note-wrapper {
   min-height: auto;
   max-height: 500px;
 }
 
-.attr-label{
+.attr-label {
   font-size: 10px;
   color: #a3a3a3;
   margin-right: 10px;
   margin-left: 20px;
 }
 
-.attr-value{
+.attr-value {
   font-size: 10px;
   color: #a3a3a3;
 }
