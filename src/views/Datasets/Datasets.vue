@@ -179,7 +179,7 @@ export default {
             this.resultList = data.results
           }
           else{
-            that.$notify.error({
+            this.$notify.error({
               title: '服务器失败 :/predata/ get',
               message: res.response,
               duration: 5000

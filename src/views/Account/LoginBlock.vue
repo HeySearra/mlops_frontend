@@ -8,8 +8,8 @@
           </el-input>
         </el-form-item>
         <el-form-item prop="password">
-          <el-input type="password" v-model="form.password" placeholder="请输入密码"
-                    clearable @keypress.native.enter="submitForm('form')">
+          <el-input type="password" v-model="form.password" placeholder="请输入密码" clearable
+            @keypress.native.enter="submitForm('form')">
             <i slot="prefix" class="el-input__icon iconfont el-icon-lock"></i>
           </el-input>
         </el-form-item>
@@ -17,7 +17,7 @@
       </el-form>
     </div>
     <div class="msg">
-      没有账号？<a @click="$router.replace({path: '/register'})">立即注册></a>
+      没有账号？<a @click="$router.replace({ path: '/register' })">立即注册></a>
     </div>
   </el-card>
 </template>
@@ -27,7 +27,7 @@ import QS from "qs"
 
 export default {
   name: 'Login_Block',
-  data () {
+  data() {
     var validatePass = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('密码不能为空'))
@@ -61,7 +61,7 @@ export default {
     }
   },
   methods: {
-    submitForm (formName) {
+    submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           this.signIn()
@@ -79,33 +79,50 @@ export default {
         }
       })
     },
-    resetForm (formName) {
+    resetForm(formName) {
       this.$refs[formName].resetFields()
     },
-    signIn () {
+    signIn() {
       const that = this
       this.$http_wang({
-          url: "/account/login/",
-          method: "post",
-          headers: {
-            "Content-Type":'application/x-www-form-urlencoded;charset=UTF-8',
-          },
-          data: QS.stringify(that.form)
+        url: "/account/login/",
+        method: "post",
+        headers: {
+          "Content-Type": 'application/x-www-form-urlencoded;charset=UTF-8',
+        },
+        data: QS.stringify(that.form)
       }).then(res => {
-        // localStorage.setItem('token', res.data.access)
-        localStorage.setItem('username', this.form.username)
-        that.login_manager.set(true, "", this.form.username, "")
-        that.$notify.success({
-          title: '成功',
-          message: '登录成功'
-        })
-        this.$bus.$emit("usernameUpdate", this.form.username)
-        that.$router.push("/datasets")
+        if (res.status == 200) {
+          // localStorage.setItem('token', res.data.access)
+          localStorage.setItem('username', this.form.username)
+          that.login_manager.set(true, "", this.form.username, "")
+          that.$notify.success({
+            title: '成功',
+            message: '登录成功'
+          })
+          this.$bus.$emit("usernameUpdate", this.form.username)
+          that.$router.push("/datasets")
+        }
+        else if (res.response.status == 403) {
+          that.$notify.error({
+            title: '用户名或密码错误',
+            duration: 5000
+          });
+        }
+        else {
+          that.$notify.error({
+            title: '服务器失败 :/account/login/ post',
+            message: res.response,
+            duration: 5000
+          });
+        }
       }).catch(err => {
         console.log(err)
         that.$notify.error({
-          title: '用户名或密码错误'
-        })
+          title: '服务器失败 :/account/login/ post',
+          message: res.response,
+          duration: 5000
+        });
       })
     }
   }
@@ -113,16 +130,17 @@ export default {
 </script>
 
 <style scoped>
-h2{
+h2 {
   text-align: center;
   margin: 0 auto 10px;
 }
 
 
-h2>figure:hover{
+h2>figure:hover {
   background-size: 230px;
 }
-.card{
+
+.card {
   position: absolute;
   height: auto;
   width: 400px;
@@ -132,16 +150,16 @@ h2>figure:hover{
   border-radius: 15px;
 }
 
-.demo-form{
-  width:280px;
-  margin:0 auto;
+.demo-form {
+  width: 280px;
+  margin: 0 auto;
 }
 
-.iconfont{
-  margin-left:2px;
+.iconfont {
+  margin-left: 2px;
 }
 
-.el-button{
+.el-button {
   width: 100%;
   color: white;
   background-image: linear-gradient(to right, #0250c5, #3F87DA);
@@ -152,22 +170,21 @@ h2>figure:hover{
   text-indent: 2em;
 }
 
-.el-button:hover{
+.el-button:hover {
   background-color: #3F87DA;
 }
 
-.msg{
+.msg {
   display: block;
   cursor: pointer;
   text-align: center;
-  width:auto;
+  width: auto;
   font-size: 14px;
   margin: 15px auto 0;
 }
 
-.msg a:hover{
+.msg a:hover {
   text-decoration: underline;
   color: #3F87DA;
 }
-
 </style>
