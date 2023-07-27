@@ -1,66 +1,36 @@
 <template>
   <div class="container">
 
-    <el-dialog
-        title="修改数据"
-        :visible.sync="changeInfoDialogVisible"
-        width="60%"
-        :destroy-on-close="true"
-        modal>
-      <el-form ref="form"
-               :model="detail"
-               label-width="80px"
-               size="mini">
+    <el-dialog title="修改数据" :visible.sync="changeInfoDialogVisible" width="60%" :destroy-on-close="true" modal>
+      <el-form ref="form" :model="detail" label-width="80px" size="mini">
         <el-form-item label="数据名称">
           <el-input v-model="detail.name"></el-input>
         </el-form-item>
         <el-form-item label="数据简介">
-          <el-input
-              type="textarea"
-              autosize
-              placeholder="请输入数据简介"
-              v-model="detail.short_description">
+          <el-input type="textarea" autosize placeholder="请输入数据简介" v-model="detail.short_description">
           </el-input>
         </el-form-item>
         <div>
           <el-form-item label="详细介绍">
-            <el-input
-                type="textarea"
-                autosize
-                placeholder="请输入数据详情介绍"
-                v-model="detail.long_description">
+            <el-input type="textarea" autosize placeholder="请输入数据详情介绍" v-model="detail.long_description">
             </el-input>
           </el-form-item>
           <el-form-item label="领域">
-            <el-select v-model="detail.area" placeholder="请选择" >
-              <el-option
-                  v-for="a in areaOptions"
-                  :key="a"
-                  :label="a"
-                  :value="a">
+            <el-select v-model="detail.area" placeholder="请选择">
+              <el-option v-for="a in areaOptions" :key="a" :label="a" :value="a">
               </el-option>
             </el-select>
           </el-form-item>
         </div>
 
         <el-form-item label="任务">
-          <el-select v-model="detail.task" placeholder="请选择" >
-            <el-option
-                v-for="b in taskOptions"
-                :key="b"
-                :label="b"
-                :value="b">
+          <el-select v-model="detail.task" placeholder="请选择">
+            <el-option v-for="b in taskOptions" :key="b" :label="b" :value="b">
             </el-option>
           </el-select>
         </el-form-item>
-        <el-button
-            type="primary"
-            icon="el-icon-edit"
-            circle
-            size="mini"
-            style="margin-left: 100px"
-            @click="changeInfoDialogVisible = false"
-        >
+        <el-button type="primary" icon="el-icon-edit" circle size="mini" style="margin-left: 100px"
+          @click="changeInfoDialogVisible = false">
         </el-button>
       </el-form>
     </el-dialog>
@@ -74,15 +44,14 @@
     </div>
     <div class="info" style="color:grey">简介： {{ detail.short_description }}</div>
 
-    <div class="version-choose" >
-      <el-button type="primary" icon="el-icon-edit" circle size="mini" style="margin-right: 10px" @click="changeInfo"></el-button>
-      <el-button type="danger" icon="el-icon-delete" circle size="mini" style="margin-right: 10px" @click="deleteDataset"></el-button>
+    <div class="version-choose">
+      <el-button type="primary" icon="el-icon-edit" circle size="mini" style="margin-right: 10px"
+        @click="changeInfo"></el-button>
+      <el-button type="danger" icon="el-icon-delete" circle size="mini" style="margin-right: 10px"
+        @click="deleteDataset"></el-button>
       <el-select v-model="version_choose" size="small" @change="versionChange">
-        <el-option
-            v-for="(version, index) in detail.children"
-            :key="version.children_id[0]"
-            :label="version.children_name[0]"
-            :value="version.children_id[0]">
+        <el-option v-for="(version, index) in detail.children" :key="version.children_id[0]"
+          :label="version.children_name[0]" :value="version.children_id[0]">
         </el-option>
       </el-select>
     </div>
@@ -97,7 +66,11 @@
           <dataset-experiment ref="Experiment" :history="resultList" :detail="detail" :id="id"></dataset-experiment>
         </el-tab-pane>
 
-        <el-tab-pane label="视图" name="third">
+        <el-tab-pane label="自定义实验" name="third">
+          <user-defined-pre :id="id" :detail="detail" v-if="detail"></user-defined-pre>
+        </el-tab-pane>
+
+        <el-tab-pane label="视图" name="fourth">
           <dataset-statistic :id="id"></dataset-statistic>
         </el-tab-pane>
       </el-tabs>
@@ -110,6 +83,7 @@
 import DatasetIntro from "../../components/DatasetIntro";
 import DatasetStatistic from "../../components/DatasetStatistic";
 import DatasetExperiment from "../../components/DatasetExperiment";
+import UserDefinedPre from "../../components/UserDefinedPre.vue";
 
 export default {
 
@@ -117,6 +91,7 @@ export default {
     DatasetIntro,
     DatasetStatistic,
     DatasetExperiment,
+    UserDefinedPre
   },
 
   data() {
@@ -135,16 +110,16 @@ export default {
         short_description: "暂无简介",
         long_description: "## 数据集描述\n",
         sample: {
-          head:[],
-          sample_data:[]
+          head: [],
+          sample_data: []
         },
         created: "2023-01-01T00:00:00",
         experiment_times: 0,
         record_count: 0,
       },
-      process_info:[],
-      areaOptions:["医疗"],
-      taskOptions:["通用"],
+      process_info: [],
+      areaOptions: ["医疗"],
+      taskOptions: ["通用"],
       changeInfoDialogVisible: false,
       exp_count: 2,
       exp_list: [],
@@ -160,7 +135,7 @@ export default {
         'resource': 'resource',
         'desc': 'desc',
       },
-      resultList:[]
+      resultList: []
     }
   },
 
@@ -208,7 +183,7 @@ export default {
               'children_name': [data.name],
             })
           }
-          else{
+          else {
             data.children = that.detail.children
           }
           that.detail = data
@@ -226,7 +201,7 @@ export default {
       if (version != this.id) {
         this.get_datasets(version)
         this.id = version
-        this.$router.replace(version) 
+        this.$router.replace(version)
         // this.$refs.child.$emit('childMethod','发送给方法一的数据') // 方法1:触发监听事件
         // this.$refs.child.getData(version, 0, 100) // 方法2:直接调用
         this.$bus.$emit("xxx", version, 0, 100)
@@ -234,7 +209,7 @@ export default {
       }
     },
     parseHistoryRecord() {
-      if(this.detail.process_code === ""){
+      if (this.detail.process_code === "") {
         return
       }
       var processes = JSON.parse(this.detail.process_code)
@@ -315,19 +290,18 @@ export default {
   text-align: justify;
 }
 
-.experiment>div {
+.experiment > div {
   height: 22px;
   flex: 1;
 }
 
-#id{
+#id {
   margin-top: 10px;
 }
 
-.version-choose{
+.version-choose {
   position: absolute;
   top: 100px;
   right: 200px;
 }
-
 </style>
