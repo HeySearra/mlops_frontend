@@ -1,11 +1,19 @@
 <template>
   <div>
-    <div class="table" v-show="this.outputVisible">
+    <div
+      class="table"
+      v-show="this.outputVisible"
+    >
       <el-card shadow="never">
-        <div slot="header" class="card-title">
+        <div
+          slot="header"
+          class="card-title"
+        >
           <span>自定义预处理结果</span>
         </div>
-        <el-table :data="output.slice((currentPage-1)*pagesize,currentPage*pagesize)" :header-cell-style="{
+        <el-table
+          :data="output.slice((currentPage-1)*pagesize,currentPage*pagesize)"
+          :header-cell-style="{
         'font-size': '14px',
         color: '#778192',
         'font-weight': 'normal',
@@ -13,28 +21,60 @@
         'background-color': '#fafafa',
         padding: '0',
         height: '2.5vw',
-      }" v-loading="loading" element-loading-text="结果加载中" element-loading-spinner="el-icon-loading">
-          <el-table-column v-for="(th, index) in header_name" :key="index" :prop="th" :label="th" align="center"
-            :fixed="index==0? true:false">
+      }"
+          v-loading="loading"
+          element-loading-text="结果加载中"
+          element-loading-spinner="el-icon-loading"
+        >
+          <el-table-column
+            v-for="(th, index) in header_name"
+            :key="index"
+            :prop="th"
+            :label="th"
+            align="center"
+            :fixed="index==0? true:false"
+          >
           </el-table-column>
 
         </el-table>
-        <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage"
-          :page-sizes="[10, 15, 20]" :page-size="pagesize" layout="total, sizes, prev, pager, next, jumper"
-          :total='output.length' style="margin:20px">
+        <el-pagination
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="currentPage"
+          :page-sizes="[10, 15, 20]"
+          :page-size="pagesize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total='output.length'
+          style="margin:20px"
+        >
         </el-pagination>
       </el-card>
     </div>
 
-    <div class="table" style="margin-top:20px">
+    <div
+      class="table"
+      style="margin-top:20px"
+    >
       <el-card shadow="never">
-        <div slot="header" class="card-title">
+        <div
+          slot="header"
+          class="card-title"
+        >
           <span>自定义预处理记录</span>
-          <el-button style="float: right; padding: 3px 0" type="text" icon="el-icon-circle-plus-outline"
-            @click="dialogFormVisible=true">新建实验</el-button>
+          <el-button
+            style="float: right; padding: 3px 0"
+            type="text"
+            icon="el-icon-circle-plus-outline"
+            @click="dialogFormVisible=true"
+          >新建实验</el-button>
         </div>
 
-        <el-table border tooltip-effect="dark" style="width: 100%" :data="historyList" :header-cell-style="{
+        <el-table
+          border
+          tooltip-effect="dark"
+          style="width: 100%"
+          :data="historyList"
+          :header-cell-style="{
         'font-size': '14px',
         color: '#778192',
         'font-weight': 'normal',
@@ -42,14 +82,34 @@
         'background-color': '#fafafa',
         padding: '0',
         height: '2.5vw',
-      }">
-          <el-table-column prop="id" label="ID" width="160" align="center">
+      }"
+        >
+          <el-table-column
+            prop="id"
+            label="ID"
+            width="160"
+            align="center"
+          >
           </el-table-column>
-          <el-table-column prop="name" label="名称" width="400" align="center" show-overflow-tooltip>
+          <el-table-column
+            prop="name"
+            label="名称"
+            width="400"
+            align="center"
+            show-overflow-tooltip
+          >
           </el-table-column>
-          <el-table-column prop="description" label="描述" show-overflow-tooltip>
+          <el-table-column
+            prop="description"
+            label="描述"
+            show-overflow-tooltip
+          >
           </el-table-column>
-          <el-table-column label="操作" width="100" align="center">
+          <el-table-column
+            label="操作"
+            width="100"
+            align="center"
+          >
             <!-- <template slot-scope="scope">
               <el-button @click="histroy_delete(scope.row)" type="text">删除</el-button>
             </template> -->
@@ -60,73 +120,177 @@
     </div>
 
     <div style="margin-top: 20px">
-      <el-card shadow="never" class="gpt-card">
-        <div slot="header" class="card-title">
+      <el-card
+        shadow="never"
+        class="gpt-card"
+      >
+        <div
+          slot="header"
+          class="card-title"
+        >
           <span>AI模型生成代码</span>
         </div>
 
         <div class="chat-container">
           <div class="chat">
-            <div v-for="(message, index) in chatMessages" :key="index"
-              :class="['message', message.isUser ? 'user' : 'chatgpt']">
+            <div
+              v-for="(message, index) in chatMessages"
+              :key="index"
+              :class="['message', message.isUser ? 'user' : 'chatgpt']"
+            >
               <div class="avatar-container">
-                <el-avatar v-if="message.isUser" icon="el-icon-user-solid" size="small" shape="square"></el-avatar>
-                <el-avatar v-else :src="avatarURL" size="small" shape="square"></el-avatar>
+                <el-avatar
+                  v-if="message.isUser"
+                  icon="el-icon-user-solid"
+                  size="small"
+                  shape="square"
+                ></el-avatar>
+                <el-avatar
+                  v-else
+                  :src="avatarURL"
+                  size="small"
+                  shape="square"
+                ></el-avatar>
               </div>
 
-              {{ message.content }}
+              <pre v-highlight><code :class="{'code-area':!message.isUser}">{{ message.content }}</code></pre>
+              <div style="margin-left: auto;">
+                <el-button
+                  v-clipboard:copy="message.content"
+                  v-clipboard:success="onCopySuccess"
+                  v-if="!message.isUser"
+                  icon="el-icon-copy-document"
+                  size="small"
+                  style="margin-left: 4px;"
+                >复制</el-button>
+              </div>
             </div>
           </div>
           <div class="user-input">
-            <textarea class="user-input-field" v-model="userMessage" placeholder="请输入预处理需求描述..." />
-            <el-button class="user-input-button" icon="el-icon-s-promotion" type="primary" circle
-              @click="sendMessage"></el-button>
+            <textarea
+              class="user-input-field"
+              v-model="userMessage"
+              placeholder="请输入预处理需求描述..."
+            />
+            <el-button
+              class="user-input-button"
+              icon="el-icon-s-promotion"
+              type="primary"
+              circle
+              @click="sendMessage"
+            ></el-button>
           </div>
         </div>
 
       </el-card>
     </div>
 
-    <el-dialog title="新建预处理实验" :visible.sync="dialogFormVisible" width="650px" class="new-dia">
-      <el-form :model="form" ref="form" :rules="rules" label-width="150px">
-        <el-form-item label="实验名称" prop="name">
+    <el-dialog
+      title="新建预处理实验"
+      :visible.sync="dialogFormVisible"
+      width="650px"
+      class="new-dia"
+    >
+      <el-form
+        :model="form"
+        ref="form"
+        :rules="rules"
+        label-width="150px"
+      >
+        <el-form-item
+          label="实验名称"
+          prop="name"
+        >
           <el-input v-model="form.name"></el-input>
         </el-form-item>
         <el-form-item label="描述">
-          <el-input type="textarea" v-model="form.description"></el-input>
+          <el-input
+            type="textarea"
+            v-model="form.description"
+          ></el-input>
         </el-form-item>
-        <el-form-item label="上传代码" prop="file">
-          <el-upload class="upload-new-pre" action="#" accept=".py" ref="pre_upload" :on-change="handleChange"
-            :on-remove="handleRemove" :auto-upload="false" :on-exceed="uploadExceed" :limit="1">
-            <el-button size="small" slot="trigger" type="primary" plain>点击上传</el-button>
-            <el-button icon="el-icon-download" size="small" style="margin-left: 10px;" type="success" plain
-              @click="download">下载模板文件</el-button>
-            <div class="el-upload__tip" slot="tip">仅支持 .py 文件
+        <el-form-item
+          label="上传代码"
+          prop="file"
+        >
+          <el-upload
+            class="upload-new-pre"
+            action="#"
+            accept=".py"
+            ref="pre_upload"
+            :on-change="handleChange"
+            :on-remove="handleRemove"
+            :auto-upload="false"
+            :on-exceed="uploadExceed"
+            :limit="1"
+          >
+            <el-button
+              size="small"
+              slot="trigger"
+              type="primary"
+              plain
+            >点击上传</el-button>
+            <el-button
+              icon="el-icon-download"
+              size="small"
+              style="margin-left: 10px;"
+              type="success"
+              plain
+              @click="download"
+            >下载模板文件</el-button>
+            <div
+              class="el-upload__tip"
+              slot="tip"
+            >仅支持 .py 文件
             </div>
           </el-upload>
 
         </el-form-item>
 
-        <el-form-item label="样例参数" prop="arguments">
-          <el-input type="textarea" v-model="form.arguments"
-            placeholder='json格式，示例：{"subset":"日期"},没有参数请填{}'></el-input>
+        <el-form-item
+          label="样例参数"
+          prop="arguments"
+        >
+          <el-input
+            type="textarea"
+            v-model="form.arguments"
+            placeholder='json格式，示例：{"subset":"日期"},没有参数请填{}'
+          ></el-input>
         </el-form-item>
         <el-form-item label="保存预处理方法">
-          <el-radio v-model="form.save_method" :label="0">否</el-radio>
-          <el-radio v-model="form.save_method" :label="1">是</el-radio>
+          <el-radio
+            v-model="form.save_method"
+            :label="0"
+          >否</el-radio>
+          <el-radio
+            v-model="form.save_method"
+            :label="1"
+          >是</el-radio>
         </el-form-item>
 
         <el-form-item label="保存处理后的数据集">
-          <el-radio v-model="form.save_data" :label="0">否</el-radio>
-          <el-radio v-model="form.save_data" :label="1">是</el-radio>
+          <el-radio
+            v-model="form.save_data"
+            :label="0"
+          >否</el-radio>
+          <el-radio
+            v-model="form.save_data"
+            :label="1"
+          >是</el-radio>
         </el-form-item>
 
-        <el-form-item label="处理后的数据集名称" v-show="form.save_data==1">
+        <el-form-item
+          label="处理后的数据集名称"
+          v-show="form.save_data==1"
+        >
           <el-input v-model="form.save_data_name"></el-input>
         </el-form-item>
 
         <el-form-item>
-          <el-button type="primary" @click="submitForm('form')">立即创建</el-button>
+          <el-button
+            type="primary"
+            @click="submitForm('form')"
+          >立即创建</el-button>
           <el-button @click="resetForm('form')">重置</el-button>
         </el-form-item>
       </el-form>
@@ -138,10 +302,9 @@
 
 <script>
 import avatarURL from '../assets/gpt.jpg'
+
 export default {
-
   components: {
-
   },
 
   props: ['id', 'detail'],
@@ -182,7 +345,7 @@ export default {
         ],
       },
       chatMessages: [
-        { content: "您好！有什么可以帮助您的吗？", isUser: false },
+        { content: "您好！请告诉我您的预处理需求。", isUser: false },
       ],
       userMessage: "",
       output: [],
@@ -201,6 +364,7 @@ export default {
 
 
   mounted() {
+    this.detail.name = '北医三院动态检查数据'
   },
 
   methods: {
@@ -305,13 +469,35 @@ export default {
     sendMessage() {
       if (this.userMessage.trim() !== "") {
         this.chatMessages.push({ content: this.userMessage, isUser: true });
+        this.getChatGptResponse(this.userMessage);
         this.userMessage = "";
-        this.getChatGptResponse();
       }
     },
-    getChatGptResponse() {
-      const chatGptResponse = "这是您问题的答案......";
-      this.chatMessages.push({ content: chatGptResponse, isUser: false });
+    getChatGptResponse(message) {
+      // const chatGptResponse = "import pandas as pd\n\ndef process_require(df, **kwargs):\n    # 填补缺失值\n    df.fillna('Null', inplace=True)\n    \n    return df";
+      console.log(message)
+      let that = this
+      let chatGptResponse = ''
+      this.$http_wang({
+        url: "/processfile/get_llm_code/",
+        method: "post",
+        data: {
+          dataset_name: this.detail.name,
+          require: message
+        }
+      }).then((res) => {
+        if (res.status == 200) {
+          chatGptResponse = res.data.result
+          this.chatMessages.push({ content: chatGptResponse, isUser: false });
+        } else {
+          that.$notify.error({
+            title: '服务器失败 :/processfile/get_llm_code/ post',
+            message: res.response,
+            duration: 5000
+          });
+        }
+      })
+      
     },
 
     //    分页
@@ -341,6 +527,13 @@ export default {
           });
         }
       });
+    },
+
+    onCopySuccess() {
+      this.$message({
+        message: '复制成功',
+        type: 'success'
+      });
     }
 
 
@@ -360,6 +553,9 @@ export default {
   font-size: 18px;
   font-weight: bold;
   color: #555;
+}
+.code-area {
+  background-color: #f7f7f7;
 }
 
 .new-dia >>> .el-dialog__body {
@@ -383,7 +579,7 @@ export default {
 
 .message {
   display: flex;
-  align-items: center;
+  /* align-items: center; */
   padding: 25px 150px;
   font-size: 15px;
   line-height: 1.75;
@@ -391,6 +587,7 @@ export default {
 
 .avatar-container {
   margin-right: 25px;
+  margin-top: 25px;
 }
 
 .user {
