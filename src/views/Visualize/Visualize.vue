@@ -627,7 +627,6 @@ export default {
             let item = {name:key, type:"line", data:att_visit[key], symbolSize: 0, showSymbol: false, lineStyle: {width: 0, color: 'rgba(0, 0, 0, 0)'}};
             this.singleSeries.push(item);
           }
-          console.log(this.singleSeries);
           this.singleLegends.push("output");
           this.initSingleCharts();
         })
@@ -787,9 +786,17 @@ export default {
         series: this.singleSeries,
       });
       var selectArr = myChart.getOption().legend[0].data;
+      let count = 0;
       for (var key in selectArr) {
-          this.singleSelected[selectArr[key]] = true;
+          if (count >= 3) this.singleSelected[selectArr[key]] = false; 
+            else this.singleSelected[selectArr[key]] = true;
+            count = count + 1;
       }
+      this.singleSelected.output = true;
+      console.log(this.singleSelected);
+      myChart.setOption({legend: {
+        selected: this.singleSelected
+      }});
       let that = this;
       myChart.on('legendselectchanged', function(obj) {
         var selected = obj.selected;
