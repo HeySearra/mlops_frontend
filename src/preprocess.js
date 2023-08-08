@@ -166,9 +166,10 @@ const nodeOptions=[
       value: () => ({
         meta: {
           name: 'str_null',
-          title: "格式转化",
+          title: "清理字符串null",
           params: {
-            str_list: { value:'any',type: "Enum", unique:true, options:['null', 'NULL', 'None', 'none', '0', '']},
+            // str_list: { value:'any',type: "Enum", unique:true, options:['null', 'NULL', 'None', 'none', '0', '']},
+            str_list: {value:"", type:"String", unique:false, tips:"需要输入多个字符串，请用[\"str1\", \"str2\"]格式"},
           },
           description: ""
         },
