@@ -85,13 +85,6 @@
       }"
         >
           <el-table-column
-            prop="id"
-            label="ID"
-            width="160"
-            align="center"
-          >
-          </el-table-column>
-          <el-table-column
             prop="name"
             label="名称"
             width="400"
@@ -110,9 +103,9 @@
             width="100"
             align="center"
           >
-            <!-- <template slot-scope="scope">
+            <template slot-scope="scope">
               <el-button @click="histroy_delete(scope.row)" type="text">删除</el-button>
-            </template> -->
+            </template>
           </el-table-column>
 
         </el-table>
@@ -203,6 +196,30 @@
         >
           <el-input v-model="form.name"></el-input>
         </el-form-item>
+        <el-form-item label="多数据集预处理">
+          <el-radio
+            v-model="form.multi"
+            :label="0"
+          >否</el-radio>
+          <el-radio
+            v-model="form.multi"
+            :label="1"
+          >是</el-radio>
+        </el-form-item>
+
+        <el-form-item label="选择第二个数据集" v-show = "form.multi">
+          <el-select v-model="form.multi_dataset_id" placeholder="选择数据集" @change="getDatasetId">
+            <el-option v-for="item in datasetList" :value="item.id" :key="item.id"
+                        :label="item.name"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="选择第二个数据集" v-show = "form.multi">
+          <el-select v-model="form.multi_name" placeholder="选择子数据集">
+            <el-option v-for="item in childDatasetList" :value="item.children_name" :key="item.children_id"
+                        :label="item.children_name"></el-option>
+          </el-select>
+        </el-form-item>
+
         <el-form-item label="描述">
           <el-input
             type="textarea"
@@ -327,13 +344,19 @@ export default {
       dialogFormVisible: false,
       avatarURL: avatarURL,
       historyList: [],
+      datasetList: '',
+      childDatasetList: [],
       form: {
         name: '',
+        multi_dataset_id:'',
+        multi_name:'',
         file: null,
         arguments: '',
         save_method: 0,
         save_data: 0,
         save_data_name: '',
+        multi:0,
+        description:''
       },
       rules: {
         name: [
@@ -360,11 +383,11 @@ export default {
 
   created() {
     this.get_prelist()
+    this.getDatasetList()
   },
 
 
   mounted() {
-    this.detail.name = '北医三院动态检查数据'
   },
 
   methods: {
@@ -392,11 +415,16 @@ export default {
       var params = new FormData()
       params.append('file', this.form.file.raw)
       params.append('name', this.form.name)
+      params.append('description', this.form.description)
       params.append('dataset_name', this.detail.name)
       params.append('arguments', this.form.arguments)
       params.append('save_method', this.form.save_method)
       params.append('save_output', this.form.save_data)
+      params.append('multi', this.form.multi)
       if (this.form.save_data == 1) params.append('output_name', this.form.save_data_name)
+      if (this.form.multi== 1){
+        params.append('multi_name', this.form.multi_name)
+      }
       this.$http_wang({
         url: "/processfile/",
         method: "post",
@@ -415,6 +443,7 @@ export default {
           this.resetForm(formName)
           this.header_name = Object.keys(this.output[0])
           this.loading = false
+          this.get_prelist()
         } else {
           this.loading = false
           that.$notify.error({
@@ -464,6 +493,10 @@ export default {
       this.$refs[formName].resetFields();
       this.clearFiles();
       this.form.file = null
+      this.form.multi_dataset_id = ''
+      this.form.description= ''
+      this.childDatasetList = []
+      this.form.multi_name = ''
     },
 
     sendMessage() {
@@ -513,20 +546,13 @@ export default {
       this.$http_wang({
         url: "/processfile/" + row.id + '/',
         method: "delete",
-      }).then((res) => {
-        if (res.status == 200) {
+      })
           that.$notify({
             title: '删除成功',
             duration: 5000
           });
-        } else {
-          that.$notify.error({
-            title: '服务器失败 :/processfile/ delete',
-            message: res.response,
-            duration: 5000
-          });
-        }
-      });
+          this.get_prelist()
+
     },
 
     onCopySuccess() {
@@ -534,7 +560,44 @@ export default {
         message: '复制成功',
         type: 'success'
       });
-    }
+    },
+
+    getDatasetList() {
+      this.$http_vis({
+        url: "/predata/",
+        method: "get",
+      }).then((res) => {
+          let data = res.data.results
+          this.datasetList = data
+      })
+    },
+
+    getDatasetId(){
+      let url = "/predata/" + this.form.multi_dataset_id + "/";
+      this.$http_vis({
+        url: url,
+        method: "get",
+      }).then((res) => {
+        this.datasetInfo = res.data;
+        let data = res.data;
+        this.childDatasetList = [];
+        this.childDatasetList.push({
+          children_id: this.form.multi_dataset_id,
+          children_name: data.name
+        })
+        // console.log(data);
+        // this.childDatasetList = data.children;
+        for (let i in data.children) {
+          let childItem = {
+            children_id: data.children[i].children_id[0],
+            children_name: data.children[i].children_name[0]
+          }
+          this.childDatasetList.push(childItem);
+        }
+        this.form.multi_name = data.name;
+      })
+
+    },
 
 
   }
