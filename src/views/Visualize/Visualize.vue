@@ -45,14 +45,14 @@
       <el-table-column prop="feature_name" label="特征" header-align="center"></el-table-column>
       <el-table-column prop="min" label="最小值" header-align="center"></el-table-column>
       <el-table-column prop="max" label="最大值" header-align="center"></el-table-column>
-      <el-table-column prop="mean" label="均值" header-align="center"></el-table-column>
-      <el-table-column prop="std" label="标准差" header-align="center"></el-table-column>
+      <el-table-column prop="mean" label="均值" header-align="center" :formatter="formatAmount"></el-table-column>
+      <el-table-column prop="std" label="标准差" header-align="center" :formatter="formatAmount"></el-table-column>
       <el-table-column prop="p25" label="25%" header-align="center"></el-table-column>
       <el-table-column prop="p50" label="50%" header-align="center"></el-table-column>
       <el-table-column prop="p75" label="75%" header-align="center"></el-table-column>
       <el-table-column label="正正态性检验态" header-align="center">
-        <el-table-column prop="ntest_s" label="统计值" header-align="center"></el-table-column>
-        <el-table-column prop="ntest_p" label="p值" header-align="center"></el-table-column>
+        <el-table-column prop="ntest_s" label="统计值" header-align="center" :formatter="formatAmount"></el-table-column>
+        <el-table-column prop="ntest_p" label="p值" header-align="center" :formatter="formatAmount"></el-table-column>
       </el-table-column>
       <el-table-column prop="hist" label="频率分布直方图" header-align="center" >
         <template slot-scope="scope">
@@ -94,16 +94,16 @@
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="横轴">
-              <el-select v-model="xFeature" placeholder="横轴" >
+            <el-form-item :label=firstDim>
+              <el-select v-model="xFeature" :placeholder=firstDim >
                 <el-option v-for="item in featureList" :value="item" :key="item"
                             :label="item"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="纵轴">
-              <el-select multiple v-model="yFeature" placeholder="纵轴" :disabled="yDisabled">
+            <el-form-item :label=secondDim>
+              <el-select multiple v-model="yFeature" :placeholder=secondDim :disabled=yDisabled>
                 <el-option v-for="item in featureList" :value="item" :key="item"
                             :label="item"></el-option>
               </el-select>
@@ -127,10 +127,24 @@
     <el-dialog
       title="过滤"
       :visible.sync="filterVisible"
-      width="30%"
+      width="60%"
       :before-close="handleClose">
       <span>请输入过滤信息，格式为[字段名]==***，如pdid==98</span>
       <el-input v-model="filterString" placeholder="请输入内容"></el-input>
+      <div style="display: flex; align-items: center;">
+        过滤特征<el-select v-model="filterFeature" placeholder="请输入过滤特征" :style="{ flex: '1 0 200px' }">
+          <el-option v-for="item in featureList" :value="item" :key="item"
+                      :label="item"></el-option>
+        </el-select>
+        运算符<el-select v-model="filterSymbol" placeholder="请输入运算符" :style="{ flex: '1 0 200px' }">
+          <el-option v-for="item in SymbolList" :value="item" :key="item"
+                      :label="item"></el-option>
+        </el-select>
+        值<el-input v-model="filterValue" placeholder="请输入值" :style="{ flex: '1 0 200px' }"></el-input>
+        <el-button @click="addFilterString()">添加</el-button>
+      </div>
+      
+      
       <span slot="footer" class="dialog-footer">
         <el-button @click="filterVisible = false">取 消</el-button>
         <el-button type="primary" @click="figureFilter()">确 定</el-button>
@@ -231,8 +245,32 @@ export default {
         {
           name: "频次分布直方图",
           id: "bar",
+        },
+        {
+          name: "饼图",
+          id: "pie"
         }
       ],
+      figureClassMap: {
+        line: {
+          firstDim: "横轴",
+          secondDim: "纵轴",
+          yDisabled: false
+        },
+        bar: {
+          firstDim: "横轴",
+          secondDim: "",
+          yDisabled: true
+        },
+        pie: {
+          firstDim: "特征",
+          secondDim: "",
+          yDisabled: true
+        }
+      },
+      firstDim: "横轴",
+      secondDim: "纵轴",
+      figureChart: "",
       figureClass: "",
       featureList: ["pdid", "尿素", "血蛋白", "日期"],
       xFeature: "",
@@ -241,7 +279,13 @@ export default {
       figureData: {
       },
       filterVisible: false,
-      filterString: "pdid==98",
+      filterString: "",
+      filterFeature: "",
+      filterSymbol: "",
+      SymbolList: [
+        "==", "!=", "<", "<=", ">", ">="
+      ],
+      filterValue: "",
       modelList: [
         
       ],
@@ -267,7 +311,7 @@ export default {
 
 
   mounted() {
-
+    this.figureChart = echarts.init(this.$refs.explore_chart);
   },
 
   methods: {
@@ -303,7 +347,8 @@ export default {
         //   id: this.cur_dataset
         // }
       }).then((res) => {
-        this.datasetInfo = res.data;
+        this.datasetInfo = res.data; 
+        this.datasetInfo.created = this.formatToSecond(this.datasetInfo.created);
         let data = res.data;
         this.childDatasetList = [];
         this.childDatasetList.push({
@@ -348,6 +393,7 @@ export default {
         }).then((res) => {
           // console.log(res.data);
           this.datasetInfo = res.data;
+          this.datasetInfo.created  = this.formatToSecond(this.datasetInfo.created);
           let fList = res.data.sample.head;
           this.featureList = fList;
       });
@@ -405,13 +451,22 @@ export default {
         return true
       }
     },
-    getFigureClass(val) {
-      console.log(val);
-      if (val=="bar") {
-        this.yDisabled = true;
-      }else {
-        this.yDisabled = false;
+    formatAmount(row, column) {
+      const value = row[column.property];
+      if (typeof value === 'number') {
+        return value.toFixed(2);
       }
+      return value;
+    },
+    formatToSecond(timestamp) {
+      const date = new Date(timestamp);
+      const formattedDate = date.toISOString().slice(0, 19).replace("T", " ");
+      return formattedDate;
+    },
+    getFigureClass(val) {
+      this.firstDim = this.figureClassMap[val].firstDim;
+      this.secondDim = this.figureClassMap[val].secondDim;
+      this.yDisabled = this.figureClassMap[val].yDisabled;
     },
     showFigure() {
       // console.log(this.dataset_id, this.xFeature, this.yFeature, this.figureClass, this.filterString);
@@ -443,73 +498,137 @@ export default {
           let resdata = res.data.data.figureData;
           this.figureData = resdata;
           console.log(this.figureData);
-          let myChart = echarts.init(this.$refs.explore_chart);
+          let myChart = this.figureChart;
           myChart.clear();
-          let xAxis = {
-            type: "category",
-            data: this.figureData.xFeature.data
-          };
-          let yAxis = [];
-          for (let i in this.figureData.yFeature) {
-            yAxis.push({
-              type: 'value',
-              name: this.figureData.yFeature[i].name,
-              position: 'right',
-              offset: i*90,
-              nameLocation: 'end',
-              scale: true,
-              axisTick: {
-                show: true
-              },
-              splitLine: {
-                show: false
-              },
-              axisLine: {
-                show: true,
-                onZero: false
-              },
-              axisLabel: {
-                show: true,
-                formatter(params){
-                  return (params).toFixed(0)
-                }
-              }
-            })
+          if (this.figureClass=="pie") {
+            this.showPie();
           }
-          let legend = {
-            data:[]
+          if (this.figureClass=="line" || this.figureClass=="bar") {
+            this.showLineBar();
           }
-          let series = [];
-          for (let i in this.figureData.yFeature) {
-            legend.data.push(this.figureData.yFeature[i].name);
-            series.push({
-              data: this.figureData.yFeature[i].data,
-              name: this.figureData.yFeature[i].name,
-              type: this.figureClass,
-              yAxisIndex: i
-            });
-          }
-          let grid = {
-            top: '15%',
-            right: (this.figureData.yFeature.length-1) * 90,
-            containLabel: true
-          };
-          myChart.setOption({
-            xAxis:xAxis, yAxis:yAxis, series:series, legend:legend, grid:grid,
-            tooltip: {
-              trigger: 'axis'
-            },
-            toolbox: {
-              feature: {
-                saveAsImage: {}
-              }
-            }
-          });
         });
+    },
+    showLineBar() {
+      let myChart = this.figureChart;
+      let xAxis = {
+        type: "category",
+        data: this.figureData.xFeature.data
+      };
+      let yAxis = [];
+      for (let i in this.figureData.yFeature) {
+        yAxis.push({
+          type: 'value',
+          name: this.figureData.yFeature[i].name,
+          position: 'right',
+          offset: i*90,
+          nameLocation: 'end',
+          scale: true,
+          axisTick: {
+            show: true
+          },
+          splitLine: {
+            show: false
+          },
+          axisLine: {
+            show: true,
+            onZero: false
+          },
+          axisLabel: {
+            show: true,
+            formatter(params){
+              return (params).toFixed(0)
+            }
+          }
+        })
+      }
+      let legend = {
+        data:[]
+      }
+      let series = [];
+      for (let i in this.figureData.yFeature) {
+        legend.data.push(this.figureData.yFeature[i].name);
+        series.push({
+          data: this.figureData.yFeature[i].data,
+          name: this.figureData.yFeature[i].name,
+          type: this.figureClass,
+          yAxisIndex: i
+        });
+      }
+      let grid = {
+        top: '15%',
+        right: (this.figureData.yFeature.length-1) * 90,
+        containLabel: true
+      };
+      myChart.setOption({
+        xAxis:xAxis, yAxis:yAxis, series:series, legend:legend, grid:grid,
+        tooltip: {
+          trigger: 'axis'
+        },
+        toolbox: {
+          feature: {
+            saveAsImage: {}
+          }
+        }
+      });
+    },
+    showPie(){
+      let myChart = this.figureChart;
+      let legend = {
+        top: '5%',
+        left: 'center'
+      }
+      let series = [];
+      let pieSeries = {
+        name: this.xFeature,
+        type: "pie",
+        radius: ['40%', '70%'],
+        avoidLabelOverlap: false,
+        itemStyle: {
+          borderRadius: 10,
+          borderColor: '#fff',
+          borderWidth: 2
+        },
+        label: {
+          show: false,
+          position: 'center'
+        },
+        emphasis: {
+          label: {
+            show: true,
+            fontSize: 40,
+            fontWeight: 'bold'
+          }
+        },
+        labelLine: {
+          show: false
+        },
+        data: []
+      }
+      for (let i in this.figureData.yFeature[0].data) {
+        pieSeries.data.push({
+          value: this.figureData.yFeature[0].data[i],
+          name: this.figureData.xFeature.data[i]
+        });
+      }
+      series.push(pieSeries);
+      myChart.setOption({
+        series:series, legend:legend,
+        tooltip: {
+          trigger: 'item'
+        },
+        toolbox: {
+          feature: {
+            saveAsImage: {}
+          }
+        }
+      });
     },
     figureFilter() {
       this.filterVisible = false;
       // console.log(this.filterString);
+    },
+    addFilterString() {
+      this.filterString = this.filterString + this.filterFeature + this.filterSymbol + this.filterValue;
     },
     handleClose(done) {
       this.$confirm('确认关闭？')
@@ -561,8 +680,8 @@ export default {
         }).then((res) => {
           let data = res.data.data;
           this.MultiTestTable = [];
-          this.MultiTestTable.push({method:"pearsonr", value:data.pearsonr});
-          var t_test_string = "t="+ data.ttest[0] + ",p=" + data.ttest[1];
+          this.MultiTestTable.push({method:"pearsonr", value:data.pearsonr.toFixed(2)});
+          var t_test_string = "t="+ data.ttest[0].toFixed(2) + ",p=" + data.ttest[1].toFixed(2);
           this.MultiTestTable.push({method:"t-test", value:t_test_string});    
           this.MultiTestShow = true;
         })
