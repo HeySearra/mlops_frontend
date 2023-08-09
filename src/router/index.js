@@ -75,6 +75,12 @@ const routes = [
             import ('../views/Visualize/Visualize.vue'),
         props: route => ({param: route.query.param})
     },
+    {
+        path: '/modelana',
+        name: 'ModelAnalyse',
+        component: () =>
+            import ('../views/Visualize/ModelAnalyse.vue'),
+    }
 ]
 
 const router = new VueRouter({

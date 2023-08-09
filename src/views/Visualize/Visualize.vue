@@ -154,58 +154,6 @@
     <div style="margin-top: 40px">
     </div>
 
-    <el-form>
-      <el-form-item label="模型">
-        <el-select v-model="cur_model" placeholder="选择模型" @change="getModelId($event)">
-          <el-option v-for="item in modelList" :value="item.model_id" :key="item.model_id"
-                     :label="item.model_name"></el-option>
-        </el-select>
-      </el-form-item>
-    </el-form>
-    <el-descriptions title="Metrics" v-if="result_all.type=='b-cls'?true:false" :column="3" style="width: 550px" border>
-      <el-descriptions-item>
-        <template slot="label">acc</template>{{result_all.metrics.acc}}</el-descriptions-item>
-      <el-descriptions-item>
-        <template slot="label">auprc</template>{{result_all.metrics.auprc}}</el-descriptions-item>
-      <el-descriptions-item>
-        <template slot="label">auroc</template>{{result_all.metrics.auroc}}</el-descriptions-item>
-      <el-descriptions-item>
-        <template slot="label">f1_score</template>{{result_all.metrics.f1}}</el-descriptions-item>
-      <el-descriptions-item>
-        <template slot="label">minpse</template>{{result_all.metrics.minpse}}</el-descriptions-item>
-      <el-descriptions-item>
-        <template slot="label">pre0</template>{{result_all.metrics.pre0}}</el-descriptions-item>
-      <el-descriptions-item>
-        <template slot="label">precision</template>{{result_all.metrics.precision}}</el-descriptions-item>
-      <el-descriptions-item>
-        <template slot="label">recall</template>{{result_all.metrics.recall}}</el-descriptions-item>
-      <el-descriptions-item>
-        <template slot="label">specificity</template>{{result_all.metrics.specificity}}</el-descriptions-item>
-    </el-descriptions>
-    <el-descriptions title="Metrics" v-if="result_all.type=='reg'?true:false" :column="2" style="width: 550px" border>
-      <el-descriptions-item>
-        <template slot="label">mse</template>{{result_all.metrics.acc}}</el-descriptions-item>
-      <el-descriptions-item>
-        <template slot="label">mae</template>{{result_all.metrics.auprc}}</el-descriptions-item>
-    </el-descriptions>
-
-    <!-- <div ref="chart" :style="{width: '1500px',height: '500px'}"></div> -->
-    <div ref="heatmap" :style="{width: '1500px',height: '300px'}"></div>
-    单条数据解释性展示
-    <el-row>
-      <el-col :span="4"><el-input placeholder="搜索单条数据" v-model="curSingleData"></el-input></el-col>
-      <el-col :span="6"><el-button type="info" @click="showSingleData()">查看源数据和预测结果</el-button></el-col>
-    </el-row>
-    <div ref="single_chart" :style="{width: '1000px',height: '500px'}"></div>
-    <el-dialog title="源数据和预测结果"
-               :visible.sync="dialogShow"
-               width="40%">
-      <json-viewer :value="singleData"
-                   :expand-depth=5
-                   copyable
-                   boxed
-                   sort></json-viewer>
-    </el-dialog>
 
   </div>
 </template>

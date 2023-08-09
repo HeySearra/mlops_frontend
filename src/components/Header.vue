@@ -27,15 +27,15 @@
           <svg class="icon" aria-hidden="true">
             <use xlink:href="#icon-data1"></use>
           </svg>
-          分析
+          数据探查
         </router-link>
-        <span class="menu-item">
+        <router-link to='/modelana' class="menu-item">
           <svg class="icon" aria-hidden="true">
             <use xlink:href="#icon-data1"></use>
           </svg>
-          数据监测
-        </span>
-        <span class="menu-item">
+          模型分析
+        </router-link>
+        <!-- <span class="menu-item">
           <svg class="icon" aria-hidden="true">
             <use xlink:href="#icon-file"></use>
           </svg>
@@ -46,7 +46,7 @@
             <use xlink:href="#icon-data"></use>
           </svg>
           映射
-        </router-link>
+        </router-link> -->
       </div>
 
       <ul>
