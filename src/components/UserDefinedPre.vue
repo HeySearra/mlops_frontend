@@ -104,7 +104,10 @@
             align="center"
           >
             <template slot-scope="scope">
-              <el-button @click="histroy_delete(scope.row)" type="text">删除</el-button>
+              <el-button
+                @click="histroy_delete(scope.row)"
+                type="text"
+              >删除</el-button>
             </template>
           </el-table-column>
 
@@ -207,20 +210,41 @@
           >是</el-radio>
         </el-form-item>
 
-        <el-form-item label="选择第二个数据集" v-show = "form.multi">
-          <el-select v-model="form.multi_dataset_id" placeholder="选择数据集" @change="getDatasetId">
-            <el-option v-for="item in datasetList" :value="item.id" :key="item.id"
-                        :label="item.name"></el-option>
+        <el-form-item
+          label="根数据集"
+          v-show="form.multi"
+        >
+          <el-select
+            v-model="form.multi_dataset_id"
+            placeholder="选择数据集"
+            @change="getDatasetId"
+          >
+            <el-option
+              v-for="item in datasetList"
+              :value="item.id"
+              :key="item.id"
+              :label="item.name"
+            ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="选择第二个数据集" v-show = "form.multi">
-          <el-select v-model="form.multi_name" placeholder="选择子数据集">
-            <el-option v-for="item in childDatasetList" :value="item.children_name" :key="item.children_id"
-                        :label="item.children_name"></el-option>
+        <el-form-item
+          label="子数据集"
+          v-show="form.multi"
+        >
+          <el-select
+            v-model="form.multi_name"
+            placeholder="选择子数据集"
+          >
+            <el-option
+              v-for="item in childDatasetList"
+              :value="item.children_name"
+              :key="item.children_id"
+              :label="item.children_name"
+            ></el-option>
           </el-select>
         </el-form-item>
 
-        <el-form-item label="描述">
+        <el-form-item label="实验描述">
           <el-input
             type="textarea"
             v-model="form.description"
@@ -296,12 +320,23 @@
           >是</el-radio>
         </el-form-item>
 
-        <el-form-item
-          label="处理后的数据集名称"
-          v-show="form.save_data==1"
-        >
-          <el-input v-model="form.save_data_name"></el-input>
-        </el-form-item>
+        <div v-show="form.save_data == 1">
+          <el-form-item label="处理后的数据集名称">
+            <el-input v-model="form.save_data_name"></el-input>
+          </el-form-item>
+          <el-form-item label="数据集简介">
+            <el-input
+              type="textarea"
+              v-model="form.short_description"
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="数据集详细描述">
+            <el-input
+              type="textarea"
+              v-model="form.long_description"
+            ></el-input>
+          </el-form-item>
+        </div>
 
         <el-form-item>
           <el-button
@@ -348,15 +383,17 @@ export default {
       childDatasetList: [],
       form: {
         name: '',
-        multi_dataset_id:'',
-        multi_name:'',
+        multi_dataset_id: '',
+        multi_name: '',
         file: null,
         arguments: '',
         save_method: 0,
         save_data: 0,
         save_data_name: '',
-        multi:0,
-        description:''
+        multi: 0,
+        description: '',
+        short_description: '',
+        long_description: ''
       },
       rules: {
         name: [
@@ -421,8 +458,13 @@ export default {
       params.append('save_method', this.form.save_method)
       params.append('save_output', this.form.save_data)
       params.append('multi', this.form.multi)
-      if (this.form.save_data == 1) params.append('output_name', this.form.save_data_name)
-      if (this.form.multi== 1){
+
+      if (this.form.save_data == 1) {
+        params.append('output_name', this.form.save_data_name)
+        params.append('long_description', this.form.long_description)
+        params.append('short_description', this.form.short_description)
+      }
+      if (this.form.multi == 1) {
         params.append('multi_name', this.form.multi_name)
       }
       this.$http_wang({
@@ -494,9 +536,11 @@ export default {
       this.clearFiles();
       this.form.file = null
       this.form.multi_dataset_id = ''
-      this.form.description= ''
+      this.form.description = ''
       this.childDatasetList = []
       this.form.multi_name = ''
+      this.form.short_description = ''
+      this.form.long_description = ''
     },
 
     sendMessage() {
@@ -530,7 +574,7 @@ export default {
           });
         }
       })
-      
+
     },
 
     //    分页
@@ -547,11 +591,11 @@ export default {
         url: "/processfile/" + row.id + '/',
         method: "delete",
       })
-          that.$notify({
-            title: '删除成功',
-            duration: 5000
-          });
-          this.get_prelist()
+      that.$notify({
+        title: '删除成功',
+        duration: 5000
+      });
+      this.get_prelist()
 
     },
 
@@ -567,12 +611,12 @@ export default {
         url: "/predata/",
         method: "get",
       }).then((res) => {
-          let data = res.data.results
-          this.datasetList = data
+        let data = res.data.results
+        this.datasetList = data
       })
     },
 
-    getDatasetId(){
+    getDatasetId() {
       let url = "/predata/" + this.form.multi_dataset_id + "/";
       this.$http_vis({
         url: url,
