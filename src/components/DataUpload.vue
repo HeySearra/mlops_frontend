@@ -635,7 +635,6 @@ export default {
       var that = this;
       res = eval(res)
       console.log("in uploadSuccess")
-      console.log(res)
       // this.upload_data_dict = res.data_dict;
       this.tableData[0].fields = res.head;
       this.show_head_upload = true;
@@ -716,9 +715,11 @@ export default {
           name: '',
           description: '',
         }
-        this.dialogAddingEdgeVisible = false
-        this.get_head_list()
-        this.$message({
+        that.dialogAddingEdgeVisible = false
+        that.get_head_list()
+        that.get_file_head_list()
+        var res = that.$refs.upload.submit();
+        that.$message({
           type: 'success',
           message: '添加成功!'
         });
@@ -730,6 +731,37 @@ export default {
           duration: 5000
         });
       }
+    },
+
+    get_file_head_list() {
+      var that = this
+      var params = new FormData()
+      params.append('file', this.file)
+      this.$http_wang({
+        url: "/predata/pre_upload/",
+        method: "post",
+        data: params,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          // 'X-CSRFToken': that.getCookie('csrftoken'),
+        },
+      }).then((res) => {
+        console.log("ok!", res)
+        if (res.status == 200) {
+          res = eval(res)
+          console.log("in get_file_head_list")
+          // this.upload_data_dict = res.data_dict;
+          that.tableData[0].fields = res.data.head;
+          that.show_head_upload = true;
+          that.$refs.datasetInfoRef.validateField('fileList');
+        } else {
+          that.$notify.error({
+            title: '服务器失败 :/predata/pre_upload/',
+            message: res.response,
+            duration: 5000
+          });
+        }
+      })
     },
 
     /*******  第三步：关系表字段与谓词映射 方法定义 ******/

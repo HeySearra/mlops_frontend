@@ -32,11 +32,13 @@
     <el-dialog :title="dialogConf.title" :visible.sync="dialogConf.visible" :close-on-click-modal="false" destroy-on-close
       width="500px">
       <el-form @keyup.native.enter="settingSubmit" @submit.native.prevent ref="paramSetting" :model="curDialogParams"
-        label-width="100px">
+        label-width="110px">
         <el-form-item v-for="(val, key, idx) in this.curDialogParams" :label="key" :prop="key" :key="idx"
           class="super-flow-form-item">
           <el-input v-if="val.type === `Number`" v-model.number="curDialogParams[key].value" :placeholder="val.value"
             maxlength="10" size="small" />
+          <el-input v-if="val.type === `Double`" v-model="curDialogParams[key].value" onkeyup ="value=value.replace(/[^0-9.]/g, '')" :placeholder="val.value"
+          maxlength="10" size="small" />
           <!--   TODO:float validator       -->
           <el-input v-if="val.type === `Float`" v-model="curDialogParams[key].value" :placeholder="val.value"
             maxlength="10" size="small" />
@@ -67,12 +69,7 @@
         <el-descriptions-item label="">{{ nodeDescription }}</el-descriptions-item>
       </el-descriptions> -->
       <span style="margin-left: 20px">描述：{{ nodeDescription == ""? "无":nodeDescription }}</span>
-      
-      <el-text>
-
-      </el-text>
-
-
+    
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogConf.cancel">取 消</el-button>
         <el-button type="primary" @click="settingSubmit">确 定</el-button>
@@ -212,9 +209,12 @@ export default {
 
       return true
     },
-    submitPreprocess(newName) {
+    submitPreprocess(newInfo) {
       // 可能出现begin不在第一个的情形。
       if (!this.graphValidate()) {
+        that.$notify.error({
+            title: 'begin应为头节点',
+          });
         return
       }
       let that = this
@@ -232,12 +232,20 @@ export default {
         }
         methods.push(method_dict)
       }
+      if(methods.length == 0) {
+        that.$notify.error({
+            title: '未添加预处理方法',
+          });
+        return
+      }
       let id = this.dataset_id
       this.$http_wang({
         url: "/predata/" + id + "/process/",
         method: "post",
         data: {
-          name: newName,
+          name: newInfo.name + newInfo.type,
+          short_description: newInfo.short_description,
+          long_description: newInfo.long_description,
           methods: JSON.stringify(methods)
         }
       }).then((res) => {
@@ -481,6 +489,10 @@ export default {
 
   .node-header-str_null {
     background: chocolate;
+  }
+
+  .node-header-handle_outliers {
+    background: cadetblue;
   }
 
   .node-header-merge {

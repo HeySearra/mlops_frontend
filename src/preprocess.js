@@ -8,7 +8,7 @@ const nodeOptions=[
           params: {
             axis: { value:0,type: "Number", unique:true},
             how: { value:'any',type: "Enum", unique:true, options:["any","all"]},
-            thresh: { value:0,type: "Number", unique:true},
+            thresh: { value:0,type: "Double", unique:true},
             subset: { value:[], type:"ChooseCol", unique:false}
           },
           description: ""
@@ -170,6 +170,21 @@ const nodeOptions=[
           params: {
             // str_list: { value:'any',type: "Enum", unique:true, options:['null', 'NULL', 'None', 'none', '0', '']},
             str_list: {value:"", type:"String", unique:false, tips:"需要输入多个字符串，请用[\"str1\", \"str2\"]格式"},
+          },
+          description: ""
+        },
+      })
+    },
+    {
+      label: '处理离群值',
+      value: () => ({
+        meta: {
+          name: 'handle_outliers',
+          title: "处理离群值",
+          params: {
+            lower_bound: { value:0,type: "Double", unique:true},
+            upper_bound: { value:0,type: "Double", unique:true},
+            method: { value:'zscore',type: "Enum", unique:true, options:['zscore']},
           },
           description: ""
         },
