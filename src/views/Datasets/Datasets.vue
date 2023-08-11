@@ -6,24 +6,14 @@
       </el-input>
     </div>
 
-    <el-button 
-      id="upload-button" 
-      class="mid-child-container" 
-      circle
-      @click="clickSubmitIcon"
-      >
+    <el-button id="upload-button" class="mid-child-container" circle @click="clickSubmitIcon">
       <svg class="icon" id="upload-plus-icon" aria-hidden="true">
-       <use xlink:href="#icon-Plus"></use>
+        <use xlink:href="#icon-Plus"></use>
       </svg>
     </el-button>
 
-    <el-dialog
-      title="上传新数据"
-      :visible.sync="uploadDialogVisible"
-      width="60%"
-      :before-close="handleUploadDialogClose"
-      :destroy-on-close="true"
-      modal>
+    <el-dialog title="上传新数据" :visible.sync="uploadDialogVisible" width="60%" :before-close="handleUploadDialogClose"
+      :destroy-on-close="true" modal>
       <dataUpload></dataUpload>
     </el-dialog>
 
@@ -94,7 +84,8 @@
         </div>
         <el-divider></el-divider>
       </div>
-      <el-pagination :page-size="10" layout="prev, pager, next, jumper" :total="this.count" @current-change="handleCurrentChange">
+      <el-pagination :page-size="10" layout="prev, pager, next, jumper" :total="this.count"
+        @current-change="handleCurrentChange">
       </el-pagination>
     </div>
 
@@ -133,12 +124,19 @@ export default {
   },
 
   created() {
-    this.get_datasets_list()
   },
 
 
   mounted() {
-
+    if (!this.login_manager.get()) {
+      this.$notify.warning({
+        title: '未登录，请先登录账号',
+        duration: 5000
+      });
+      this.$router.push({ name: 'Login' });
+      return;
+    }
+    this.get_datasets_list()
   },
 
   methods: {
@@ -173,12 +171,12 @@ export default {
             name: this.search_word
           }
         }).then((res) => {
-          if(res.status == 200){
+          if (res.status == 200) {
             let data = res.data
             this.count = data.count
             this.resultList = data.results
           }
-          else{
+          else {
             this.$notify.error({
               title: '服务器失败 :/predata/ get',
               message: res.response,
@@ -238,29 +236,29 @@ export default {
       }
     },
 
-    clickSubmitIcon(e){
+    clickSubmitIcon(e) {
       e.stopPropagation();
       this.uploadDialogVisible = true
     },
 
-    handleUploadDialogClose(done){
+    handleUploadDialogClose(done) {
       //TODO:空表直接退出
       this.$confirm('确认关闭？已填写的数据将会清空。')
-          // eslint-disable-next-line no-unused-vars
-          .then(_ => {
-            done();
-          })
-          .catch(_ => {});
+        // eslint-disable-next-line no-unused-vars
+        .then(_ => {
+          done();
+        })
+        .catch(_ => { });
     },
 
     // handleSizeChange(val) {
-  	// 	this.query.pageSize = val
-  	// 	this.getCateList() // 重新请求数据
-  	// },
-  	handleCurrentChange(val) {
-  		// this.query.currentPage = val
-  		this.get_datasets_list(val)
-  	}
+    // 	this.query.pageSize = val
+    // 	this.getCateList() // 重新请求数据
+    // },
+    handleCurrentChange(val) {
+      // this.query.currentPage = val
+      this.get_datasets_list(val)
+    }
   }
 
 }

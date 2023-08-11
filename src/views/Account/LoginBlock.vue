@@ -93,8 +93,6 @@ export default {
         data: QS.stringify(that.form)
       }).then(res => {
         if (res.status == 200) {
-          // localStorage.setItem('token', res.data.access)
-          localStorage.setItem('username', this.form.username)
           that.login_manager.set(true, "", this.form.username, "")
           that.$notify.success({
             title: '成功',

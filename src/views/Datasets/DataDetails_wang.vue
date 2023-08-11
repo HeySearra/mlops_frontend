@@ -108,12 +108,12 @@ export default {
         children: [],
         father: 0,
         short_description: "暂无简介",
-        long_description: "## 数据集描述\n",
+        long_description: "\n",
         sample: {
           head: [],
           sample_data: []
         },
-        created: "2023-01-01T00:00:00",
+        created: "",
         experiment_times: 0,
         record_count: 0,
       },
@@ -140,17 +140,25 @@ export default {
   },
 
   created() {
-    const id = this.$route.params.id
-    this.origin_id = parseInt(id)
-    this.id = parseInt(id)
-    this.get_datasets(id)
-    this.version_choose = this.id
 
   },
 
 
   mounted() {
-
+    var that = this
+    if(!this.login_manager.get()){
+        that.$notify.warning({
+            title: '未登录，请先登录账号',
+            duration: 5000
+          });
+        that.$router.push('/login');
+        return
+      }
+    const id = this.$route.params.id
+    this.origin_id = parseInt(id)
+    this.id = parseInt(id)
+    this.get_datasets(id)
+    this.version_choose = this.id
   },
 
   methods: {
@@ -158,6 +166,9 @@ export default {
       this.html = render;
     },
     beautifyTimestamp(ts) {
+      if(ts == "" || ts == undefined){
+        return ""
+      }
       let date = ts.split("T")[0]
       let time = ts.split("T")[1]
       let date_parts = date.split("-")

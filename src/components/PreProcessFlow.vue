@@ -215,6 +215,13 @@ export default {
       return true
     },
     submitPreprocess(newInfo) {
+      if(!this.login_manager.get()){
+        that.$notify.warning({
+            title: '未登录，请先登录账号',
+            duration: 5000
+          });
+        return
+      }
       // 可能出现begin不在第一个的情形。
       if (!this.graphValidate()) {
         that.$notify.error({

@@ -60,8 +60,8 @@ export default {
         newNameDialogVisible:false,
         newInfo: {
           name: "",
-          short_description: "",
-          long_description: "",
+          short_description: "简介",
+          long_description: "介绍",
           type: "",
         },
         typeOptions: [".csv", ".xlsx", ".xls"],
@@ -72,7 +72,9 @@ export default {
 
   },
   mounted(){
-
+    if(!this.login_manager.get()){
+        return
+      }
   },
   props:{
     id:{

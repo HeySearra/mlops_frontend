@@ -89,7 +89,25 @@ export default {
     detail: {
       type: Object,
       required: true,
-      default: null,
+      default: {
+        owner: "匿名用户",
+        id_col: 1,
+        process_code: "",
+        name: "",
+        task: "通用",
+        area: "",
+        children: [],
+        father: 0,
+        short_description: "暂无简介",
+        long_description: "\n",
+        sample: {
+          head: [],
+          sample_data: []
+        },
+        created: "",
+        experiment_times: 0,
+        record_count: 0,
+      },
     },
     id: {
       type: Number,
@@ -99,6 +117,11 @@ export default {
       type: Array,
       require: false
     }
+  },
+  created() {
+    if(!this.login_manager.get()){
+        return
+      }
   },
   methods: {
     Download() {

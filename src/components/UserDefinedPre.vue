@@ -391,9 +391,9 @@ export default {
         save_data: 0,
         save_data_name: '',
         multi: 0,
-        description: '',
-        short_description: '',
-        long_description: ''
+        description: ' ',
+        short_description: ' ',
+        long_description: ' '
       },
       rules: {
         name: [
@@ -419,12 +419,15 @@ export default {
   },
 
   created() {
-    this.get_prelist()
-    this.getDatasetList()
   },
 
 
   mounted() {
+    if(!this.login_manager.get()){
+        return
+      }
+    this.get_prelist()
+    this.getDatasetList()
   },
 
   methods: {
@@ -437,7 +440,14 @@ export default {
         if (res.status == 200) {
           let data = res.data
           that.historyList = data.results
-        } else {
+        } 
+        else if(res.status == 403 || res.response.status == 403){
+          that.$notify.error({
+            title: '未登录',
+            duration: 5000
+          });
+        }
+        else {
           that.$notify.error({
             title: '服务器失败 /processfile/',
             message: res.response,

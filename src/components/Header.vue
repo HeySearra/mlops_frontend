@@ -49,11 +49,18 @@
         </router-link> -->
       </div>
 
-      <ul>
+      <div class="user">
         <li>
-          <router-link to="/login"> {{ username === "" ? "登录" : username }}</router-link>
+          <span class="el-dropdown-link" @click="to_login" v-if="!login_state && !username">
+            <span>登录</span>
+          </span>
+          <span class="el-dropdown-link" @click="logout" v-if="login_state && username">
+            <span>{{ username }}</span>
+          </span>
+
+
         </li>
-      </ul>
+      </div>
 
     </div>
 
@@ -68,28 +75,109 @@ export default {
   data() {
     return {
       username: "",
-      state: false,
+      login_state: false,
       token: "",
     }
   },
-  methods:
-  {
-    goto(index) {
-      this.$router.push(index)
-    }
-  },
+  
   mounted() {
+    this.get_user()
     if (this.login_manager.get()) {
-      this.state = true
+      this.login_state = true
       this.username = this.login_manager.get_name()
       // this.token = this.login_manager.get_token()
     }
+    else {
+      var route_name = this.$router.history.current.name;
+      if (route_name != 'Login' && route_name != 'Register') {
+        this.$router.push({ name: 'Login' });
+      }
+    }
     var _that = this
     this.$bus.$on("usernameUpdate", (name) => {
+      _that.login_state = true
       _that.username = name
     })
-  }
+  },
 
+  methods: {
+    goto(index) {
+      this.$router.push(index)
+    },
+    to_login() {
+      this.$router.push({ path: '/login', query: { from: this.$route.path } });
+    },
+    logout() {
+      var that = this;
+      this.$http_wang({
+        url: "/account/logout/",
+        method: "post",
+        headers: {
+          "Content-Type": 'application/x-www-form-urlencoded;charset=UTF-8',
+        },
+      }).then(res => {
+        if (res.status == 200) {
+          // localStorage.setItem('token', res.data.access)
+          that.login_manager.clear()
+          that.login_state = false
+          that.username = ""
+          that.$notify.success({
+            title: '成功',
+            message: '登出成功'
+          })
+        }
+        else if (res.response.status == 403) {
+          that.$notify.error({
+            title: '登出失败',
+            duration: 5000
+          });
+        }
+        else {
+          that.$notify.error({
+            title: '服务器失败 :/account/logout/ post',
+            message: res.response,
+            duration: 5000
+          });
+        }
+      }).catch(err => {
+        console.log(err)
+        that.$notify.error({
+          title: '服务器失败 :/account/logout/ post',
+          message: res.response,
+          duration: 5000
+        });
+      })
+    },
+
+    get_user(){
+      var that = this;
+      this.$http_wang({
+        url: "/account/get_user/",
+        method: "post",
+        headers: {
+          "Content-Type": 'application/x-www-form-urlencoded;charset=UTF-8',
+        },
+      }).then(res => {
+        if (res.status == 200) {
+          that.login_manager.set(true, "", res.data.username, "")
+          that.login_state = true
+          that.username = res.data.username
+        }
+        else {
+          that.login_manager.clear()
+          that.login_state = false
+          that.username = ""
+        }
+      }).catch(err => {
+        console.log(err)
+        that.$notify.error({
+          title: '服务器失败 :/account/get_user/ post',
+          message: res.response,
+          duration: 5000
+        });
+      })
+    }
+  }
 }
 </script>
 
@@ -98,6 +186,19 @@ export default {
 .menu-item {
   text-decoration: inherit;
   cursor: pointer;
+}
+
+.el-dropdown-link {
+  cursor: pointer;
+  /* color: hsl(1, 69%, 78%); */
+  display: inline-block;
+  width: 50px;
+}
+
+.user {
+  float: right;
+  margin: 10px 35px 10px 20px;
+  overflow: hidden;
 }
 
 .icon {

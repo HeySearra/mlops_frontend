@@ -321,10 +321,13 @@ export default {
     }
   },
   created() {
-    this.get_area();
   },
 
   mounted() {
+    if(!this.login_manager.get()){
+        return
+      }
+    this.get_area();
   },
   methods: {
     getCookie(name) {
