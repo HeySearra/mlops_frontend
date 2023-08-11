@@ -125,6 +125,7 @@ export default {
             title: '成功',
             message: '登出成功'
           })
+          that.$router.push('/login');
         }
         else if (res.response.status == 403) {
           that.$notify.error({
