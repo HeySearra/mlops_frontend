@@ -244,7 +244,9 @@ export default {
         method_dict["name"] = name
         method_dict["description"] = graph.nodeList[i].meta.description
         for (let key in graph.nodeList[i].meta.params) {
-          method_dict["params"][key] = param[key].value
+          if(param[key].value != ''){
+            method_dict["params"][key] = param[key].value
+          }
         }
         methods.push(method_dict)
       }
