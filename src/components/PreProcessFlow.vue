@@ -34,25 +34,30 @@
       <el-form @keyup.native.enter="settingSubmit" @submit.native.prevent ref="paramSetting" :model="curDialogParams"
         label-width="110px">
         <el-form-item v-for="(val, key, idx) in this.curDialogParams" :label="key" :prop="key" :key="idx"
-          class="super-flow-form-item">
-          <el-input v-if="val.type === `Number`" v-model.number="curDialogParams[key].value" :placeholder="val.value"
-            maxlength="10" size="small" />
-          <el-input v-if="val.type === `Double`" v-model="curDialogParams[key].value" onkeyup ="value=value.replace(/[^0-9.]/g, '')" :placeholder="val.value"
-          maxlength="10" size="small" />
+          >
+          <el-input v-if="val.type === `Number`" v-model.number="curDialogParams[key].value"
+            :placeholder="curDialogParams[key].value === `` ? val.tips : curDialogParams[key].value" maxlength="10"
+            size="small" />
+          <el-input v-if="val.type === `Double`" v-model="curDialogParams[key].value"
+            onkeyup="value=value.replace(/[^0-9.]/g, '')"
+            :placeholder="curDialogParams[key].value === `` ? val.tips : curDialogParams[key].value" maxlength="10"
+            size="small" />
           <!--   TODO:float validator       -->
-          <el-input v-if="val.type === `Float`" v-model="curDialogParams[key].value" :placeholder="val.value"
-            maxlength="10" size="small" />
+          <el-input v-if="val.type === `Float`" v-model="curDialogParams[key].value"
+            :placeholder="curDialogParams[key].value === `` ? val.tips : curDialogParams[key].value" maxlength="10"
+            size="small" />
           <el-input v-if="val.type === `String` && val.unique === true" v-model="curDialogParams[key].value"
-            :placeholder="val.value" maxlength="20" size="small" />
+            :placeholder="curDialogParams[key].value === `` ? val.tips : curDialogParams[key].value" maxlength="20"
+            size="small" />
           <el-input type="textarea" v-if="val.type === `String` && val.unique === false"
             v-model="curDialogParams[key].value" :autosize="{ minRows: 2, maxRows: 4 }"
             :placeholder="curDialogParams[key].value === `` ? val.tips : curDialogParams[key].value" />
           <el-select multiple collapse-tags v-if="val.type === `ChooseCol`" v-model="curDialogParams[key].value"
-            placeholder="请选择" size="small">
+            :placeholder="val.tips" size="small" style="width:100%" >
             <el-option v-for="(col, idx) in all_cols" :key="idx" :label="col" :value="col" />
           </el-select>
-          <el-select v-if="val.type === `Enum` && val.unique" v-model="curDialogParams[key].value" placeholder="请选择"
-            size="small">
+          <el-select v-if="val.type === `Enum` && val.unique" v-model="curDialogParams[key].value"
+          :placeholder="val.tips" size="small" style="width:100%" >
             <el-option v-for="(val, idx) in curDialogParams[key].options" :key="idx" :label="val" :value="val" />
           </el-select>
           <div v-if="val.type === `Bool`">
@@ -64,12 +69,12 @@
       <!-- <el-form-item label="描述" class="super-flow-form-item">
         <el-input v-model="nodeDescription" maxlength="20" size="small" />
       </el-form-item> -->
-<!-- 
+      <!-- 
       <el-descriptions title="描述" style="border: 0px;!important">
         <el-descriptions-item label="">{{ nodeDescription }}</el-descriptions-item>
       </el-descriptions> -->
-      <span style="margin-left: 20px">描述：{{ nodeDescription == ""? "无":nodeDescription }}</span>
-    
+      <span style="margin-left: 20px">描述：{{ nodeDescription == "" ? "无" : nodeDescription }}</span>
+
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogConf.cancel">取 消</el-button>
         <el-button type="primary" @click="settingSubmit">确 定</el-button>
@@ -213,8 +218,8 @@ export default {
       // 可能出现begin不在第一个的情形。
       if (!this.graphValidate()) {
         that.$notify.error({
-            title: 'begin应为头节点',
-          });
+          title: 'begin应为头节点',
+        });
         return
       }
       let that = this
@@ -232,10 +237,10 @@ export default {
         }
         methods.push(method_dict)
       }
-      if(methods.length == 0) {
+      if (methods.length == 0) {
         that.$notify.error({
-            title: '未添加预处理方法',
-          });
+          title: '未添加预处理方法',
+        });
         return
       }
       let id = this.dataset_id
@@ -555,5 +560,4 @@ export default {
   }
 }
 
-// TODO: 展示表头
-</style>
+// TODO: 展示表头</style>
