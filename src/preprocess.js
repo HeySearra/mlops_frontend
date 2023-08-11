@@ -187,6 +187,7 @@ const nodeOptions = [
           lower_bound: { value: 0, type: "Double", unique: true, tips: "下限，值必须大于等于下限，否则会被置nan" },
           upper_bound: { value: 0, type: "Double", unique: true, tips: "上限，值必须小于等于上限，否则会被置nan" },
           method: { value: 'zscore', type: "Enum", unique: true, options: ['zscore'] },
+          column_name: { value: "", type: "SingleChoose", unique: false, tips: "选择列" }
         },
         description: "处理DataFrame中某一列的离群值，将其变为为NaN。给定上下限优先使用上下限，未给定上下限使用zscore方法结合3 sigma原则筛选"
       },

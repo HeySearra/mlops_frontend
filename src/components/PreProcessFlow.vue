@@ -56,6 +56,10 @@
             :placeholder="val.tips" size="small" style="width:100%" >
             <el-option v-for="(col, idx) in all_cols" :key="idx" :label="col" :value="col" />
           </el-select>
+          <el-select collapse-tags v-if="val.type === `SingleChoose`" v-model="curDialogParams[key].value"
+          :placeholder="val.tips" size="small" style="width:100%" >
+          <el-option v-for="(col, idx) in all_cols" :key="idx" :label="col" :value="col" />
+        </el-select>
           <el-select v-if="val.type === `Enum` && val.unique" v-model="curDialogParams[key].value"
           :placeholder="val.tips" size="small" style="width:100%" >
             <el-option v-for="(val, idx) in curDialogParams[key].options" :key="idx" :label="val" :value="val" />

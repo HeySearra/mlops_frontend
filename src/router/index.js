@@ -23,7 +23,7 @@ const routes = [
             import ('../views/Datasets/DataDetails.vue')
     },
     {
-        path: '/datadetails_wang/:id',
+        path: '/datadetail/:id',
         name: 'DataDetails_wang',
         component: () =>
             import ('../views/Datasets/DataDetails_wang.vue')
