@@ -60,7 +60,7 @@
           slot="header"
           class="card-title"
         >
-          <span>自定义预处理记录</span>
+          <span>自定义预处理方法</span>
           <el-button
             style="float: right; padding: 3px 0"
             type="text"
