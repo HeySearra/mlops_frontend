@@ -70,9 +70,9 @@
           <user-defined-pre :id="id" :detail="detail" v-if="detail"></user-defined-pre>
         </el-tab-pane>
 
-        <el-tab-pane label="视图" name="fourth">
+        <!-- <el-tab-pane label="视图" name="fourth">
           <dataset-statistic :id="id"></dataset-statistic>
-        </el-tab-pane>
+        </el-tab-pane> -->
       </el-tabs>
     </div>
 
@@ -212,12 +212,12 @@ export default {
       if (version != this.id) {
         this.get_datasets(version)
         this.id = version
-        this.$router.replace(version)
+        this.$router.push(version)
         // this.$refs.child.$emit('childMethod','发送给方法一的数据') // 方法1:触发监听事件
         // this.$refs.child.getData(version, 0, 100) // 方法2:直接调用
         this.$bus.$emit("xxx", version, 0, 100)
         this.$bus.$emit("method2", version)
-      }
+      } 
     },
     parseHistoryRecord() {
       if (this.detail.process_code === "") {
