@@ -80,6 +80,14 @@ const routes = [
         name: 'ModelAnalyse',
         component: () =>
             import ('../views/Visualize/ModelAnalyse.vue'),
+    },
+    {
+        path: '/flow-experiments',
+        beforeEnter() {location.href = 'http://162.105.88.214:5000/#/experiments/0?searchFilter=&orderByKey=attributes.start_time&orderByAsc=false&startTime=ALL&lifecycleFilter=Active&modelVersionFilter=All%20Runs&selectedColumns=attributes.%60Source%60,attributes.%60Models%60&isComparingRuns=false&compareRunCharts=dW5kZWZpbmVk';},
+    },
+    {
+        path: '/flow-model',
+        beforeEnter() {location.href = 'http://162.105.88.214:5000/#/models';},
     }
 ]
 

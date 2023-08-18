@@ -11,13 +11,13 @@
           </svg>
           数据集
         </router-link>
-        <router-link to='/model' class="menu-item">
+        <router-link :to="{path: '/flow-experiments'}" class="menu-item">
           <svg class="icon" aria-hidden="true">
             <use xlink:href="#icon-model"></use>
           </svg>
           模型
         </router-link>
-        <router-link to='/experiment' class="menu-item">
+        <router-link :to="{path: '/flow-model'}" class="menu-item">
           <svg class="icon" aria-hidden="true">
             <use xlink:href="#icon-code"></use>
           </svg>
