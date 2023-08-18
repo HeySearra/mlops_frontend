@@ -60,8 +60,8 @@ export default {
         newNameDialogVisible:false,
         newInfo: {
           name: "",
-          short_description: "简介",
-          long_description: "介绍",
+          short_description: "",
+          long_description: "",
           type: "",
         },
         typeOptions: [".csv", ".xlsx", ".xls"],

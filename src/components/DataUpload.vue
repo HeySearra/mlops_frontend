@@ -75,12 +75,12 @@
         <el-card shadow="never" style="margin-top: 2%; width: 600px;">
           <div slot="header" style="font-size: 15px; font-weight: bold">
             <i class="el-icon-document-copy"></i>
-            领域表头
+            领域特征
             <el-tooltip class="item" effect="dark" content="请添加关系，并选择表中字段中该头/尾实体的关键属性，完成关系映射" placement="top-start">
               <i class="el-icon-info" style="margin-left: 5px;margin-top: 3px"></i>
             </el-tooltip>
 
-            <el-select v-model="valueMeta" value-key="fromId" collapse-tags placeholder="请选择实例"
+            <el-select v-model="valueMeta" value-key="fromId" collapse-tags placeholder="请选择特征"
               @change="selectEdgeChange">
               <div class="el-input" style="width:90%;margin-left:5%;">
                 <input type="text" placeholder="请输入" class="el-input__inner" v-model="dropDownValue"
