@@ -17,12 +17,27 @@
           </svg>
           模型
         </router-link>
-        <router-link :to="{path: '/flow-model'}" class="menu-item">
-          <svg class="icon" aria-hidden="true">
-            <use xlink:href="#icon-code"></use>
-          </svg>
-          实验
-        </router-link>
+        <el-dropdown class="menu-item">
+          <span>
+              <svg class="icon" aria-hidden="true">
+                <use xlink:href="#icon-code"></use>
+              </svg>
+              实验
+          </span>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item>
+              <el-button type = "text" @click="clickSubmitIcon" style = "color: #333333">
+                新增实验
+              </el-button>
+            </el-dropdown-item>
+            <el-dropdown-item>
+              <router-link :to="{path: '/flow-model'}" style = "color: #333333">
+                实验
+              </router-link>
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
+        
         <router-link to='/visualize' class="menu-item">
           <svg class="icon" aria-hidden="true">
             <use xlink:href="#icon-data1"></use>
@@ -61,9 +76,55 @@
 
         </li>
       </div>
-
-    </div>
-
+        <!-- <el-dialog title="上传新数据" :visible.sync="uploadDialogVisible" width="60%" :before-close="handleUploadDialogClose"
+          :destroy-on-close="true" modal>
+          <div class = "upload-frame">
+            <el-form ref="form" :model="form" label-width="80px">
+              <el-form-item label="活动区域">
+                <el-select v-model="form.region" placeholder="请选择活动区域">
+                  <el-option label="区域一" value="shanghai"></el-option>
+                  <el-option label="区域二" value="beijing"></el-option>
+                </el-select>
+              </el-form-item>
+            </el-form>
+          </div>
+        </el-dialog> -->
+      </div>
+    <el-dialog title="上传新数据" :visible.sync="uploadDialogVisible" width="60%" :before-close="handleUploadDialogClose"
+        :destroy-on-close="true" modal>
+        <div>
+          <el-form ref="form" :model="form" :rules="rules" label-width="10em" class="upload-frame">
+            <el-form-item label="选择数据集" prop="dataset">
+              <el-select v-model="form.dataset" placeholder="请选择数据集">
+                <el-option label="区域一" value="shanghai"></el-option>
+                <el-option label="区域二" value="beijing"></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="选择数据" prop="data">
+              <el-select v-model="form.data" placeholder="请选择数据" >
+                <el-option label="区域一" value="shanghai"></el-option>
+                <el-option label="区域二" value="beijing"></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="文件上传" prop="fileList">
+              <el-upload
+                class="upload-demo"
+                drag
+                action="/wang/predata/pre_upload/"
+                accept=".py"
+                v-model="codeFile"
+                :file-list="fileList"
+                :before-upload="beforeUpload" 
+                :on-remove="handleRemoveFile"
+                multiple>
+                <i class="el-icon-upload"></i>
+                <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+                <div class="el-upload__tip" slot="tip">只能上传py文件</div>
+              </el-upload>
+            </el-form-item>
+          </el-form>
+        </div>
+      </el-dialog>
   </div>
 </template>
 
@@ -77,6 +138,26 @@ export default {
       username: "",
       login_state: false,
       token: "",
+      uploadDialogVisible: false,
+      form: {
+        dataset: '',
+        data: '',
+        fileList: null,
+      },
+      codeFile: null,
+      fileList: [],
+      rules: {
+        dataset: [
+          { required: true, message: '请输入数据集', trigger: 'blur' },
+        ],
+        data: [
+          { required: true, message: '请选择领域', trigger: 'blur' },
+        ],
+        fileList: [
+          { required: true, message: '请上传文件', trigger: 'blur' }
+        ],
+      },
+      resultList: undefined,
     }
   },
   
@@ -98,6 +179,7 @@ export default {
       _that.login_state = true
       _that.username = name
     })
+    this.get_datasets_list()
   },
 
   methods: {
@@ -177,7 +259,103 @@ export default {
           duration: 5000
         });
       })
-    }
+    },
+
+    clickSubmitIcon(e) {
+      e.stopPropagation();
+      this.uploadDialogVisible = true
+    },
+
+    handleUploadDialogClose(done) {
+      //TODO:空表直接退出
+      this.$confirm('确认关闭？已填写的数据将会清空。')
+        // eslint-disable-next-line no-unused-vars
+        .then(_ => {
+          done();
+        })
+        .catch(_ => { });
+    },
+
+    // handleSizeChange(val) {
+    // 	this.query.pageSize = val
+    // 	this.getCateList() // 重新请求数据
+    // },
+    handleCurrentChange(val) {
+      // this.query.currentPage = val
+      this.get_datasets_list(val)
+    },
+
+    beforeUpload(file) {
+      const { name, size } = file;
+      this.file = file
+      const index = name.lastIndexOf('.');
+      // 判断文件名是否有后缀，没后缀文件错误
+      if (index === -1) {
+        this.$notify.error({
+          title: '错误',
+          message: '文件错误，请重新上传！',
+        });
+        return false
+      }
+      if (size > 10 * 1024 * 1024) {
+        this.$notify.error({
+          title: '错误',
+          message: '文件大小超过10M，请重新上传！',
+        });
+        return false;
+      }
+      return true;
+    },
+
+    handleRemoveFile() {
+      this.fileList = null;
+      this.codeFile = null;
+      this.$refs.datasetInfoRef.validateField('fileList');
+    },
+
+    get_datasets_list(page = 1) {
+      if (this.mode == '其他') {
+        this.$http({
+          url: "/datasets/",
+          method: "get",
+          params: {
+            page: page,
+            area: this.clusterFields.checkList,
+            task: this.clusterTasks.checkList,
+            name: this.search_word
+          }
+        }).then((res) => {
+          let data = res.data
+          this.count = data.count
+          this.resultList = data.results
+        })
+      } else if (this.mode == '预处理') {
+        this.$http_wang({
+          url: "/predata/",
+          method: "get",
+          params: {
+            page: page,
+            area: this.clusterFields.checkList,
+            name: this.search_word
+          }
+        }).then((res) => {
+          if (res.status == 200) {
+            let data = res.data
+            this.count = data.count
+            this.resultList = data.results
+          }
+          else {
+            this.$notify.error({
+              title: '服务器失败 :/predata/ get',
+              message: res.response,
+              duration: 5000
+            });
+          }
+        })
+      }
+
+    },
+
   }
 }
 </script>
@@ -268,5 +446,13 @@ li :hover {
   display: inline-flex;
   justify-items: stretch;
   align-items: center;
+}
+
+#upload-frame {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: column;
 }
 </style>
