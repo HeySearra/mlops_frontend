@@ -63,7 +63,6 @@
           映射
         </router-link> -->
       </div>
-
       <div class="user">
         <li>
           <span class="el-dropdown-link" @click="to_login" v-if="!login_state && !username">
@@ -95,22 +94,24 @@
         <div>
           <el-form ref="form" :model="form" :rules="rules" label-width="10em" class="upload-frame">
             <el-form-item label="选择数据集" prop="dataset">
-              <el-select v-model="form.dataset" placeholder="请选择数据集">
-                <el-option label="区域一" value="shanghai"></el-option>
-                <el-option label="区域二" value="beijing"></el-option>
+              <el-select v-model="datasetId" placeholder="请选择数据集">
+                <div v-for="(item, index) in resultList " :key="index">
+                  <el-option :label="item.name" :value="item.id"></el-option>
+                </div>
               </el-select>
             </el-form-item>
-            <el-form-item label="选择数据" prop="data">
-              <el-select v-model="form.data" placeholder="请选择数据" >
-                <el-option label="区域一" value="shanghai"></el-option>
-                <el-option label="区域二" value="beijing"></el-option>
+            <el-form-item label="选择数据" prop="data" v-if="datasetId">
+              <el-select v-model="form.dataId" placeholder="请选择数据" >
+                <div v-for="(item, index) in detail.children " :key="index">
+                  <el-option :label="item.children_name[0]" :value="item.children_id"></el-option>
+                </div>
               </el-select>
             </el-form-item>
             <el-form-item label="文件上传" prop="fileList">
               <el-upload
                 class="upload-demo"
                 drag
-                action="/wang/predata/pre_upload/"
+                action="#"
                 accept=".py"
                 v-model="codeFile"
                 :file-list="fileList"
@@ -123,6 +124,9 @@
               </el-upload>
             </el-form-item>
           </el-form>
+        </div>
+        <div style="text-align:center">
+          <el-button size="medium" type="primary" @click="handleUpload">上传</el-button>
         </div>
       </el-dialog>
   </div>
@@ -140,10 +144,10 @@ export default {
       token: "",
       uploadDialogVisible: false,
       form: {
-        dataset: '',
-        data: '',
+        dataId: '',
         fileList: null,
       },
+      datasetId: '',
       codeFile: null,
       fileList: [],
       rules: {
@@ -158,6 +162,25 @@ export default {
         ],
       },
       resultList: undefined,
+      detail: {
+        owner: "匿名用户",
+        id_col: 1,
+        process_code: "",
+        name: "",
+        task: "通用",
+        area: "",
+        children: [],
+        father: 0,
+        short_description: "暂无简介",
+        long_description: "\n",
+        sample: {
+          head: [],
+          sample_data: []
+        },
+        created: "",
+        experiment_times: 0,
+        record_count: 0,
+      },
     }
   },
   
@@ -179,7 +202,10 @@ export default {
       _that.login_state = true
       _that.username = name
     })
-    this.get_datasets_list()
+    this.$bus.$on("resultListUpdate", (resultList) => {
+      _that.resultList = resultList
+      
+    })
   },
 
   methods: {
@@ -276,18 +302,10 @@ export default {
         .catch(_ => { });
     },
 
-    // handleSizeChange(val) {
-    // 	this.query.pageSize = val
-    // 	this.getCateList() // 重新请求数据
-    // },
-    handleCurrentChange(val) {
-      // this.query.currentPage = val
-      this.get_datasets_list(val)
-    },
 
     beforeUpload(file) {
       const { name, size } = file;
-      this.file = file
+      this.codeFile = file
       const index = name.lastIndexOf('.');
       // 判断文件名是否有后缀，没后缀文件错误
       if (index === -1) {
@@ -313,49 +331,50 @@ export default {
       this.$refs.datasetInfoRef.validateField('fileList');
     },
 
-    get_datasets_list(page = 1) {
-      if (this.mode == '其他') {
-        this.$http({
-          url: "/datasets/",
-          method: "get",
-          params: {
-            page: page,
-            area: this.clusterFields.checkList,
-            task: this.clusterTasks.checkList,
-            name: this.search_word
-          }
-        }).then((res) => {
+    get_datasets(id) {
+      var that = this;
+      this.$http_wang({
+        url: "/predata/" + id + '/',
+        method: "get",
+      }).then((res) => {
+        console.log("DataDetails_wang get_datasets")
+        console.log(res)
+        if (res.status == 200) {
           let data = res.data
-          this.count = data.count
-          this.resultList = data.results
-        })
-      } else if (this.mode == '预处理') {
-        this.$http_wang({
-          url: "/predata/",
-          method: "get",
-          params: {
-            page: page,
-            area: this.clusterFields.checkList,
-            name: this.search_word
-          }
-        }).then((res) => {
-          if (res.status == 200) {
-            let data = res.data
-            this.count = data.count
-            this.resultList = data.results
+          if (data.father == null) {
+            data.children.push({
+              'children_id': [data.id],
+              'children_name': [data.name],
+            })
           }
           else {
-            this.$notify.error({
-              title: '服务器失败 :/predata/ get',
-              message: res.response,
-              duration: 5000
-            });
+            data.children = that.detail.children
           }
-        })
-      }
-
+          that.detail = data
+          // that.parseHistoryRecord()
+        } else {
+          that.$notify.error({
+            title: '服务器失败 :/predata/' + id + ' get',
+            message: res.response,
+            duration: 5000
+          });
+        }
+      });
     },
 
+    handleUpload() {
+      console.log('datasetId,',this.datasetId);
+      console.log('dataId,', this.form.dataId);
+      console.log('file,',this.codeFile);
+    }
+
+  },
+
+  watch: {
+    datasetId: function (newVal, oldVal) {
+      this.form.dataId = ''
+      this.get_datasets(parseInt(this.datasetId))
+    }
   }
 }
 </script>
@@ -448,11 +467,11 @@ li :hover {
   align-items: center;
 }
 
-#upload-frame {
+/* #upload-frame {
   width: 100%;
   display: flex;
   justify-content: flex-start;
   align-items: center;
   flex-direction: column;
-}
+} */
 </style>
