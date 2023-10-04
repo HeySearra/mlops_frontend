@@ -228,7 +228,7 @@ export default {
         });
       } else if (this.mode == '预处理') {
         this.$router.push({
-          name: "DataDetails_wang",
+          name: "DataDetails",
           params: {
             id: arg.id
           }
