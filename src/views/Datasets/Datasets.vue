@@ -259,6 +259,12 @@ export default {
       // this.query.currentPage = val
       this.get_datasets_list(val)
     }
+  },
+
+  watch: {
+    resultList: function (newVal, oldVal) {
+      this.$bus.$emit("resultListUpdate", this.resultList)
+    }
   }
 
 }

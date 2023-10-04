@@ -179,7 +179,6 @@ export default {
     },
     get_datasets(id) {
       var that = this;
-      console.log("?")
       this.$http_wang({
         url: "/predata/" + id + '/',
         method: "get",
