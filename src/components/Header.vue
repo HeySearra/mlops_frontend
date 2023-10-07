@@ -11,7 +11,7 @@
           </svg>
           数据集
         </router-link>
-        <router-link :to="{path: '/flow-experiments'}" class="menu-item">
+        <router-link :to="{path: '/flow-model'}" class="menu-item">
           <svg class="icon" aria-hidden="true">
             <use xlink:href="#icon-model"></use>
           </svg>
@@ -31,7 +31,7 @@
               </el-button>
             </el-dropdown-item>
             <el-dropdown-item>
-              <router-link :to="{path: '/flow-model'}" style = "color: #333333">
+              <router-link :to="{path: '/flow-experiments'}" style = "color: #333333">
                 实验
               </router-link>
             </el-dropdown-item>
@@ -89,7 +89,7 @@
           </div>
         </el-dialog> -->
       </div>
-    <el-dialog title="上传新数据" :visible.sync="uploadDialogVisible" width="60%" :before-close="handleUploadDialogClose"
+    <el-dialog title="上传新数据" :visible.sync="uploadDialogVisible" width="60%" 
         :destroy-on-close="true" modal>
         <div>
           <el-form ref="form" :model="form" :rules="rules" label-width="10em" class="upload-frame">
@@ -103,7 +103,7 @@
             <el-form-item label="选择数据" prop="data" v-if="datasetId">
               <el-select v-model="form.dataId" placeholder="请选择数据" >
                 <div v-for="(item, index) in detail.children " :key="index">
-                  <el-option :label="item.children_name[0]" :value="item.children_id"></el-option>
+                  <el-option :label="item.children_name[0]" :value="item.children_name[0]"></el-option>
                 </div>
               </el-select>
             </el-form-item>
@@ -111,13 +111,16 @@
               <el-upload
                 class="upload-demo"
                 drag
-                action="#"
                 accept=".py"
                 v-model="codeFile"
                 :file-list="fileList"
                 :before-upload="beforeUpload" 
                 :on-remove="handleRemoveFile"
-                multiple>
+                :on-change="handleChange"
+                action="#"
+                :auto-upload="false"
+                :limit="1"
+                >
                 <i class="el-icon-upload"></i>
                 <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
                 <div class="el-upload__tip" slot="tip">只能上传py文件</div>
@@ -126,7 +129,7 @@
           </el-form>
         </div>
         <div style="text-align:center">
-          <el-button size="medium" type="primary" @click="handleUpload">上传</el-button>
+          <el-button size="medium" type="primary" @click="handleUpload('form')">运行</el-button>
         </div>
       </el-dialog>
   </div>
@@ -203,6 +206,7 @@ export default {
       _that.username = name
     })
     this.$bus.$on("resultListUpdate", (resultList) => {
+      _that.resultList = []
       _that.resultList = resultList
       
     })
@@ -292,15 +296,15 @@ export default {
       this.uploadDialogVisible = true
     },
 
-    handleUploadDialogClose(done) {
-      //TODO:空表直接退出
-      this.$confirm('确认关闭？已填写的数据将会清空。')
-        // eslint-disable-next-line no-unused-vars
-        .then(_ => {
-          done();
-        })
-        .catch(_ => { });
-    },
+    // handleUploadDialogClose(done) {
+    //   //TODO:空表直接退出
+    //   this.$confirm('确认关闭？已填写的数据将会清空。')
+    //     // eslint-disable-next-line no-unused-vars
+    //     .then(_ => {
+    //       done();
+    //     })
+    //     .catch(_ => { });
+    // },
 
 
     beforeUpload(file) {
@@ -362,10 +366,42 @@ export default {
       });
     },
 
-    handleUpload() {
-      console.log('datasetId,',this.datasetId);
+    handleUpload(formName) {
       console.log('dataId,', this.form.dataId);
-      console.log('file,',this.codeFile);
+      console.log('fileList', this.fileList);
+      console.log(this.codeFile);
+      if (this.form.dataId == '') {
+        alert('请选择数据集！');
+        return;
+      }
+      if (this.fileList.length == 0) {
+        alert('请选择文件！');
+      }
+      var params = new FormData()
+      params.append('file', this.codeFile)
+      params.append('dataset_name', this.form.dataId)
+      params.append('name', 'concare')
+      params.append('description', 'train model')
+      this.$http_wang({
+        url: "/trainmodel/",
+        method: "post",
+        data: params,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }).then((res) => {
+        if (res.status == 200) {
+          alert('运行成功！')
+          window.location.href="http://162.105.88.214:5000/#/experiments/3?searchFilter=&orderByKey=attributes.start_time&orderByAsc=false&startTime=ALL&lifecycleFilter=Active&modelVersionFilter=All%20Runs&selectedColumns=attributes.%60Source%60,attributes.%60Models%60&isComparingRuns=false&compareRunCharts=dW5kZWZpbmVk"
+        }
+        else {
+          alert('运行失败！')
+        }
+      })
+    },
+    handleChange(file) {
+      this.codeFile = file.raw
+      this.fileList.push(file)
     }
 
   },
