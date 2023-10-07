@@ -311,7 +311,7 @@ export default {
 
 .version-choose {
   position: absolute;
-  top: 100px;
-  right: 200px;
+  top: 130px;
+  right: 175px;
 }
 </style>
