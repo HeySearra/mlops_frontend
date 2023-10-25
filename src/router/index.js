@@ -26,7 +26,7 @@ const routes = [
         path: '/datadetails/:id',
         name: 'DataDetails',
         component: () =>
-            import ('../views/Datasets/DataDetails.vue')
+            import ('../views/Datasets/DataDetails_wang.vue')
     },
     {
         path: '/new_datasets',
