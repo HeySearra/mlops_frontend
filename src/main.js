@@ -5,7 +5,7 @@ import Element from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css';
 import './assets/iconfont'
 import '@/assets/css/global.css'
-import {http, http_wang, http_vis, http_zyq} from './axios.js'
+import {http, http_wang, http_vis, http_zyq, http_jbw} from './axios.js'
 import VueClipboard from 'vue-clipboard2'
 import './assets/icons/iconfont'
 import * as echarts from 'echarts';
@@ -29,6 +29,7 @@ Vue.prototype.$http = http
 Vue.prototype.$http_wang = http_wang
 Vue.prototype.$http_vis = http_vis
 Vue.prototype.$http_zyq = http_zyq
+Vue.prototype.$http_jbw = http_jbw
 Vue.prototype.$echarts = echarts
 Vue.prototype.alert_msg = alert_msg;
 Vue.prototype.login_manager = login_manager;

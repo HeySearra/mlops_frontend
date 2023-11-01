@@ -26,7 +26,7 @@ const routes = [
         path: '/datadetails/:id',
         name: 'DataDetails',
         component: () =>
-            import ('../views/Datasets/DataDetails.vue')
+            import ('../views/Datasets/DataDetails_wang.vue')
     },
     {
         path: '/new_datasets',
@@ -83,7 +83,7 @@ const routes = [
     },
     {
         path: '/flow-experiments',
-        beforeEnter() {location.href = 'http://162.105.88.214:5000/#/experiments/0?searchFilter=&orderByKey=attributes.start_time&orderByAsc=false&startTime=ALL&lifecycleFilter=Active&modelVersionFilter=All%20Runs&selectedColumns=attributes.%60Source%60,attributes.%60Models%60&isComparingRuns=false&compareRunCharts=dW5kZWZpbmVk';},
+        beforeEnter() {location.href = 'http://162.105.88.214:5000/#/experiments/3?searchFilter=&orderByKey=attributes.start_time&orderByAsc=false&startTime=ALL&lifecycleFilter=Active&modelVersionFilter=All%20Runs&selectedColumns=attributes.%60Source%60,attributes.%60Models%60&isComparingRuns=false&compareRunCharts=dW5kZWZpbmVk';},
     },
     {
         path: '/flow-model',

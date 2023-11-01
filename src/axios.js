@@ -87,5 +87,13 @@ const http_zyq = axios.create({
 http_zyq.defaults.timeout = 200000 //超过10s则请求超时
 http_zyq.defaults.headers.post['Content-Type'] = 'application/json;charset=UTF-8'//post请求头的默认设置
 
+const http_jbw = axios.create({
+    baseURL: '/jbw/',
+    timeout: 1000000,
+    withCredentials: true
+})
+http_jbw.defaults.timeout = 200000 //超过10s则请求超时
+http_jbw.defaults.headers.post['Content-Type'] = 'application/json;charset=UTF-8'//post请求头的默认设置
 
-export {http, http_wang, http_vis, http_zyq}
+
+export {http, http_wang, http_vis, http_zyq, http_jbw}
