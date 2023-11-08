@@ -534,13 +534,13 @@ export default {
       //   return false;
       // }
       // 判断文件大小
-      if (size > 10 * 1024 * 1024) {
-        this.$notify.error({
-          title: '错误',
-          message: '文件大小超过10M，请重新上传！',
-        });
-        return false;
-      }
+      // if (size > 10 * 1024 * 1024) {
+      //   this.$notify.error({
+      //     title: '错误',
+      //     message: '文件大小超过10M，请重新上传！',
+      //   });
+      //   return false;
+      // }
       // 默认true
       return true;
     },
